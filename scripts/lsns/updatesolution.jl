@@ -25,7 +25,6 @@ function update_h(sp, currsol, h)
 				end
 				currsol.stationassign[m] = w
 				df = DataFrame(iteration=[counter], order=[m], station=[w])
-				CSV.write("assign.csv",df,append=true)
 				break
 			elseif (value(h[m, i, p, w, t]) <= 1e-2) & (currsol.h[m, i, p, w, t] >= 1e-2)
 				currsol.h[m, i, p, w, t] = value(h[m, i, p, w, t])
