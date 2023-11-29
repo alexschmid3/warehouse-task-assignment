@@ -73,11 +73,12 @@ function writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 			random_seed = [random_seed for s in 1:numpartitions+1],
 			method = [methodname for s in 1:numpartitions+1],
 			partition = union([string(s) for s in 1:numpartitions], ["global"]),
-			lsnsiterations = solvemetrics.lsnsiterations,
+			lsnsiteration = union(["summary" for p in 1:numpartitions], [string(20)]),
 			objective = objective,
 			solve_time = solvemetrics.solve_time,
 			solvetime_init = solvemetrics.solvetime_init,
-			solvetime_sp = solvemetrics.solvetime_sp,
+			solvetime_spselection = solvemetrics.solvetime_spsel,
+			solvetime_spopt = solvemetrics.solvetime_sp,
 			time_utilization = time_utilization,
 			throughput_utilization = throughput_utilization,
 			bestthroughput_utilization = bestthroughput_utilization,
@@ -119,11 +120,12 @@ function writeglobalsolutionoutputs_init(globalsolutionfilename)
 			random_seed = [],
 			method = [],
 			partition = [],
-			lsnsiterations = [],
+			lsnsiteration = [],
 			objective = [],
 			solve_time = [],
 			solvetime_init = [],
-			solvetime_sp = [],
+			solvetime_spselection = [],
+			solvetime_spopt = [],
 			time_utilization = [],
 			throughput_utilization = [],
 			bestthroughput_utilization = [],
@@ -155,7 +157,7 @@ end
 
 #-----------------------------------------------------------------------------------#
 
-function writeglobalsolutionoutputs_iter(sp_iter, iterationtime, sp_solvetime, globalsolutionfilename, s, currpartition, currsol)
+function writeglobalsolutionoutputs_iter(sp_iter, inittime, iterationtime, spselectiontime, sp_solvetime, globalsolutionfilename, s, currpartition, currsol)
 
 	ordersworked, podsworked, itemsdone = [], [], Dict()
 	for w in currpartition.workstations, t in times, (m,i,p) in currsol.itempodpicklist[w,t]
@@ -175,8 +177,11 @@ function writeglobalsolutionoutputs_iter(sp_iter, iterationtime, sp_solvetime, g
 	intindices, timeindices = [maps.mapintersectiontorow[i] for i in currpartition.intersections], [maps.maptimetocolumn[t] for t in 0:congestiontstep:horizon]
 	allcongestionvalues = sum(currcong[p][intindices, timeindices] for p in currpartition.pods)
 	orderopentime = Dict()
+	for m in currpartition.orders
+		orderopentime[m] = 0
+	end
 	for m in ordersworked
-		orderopentime[m] = 1
+		orderopentime[m] += 1
 	end
 	for w in currpartition.workstations, t in times, m in currsol.ordersopen[w,t] 
 		orderopentime[m] += 1
@@ -196,11 +201,12 @@ function writeglobalsolutionoutputs_iter(sp_iter, iterationtime, sp_solvetime, g
 			random_seed = [random_seed],
 			method = [methodname],
 			partition = [string(s)],
-			lsnsiterations = [sp_iter],
+			lsnsiteration = [sp_iter],
 			objective = [objective],
 			solve_time = [iterationtime],
-			solvetime_init = [0],
-			solvetime_sp = [sp_solvetime],
+			solvetime_init = [inittime],
+			solvetime_spselection = [spselectiontime],
+			solvetime_spopt = [sp_solvetime],
 			time_utilization = [(podprocesstime * sum(sum(length(currsol.podsworkedat[w,t]) for t in times) for w in currpartition.workstations) + itemprocesstime * sum(sum(length(currsol.itempodpicklist[w,t]) for t in times) for w in currpartition.workstations)) / ((tstep+horizon) * length(currpartition.workstations))],
 			throughput_utilization = [((podprocesstime + itemprocesstime) * sum(sum(length(currsol.itempodpicklist[w,t]) for t in times) for w in currpartition.workstations)) / (horizon * length(currpartition.workstations))],
 			bestthroughput_utilization = [(podprocesstime * sum(sum(min(1,length(currsol.podsworkedat[w,t])) for t in times) for w in currpartition.workstations) + itemprocesstime * sum(sum(length(currsol.itempodpicklist[w,t]) for t in times) for w in currpartition.workstations)) / (horizon * length(currpartition.workstations))],

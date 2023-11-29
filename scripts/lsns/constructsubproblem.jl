@@ -205,13 +205,27 @@ function constructsubproblem(partition, sp_orders, sp_window, sp_pods, sp_itemso
 	sp_tstart = sp_window.tstart
 	sp_tend = sp_window.tend
 
+	st1 = time()
 	tb_arcset, sp_arcset, sp_nodeset, sp_times, sp_alltimes = findsubproblemnetwork(sp_workstations, partition.storagelocs, sp_tstart, sp_tend)
+	println("  Time 1 = ", time()-st1)
+	st2 = time()
 	sp_podsupply = findsubproblempodsupply(partition, sp_alltimes, sp_workstations, currsol, sp_arcset)
+	println("  Time 2 = ", time()-st2)
+	st3 = time()
 	y_known, sp_podarcset, sp_podarcset_cong = findknownpodarcs(partition, currsol, sp_workstations, sp_tstart, sp_tend, sp_arcset)
+	println("  Time 3 = ", time()-st3)
+	st4 = time()
 	remaininginventory = findsubproblemremaininginventory(partition, currsol, sp_workstations, sp_tstart, sp_tend)
+	println("  Time 4 = ", time()-st4)
+	st5 = time()
 	sp_remaininginventory, sp_podswith = subprobleminventory(remaininginventory, podswith, sp_pods)
+	println("  Time 5 = ", time()-st5)
+	st6 = time()
 	sp_ordersinprogress, sp_orderswith, sp_numitems = getadditionalordersets(sp_orders, sp_itemson, sp_items)
+	println("  Time 6 = ", time()-st6)
+	st7 = time()
 	ambientcongestion, emptycongestion = findsubproblemambientcongestion(partition, currcong, sp_pods)
+	println("  Time 7 = ", time()-st7)
 
 	sp = (orders=sp_orders, workstations=sp_workstations, pods=sp_pods, tstart=sp_tstart, tend=sp_tend, partition=partition,
 		timeblockarcset=tb_arcset, arcset=sp_arcset, nodeset=sp_nodeset, times=sp_times, alltimes=sp_alltimes, podsupply=sp_podsupply,

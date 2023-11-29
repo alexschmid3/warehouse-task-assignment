@@ -219,7 +219,7 @@ end
 
 #---------------------------------------------------------------------------------------#
 
-function getintersectionmaxpods()
+function getintersectionmaxpods(maps)
 
 	intersectionmaxpods = Dict()
 	for i in intersections
@@ -230,7 +230,17 @@ function getintersectionmaxpods()
 		end
 	end
 
-	return intersectionmaxpods
+	intersectiontimemaxpods = zeros(length(intersections), length(0:congestiontstep:horizon))
+	for i in intersections, t in 0:congestiontstep:horizon
+		i1, t1 = maps.mapintersectiontorow[i], maps.maptimetocolumn[t]
+		if i in queueintersections
+			intersectiontimemaxpods[i1,t1] = intersectioncapacity * 2
+		else
+			intersectiontimemaxpods[i1,t1] = intersectioncapacity
+		end
+	end
+
+	return intersectionmaxpods, intersectiontimemaxpods
 
 end
 
@@ -241,8 +251,8 @@ function initializecongestion()
 	currentcongestion = emptycongestion()
 	maps = createcongestionmaps()
 	congestionsignature = createcongestionsignatures(maps)
-	intersectionmaxpods = getintersectionmaxpods()
-
-	return currentcongestion, maps, congestionsignature, intersectionmaxpods
+	intersectionmaxpods, intersectiontimemaxpods = getintersectionmaxpods(maps)
+	 
+	return currentcongestion, maps, congestionsignature, intersectionmaxpods, intersectiontimemaxpods
 
 end

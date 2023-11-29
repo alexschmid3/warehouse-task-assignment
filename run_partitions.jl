@@ -10,8 +10,10 @@ include("scripts/instancegeneration/readdata.jl")
 include("scripts/instancegeneration/datageneration.jl")
 include("scripts/instancegeneration/initializecongestion.jl")
 include("scripts/helper/remove.jl")
+include("scripts/helper/sortarcschronologically.jl")
+include("scripts/helper/getcurrentobjective.jl")
 include("scripts/benchmarks/synergylsns.jl")
-include("scripts/benchmarks/greedysolution.jl")
+include("scripts/benchmarks/findgreedysolution.jl")
 include("scripts/decomposition/decomposeproblem.jl")
 include("scripts/decomposition/configurepartitioncongestion.jl")
 include("scripts/decomposition/writeglobalsolutionoutputs.jl")
@@ -35,20 +37,15 @@ println("Scripts imported")
 #-----------------------------------------------------------------------------------#
 
 #Debugging mode
-visualizationflag = 0
+visualizationflag = 1
 debugprintstatements = 0 			# When a bug is found, set this to 1 for next run to get more detailed error info (warning: it's a lot of print statements, one for each unit test)
-debugmode = 0						# 1 --> will perform solution consistency unit tests at each LSNS iteration, use for debugging when changing the code
-				   					# 0 --> no solution checks, use for computational experiments
+debugmode = 0					# 1 --> will perform solution consistency unit tests at each LSNS iteration, use for debugging when changing the code, 0 --> no solution checks, use for computational experiments
+
 #Initialize Gurobi
 #const GRB_ENV = Gurobi.Env()
 
-if visualizationflag == 1
-	include("scripts/visualizations/warehouseviz.jl")
-	include("scripts/visualizations/workstationviz.jl")
-end
-
 # Select the instancecd
-row_id = 1 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1)
+row_id = 800 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1)
 instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
 testingparamsfilename = "data/decomp_instance_parameters.csv"
 methodparamsfilename = "data/decomp_lsns_parameters.csv"
@@ -75,7 +72,7 @@ methodparms = CSV.read(methodparamsfilename, DataFrame)
 #Get ML training parameters
 run_id = methodparms[row_id, 1]
 instance_id = methodparms[row_id, 2]
-methodname = methodparms[row_id, 3]
+methodname = "synergy" #methodparms[row_id, 3]
 solutioninitialization = methodparms[row_id, 4]
 targetnumpods = methodparms[row_id, 5]
 targetnumorders = methodparms[row_id, 6]
@@ -158,6 +155,10 @@ globalsolutionfilename = string(outputfolder, "/output.csv")
 if !(isdir(outputfolder))
 	mkdir(outputfolder)
 end
+visualizationfolder = string(outputfolder, "/viz")
+if !(isdir(visualizationfolder))
+	mkdir(visualizationfolder)
+end
 
 #Initialize timer
 time()
@@ -204,6 +205,11 @@ println("Instance prepared for optimization")
 
 #-----------------------------------------------------------------------------------#
 
+if visualizationflag == 1
+	include("scripts/visualizations/warehouseviz.jl")
+	include("scripts/visualizations/workstationviz.jl")
+end
+
 #Helper function
 function arcDesc(a)
 	println(nodelookup[arclookup[a][1]], " ==> ", nodelookup[arclookup[a][2]])
@@ -212,7 +218,7 @@ end
 #-----------------------------------------------------------------------------------#
 
 #Congestion initialization
-currcong, maps, congestionsignature, intersectionmaxpods = initializecongestion()
+currcong, maps, congestionsignature, intersectionmaxpods, intersectiontimemaxpods = initializecongestion()
 
 #-----------------------------------------------------------------------------------#
 
@@ -226,6 +232,13 @@ println("--------------------Decompose instance-------------------")
 #Decompose problem spatially and assign orders
 if visualizationflag == 1
 	warehouseviz("warehouselayout.png", 4000)
+	orderlevels = [length([m for m in orders if length(itemson[m]) == l]) for l in 1:20]
+	plot1 = Plots.bar(1:20, orderlevels)
+	savefig(plot1,string(outputfolder, "/ordersize.png"))
+
+	invlevels = [length([i for i in items if length(podswith[i]) == l]) for l in 1:25]
+	plot2 = Plots.bar(1:25, invlevels)
+	savefig(plot2,string(outputfolder, "/poditemdistribution.png"))
 end
 numpartitions, partitions, partitioninfo, globalunassignedorders = decomposeproblem(stationsperpartition, partitionobjective, beta, features, featureinfo, featurenums)
 
@@ -240,7 +253,7 @@ for s in 1:numpartitions
 	currpartition = partitioninfo[s]
 	partitionsolution[s] = createemptysolution(currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations)
 end
-solvemetrics = (solve_time=zeros(numpartitions+1), solvetime_init=zeros(numpartitions+1), solvetime_sp=zeros(numpartitions+1), lsnsiterations=zeros(numpartitions+1))
+solvemetrics = (solve_time=zeros(numpartitions+1), solvetime_init=zeros(numpartitions+1), solvetime_spsel=zeros(numpartitions+1), solvetime_sp=zeros(numpartitions+1), lsnsiterations=zeros(numpartitions+1))
 writeglobalsolutionoutputs_init(globalsolutionfilename)
 counter = 1
 
@@ -249,21 +262,32 @@ for s in 1:numpartitions
 
 	println("===== PARTITION $s =====")
 
+	#Get partition info
 	currpartition = partitioninfo[s]
 
 	#Find an initial solution
-	if solutioninitialization == "none"
-		currsol = createemptysolution(currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations)
-	elseif solutioninitialization == "greedy"
-		currsol = findgreedysolution(currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations)
+	currsol = createemptysolution(currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations)
+	initstarttime = time()
+	if solutioninitialization == "greedy"
+		currsol = findgreedysolution(currpartition, currsol, currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations)
 	elseif solutioninitialization == "biggreedy"
-		currsol = findgreedysolution([m for m in currpartition.orders if length(itemson[m]) >= 4], currpartition.pods, currpartition.podswith, currpartition.workstations)
+		currsol = findgreedysolution(currpartition, currsol, [m for m in currpartition.orders if length(itemson[m]) >= 4], currpartition.pods, currpartition.podswith, currpartition.workstations)
 	end
+	initializationtime = time() - initstarttime
 
-	#Subproblem windows
+	#Report on initial solution
+	getcurrentobjective(currpartition, currsol)
+	if visualizationflag == 1
+		workstationviz(string(visualizationfolder,"/station_partition", s,"_initial.png"), currpartition, currsol)
+	end
+	writeglobalsolutionoutputs_iter("init", initializationtime, initializationtime, 0, 0, globalsolutionfilename, s, currpartition, currsol)
+	solvemetrics.solvetime_init[s] += initializationtime
+
+	#Find subproblem windows
 	windows, windowsduring, windowidlookup, windowscontaining = enumeratesubproblemwindows(currpartition, maxworkstationspersubproblem, subproblemtimelength)
 	windowsynergy = preprocesswindowsynergies(windows, windowidlookup, featureinfo, features, beta, featurenums)
 
+	#Initialize LSNS sets
 	inittime = time()
 	tabulist, lastoptimizeddifference = [], zeros(length(windows))
 
@@ -274,32 +298,43 @@ for s in 1:numpartitions
 		iterationstarttime = time()
 
 		#Select subproblem elements
+		spselectionstarttime = time()
 		if methodname == "LTO"
 			sp_winid, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, tabulist, predicted_obj = selectlearnthenoptimizesubproblem(currpartition, currsol, windows, windowscontaining, windowidlookup, windowsduring, windowsynergy, targetnumorders, targetnumpods, tabulist, lastoptimizeddifference, sp_iter)
 		elseif methodname == "random"
 			sp_winid, sp_orders, sp_window, sp_pods, sp_itemson, sp_items = selectrandomsubproblem(currpartition, windows, windowidlookup, currsol, targetnumorders, targetnumpods)
+			predicted_obj = 0
 		elseif methodname == "synergy"
 			sp_winid, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, tabulist = selectsynergisticsubproblem(currpartition, windows, currsol, targetnumorders, targetnumpods, rand(1:maxworkstationspersubproblem), tabulist)
+			predicted_obj = 0
 		end
+		spselectiontime = time() - spselectionstarttime
+		println("Selection time = ", spselectiontime, " seconds")
 
 		#Build subproblem structure
+		spconstructstarttime = time()
 		sp = constructsubproblem(currpartition, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, currsol)
+		println("Construction time = ", time() - spconstructstarttime, " seconds")
 
-		#Re-optimize
+		#Re-optimize subproblem
 		sp_obj, sp_solvetime, h_sp, y_sp, z_sp, f_sp, g_sp, v_sp, feasibleflag_sp = reoptimizesubproblem(sp, currsol, currpartition)
+		println("Re-opt time = ", sp_solvetime, " seconds")
 
 		#Update solution
+		spupdatestarttime = time()
 		currsol = updatesolution(sp, currsol, currpartition, sp_obj, h_sp, y_sp, v_sp)
 		lastoptimizeddifference = updatelastoptimizeddifference(lastoptimizeddifference, tabulist, sp_winid, windows, predicted_obj, sp_obj)
 		iterationtime = time() - iterationstarttime
-		updatesolvemetrics(s, iterationtime, sp_solvetime)
+		println("Update time = ", time() - spupdatestarttime, " seconds")
+		updatesolvemetrics(s, iterationtime, sp_solvetime, spselectiontime)
+		println("Total time = ", iterationtime, " seconds")
 
-		#Write some metrics
-		writeglobalsolutionoutputs_iter(sp_iter, iterationtime, sp_solvetime, globalsolutionfilename, s, currpartition, currsol)
+		#Write solution metrics
+		writeglobalsolutionoutputs_iter(sp_iter, 0, iterationtime, spselectiontime, sp_solvetime, globalsolutionfilename, s, currpartition, currsol)
 
 		#Visualize new solution
 		if visualizationflag == 1
-			workstationviz(string("viz/station_partition", s,"_iter", sp_iter,".png"), currpartition, sp, currsol)
+			workstationviz(string(visualizationfolder, "/station_partition", s,"_iter", sp_iter,".png"), currpartition, currsol)
 		end
 
 		#For debugging: check consistency of current solution
@@ -325,8 +360,3 @@ writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 
 #-----------------------------------------------------------------------------------#
 
-#orderlevels = [length([m for m in currpartition.orders if length(itemson[m]) == l]) for l in 1:20]
-#Plots.bar(1:20, orderlevels)
-
-#invlevels = [length([i for i in currpartition.items if length(currpartition.podswith[i]) == l]) for l in 1:25]
-#Plots.bar(1:25, invlevels)

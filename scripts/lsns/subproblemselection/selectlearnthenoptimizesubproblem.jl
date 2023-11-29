@@ -109,8 +109,8 @@ function constructbestsubproblem(currpartition, currsol, features, featurenums, 
 	@constraint(model, orderitempod[m in currpartition.orders, i in itemson[m]], alpha[m] <= sum(zeta[p] for p in currpartition.podswith[i]) )
 
 	#Order and pod inclusion
-	@constraint(model, orderinclusion[w in currpartition.workstations, t in times, m in assignedorders[w,t], win in windowscontaining[w,t]], alpha[m] >= x[win] )
-	@constraint(model, podinclusion[w in currpartition.workstations, t in times, p in currsol.podsworkedat[w,t], win in windowscontaining[w,t]], zeta[p] >= x[win] )
+	@constraint(model, orderinclusion[w in currpartition.workstations, t in times, m in unique(assignedorders[w,t]), win in windowscontaining[w,t]], alpha[m] >= x[win] )
+	@constraint(model, podinclusion[w in currpartition.workstations, t in times, p in unique(currsol.podsworkedat[w,t]), win in windowscontaining[w,t]], zeta[p] >= x[win] )
 	
 	#Order and pod exclusion
 	@constraint(model, orderisnotthere[m in setdiff(currpartition.orders, unassignedorders)], alpha[m] <= 0) 
@@ -128,6 +128,8 @@ function constructbestsubproblem(currpartition, currsol, features, featurenums, 
 	@constraint(model, minpods, sum(zeta[p] for p in currpartition.pods) >= minnumpods - podpenalty) #length(pods) / 10 )
 	@constraint(model, maxitems, sum(length(itemson[m]) * alpha[m] for m in currpartition.orders) <= targetnumitems + itempenalty) 
 	@constraint(model, minitems, sum(length(itemson[m]) * alpha[m] for m in currpartition.orders) >= minnumitems - itempenalty) 
+	@constraint(model, podpenalty <= 10)
+	@constraint(model, itempenalty <= 20)
 
 	#Taboo workstations and times
 	for sp in 1:length(tabulist)
@@ -188,7 +190,7 @@ function parseoptimizationoutput(windows, currpartition, currsol, x, alpha, zeta
 	end
 
 	#Update tabu windows
-	if length(tabulist) >= maxtabu
+	if (length(tabulist) >= maxtabu) & (tabulist != [])
 		popfirst!(tabulist)
 	end
 	push!(tabulist, sp_winid)

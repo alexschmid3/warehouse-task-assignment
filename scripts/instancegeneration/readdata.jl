@@ -330,11 +330,12 @@ end
 
 function podarcsets(items, arclength)
 
-	pods = []
-	for i in items
-		pods = union(pods, podswith[i])
-	end
-	pods = sort(pods)
+	pods = copy(allpods)
+	#pods = []
+	#for i in items
+	#	pods = union(pods, podswith[i])
+	#end
+	#pods = sort(pods)
 
 	podnodeset = Dict()
 	for p in pods
