@@ -165,6 +165,7 @@ function additionalsets(podsin, partitions)
 	
 end
 
+
 #----------------------------------------------------------------------------------------------------#
 
 function decomposeproblem(stationsperpartition, partitionobjective, beta, features, featureinfo, featurenums)
@@ -179,8 +180,14 @@ function decomposeproblem(stationsperpartition, partitionobjective, beta, featur
 		part = (partitionid=s, workstations=stationsin[s], storagelocs=storagelocsin[s], intersections=intersectionsin[s], pods=podsin[s], orders=ordersin[s], podswith=podswith_s[s], allitems=allitemsin[s], items=itemsin[s])
 		push!(partitioninfo, part)
 	end
+	
+	globalpartitionid = numpartitions+1
+	part = (partitionid=globalpartitionid, workstations=workstations, storagelocs=storagelocs, 
+	intersections=intersectionsin, pods=pods, orders=unassignedorders, podswith=podswith, 
+	allitems=allitems, items=items)
+	push!(partitioninfo, part)
 
-	return numpartitions, partitions, partitioninfo, unassignedorders
+	return numpartitions, partitions, partitioninfo, globalpartitionid
 
 end
 

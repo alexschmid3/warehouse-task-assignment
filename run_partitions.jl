@@ -42,10 +42,10 @@ debugprintstatements = 0 			# When a bug is found, set this to 1 for next run to
 debugmode = 0					# 1 --> will perform solution consistency unit tests at each LSNS iteration, use for debugging when changing the code, 0 --> no solution checks, use for computational experiments
 
 #Initialize Gurobi
-#const GRB_ENV = Gurobi.Env()
+const GRB_ENV = Gurobi.Env()
 
 # Select the instancecd
-row_id = 800 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1)
+row_id = 1000 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1)
 instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
 testingparamsfilename = "data/decomp_instance_parameters.csv"
 methodparamsfilename = "data/decomp_lsns_parameters.csv"
@@ -229,9 +229,9 @@ beta, features, featuresfor, featurenums, featureinfo = getmlfeatures(mlmodelfil
 
 println("--------------------Decompose instance-------------------")
 
-#Decompose problem spatially and assign orders
+#Warehouse visualization and statistics
 if visualizationflag == 1
-	warehouseviz("warehouselayout.png", 4000)
+	warehouseviz(string(outputfolder, "/warehouselayout.png"), 4000)
 	orderlevels = [length([m for m in orders if length(itemson[m]) == l]) for l in 1:20]
 	plot1 = Plots.bar(1:20, orderlevels)
 	savefig(plot1,string(outputfolder, "/ordersize.png"))
@@ -240,7 +240,14 @@ if visualizationflag == 1
 	plot2 = Plots.bar(1:25, invlevels)
 	savefig(plot2,string(outputfolder, "/poditemdistribution.png"))
 end
-numpartitions, partitions, partitioninfo, globalunassignedorders = decomposeproblem(stationsperpartition, partitionobjective, beta, features, featureinfo, featurenums)
+
+#Decompose problem into partitions
+numpartitions, partitions, partitioninfo, globalpartitionid = decomposeproblem(stationsperpartition, partitionobjective, beta, features, featureinfo, featurenums)
+globalpartition = partitioninfo[globalpartitionid]
+
+#Enumerate windows for the global partition
+windows_global, windowsduring_global, windowidlookup_global, windowscontaining_global = enumeratesubproblemwindows(globalpartition, 1, subproblemtimelength)
+windowsynergy_global = preprocesswindowsynergies(windows_global, windowidlookup_global, featureinfo, features, beta, featurenums)
 
 #-----------------------------------------------------------------------------------#
 
@@ -292,7 +299,7 @@ for s in 1:numpartitions
 	tabulist, lastoptimizeddifference = [], zeros(length(windows))
 
 	#Improve solution iteratively via LSNS
-	for sp_iter in 1:numsubproblemsevaluated
+	for sp_iter in 1:5 #numsubproblemsevaluated
 
 		println("----- ITER $sp_iter -----")
 		iterationstarttime = time()
