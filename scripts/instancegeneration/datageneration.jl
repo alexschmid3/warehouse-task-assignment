@@ -38,6 +38,11 @@ function Warehouse(xm,ym,Workstations,Seed;Px=6,Py=4,Street_Width=2)
     #Rows in x and y direction
     x_rows = convert(Int64, floor(xm/Street_Group_x))
     y_rows = convert(Int64, floor(ym/Street_Group_y))
+    if ym > 45
+        storageloc_rows = 2:y_rows-1
+    else
+        storageloc_rows = 1:y_rows-1
+    end
 
     #For loops to define streets:
     Vert_Streets = DataFrame(Array{Float64}(undef, x_rows, 2),[:left,:right])
@@ -56,35 +61,46 @@ function Warehouse(xm,ym,Workstations,Seed;Px=6,Py=4,Street_Width=2)
     PodLocations = DataFrame(Array{Float64}(undef, x_rows * (y_rows - 1), 2),[:x,:y])
     count=1
     for i = 1:x_rows
-        for j = 2:y_rows-1
+        for j in storageloc_rows
             PodLocations[count,1] = i*Street_Width + (i-1)*Px
             PodLocations[count,2] = j*Street_Width + (j-1)*Py
             count=count+1
         end
     end
 
-    #Workstation Locations (bottom row and top row, equally spread)
+    #Workstation Locations 
     Work_Loc = DataFrame(Array{Float64}(undef, Workstations, 3),[:Station,:x,:y])
     Work_Loc.Station = collect(size(PodLocations)[1]+1:size(PodLocations)[1]+Workstations)
 
-    topStations, bottomStations = 1:convert(Int,ceil(Workstations/2)), convert(Int, ceil(Workstations/2)+1):Workstations
-    stationsperpodcolumn = floor(x_rows / ceil(Workstations/2))
-    for i in topStations
-        Work_Loc[i,2] = Street_Width + (i-1)*(Street_Width + Group_width_x)*stationsperpodcolumn
-        Work_Loc[i,3] = 1*Street_Width + (1-1)*Py
-    end
-    for i in bottomStations
-        Work_Loc[i,2] = Street_Width + (i-length(topStations)-1)*(Street_Width + Group_width_x)*stationsperpodcolumn
-        Work_Loc[i,3] = y_rows*Street_Width + (y_rows-1)*Py
+    #Big warehouse (bottom row and top row, equally spread)
+    if ym > 45
+        topStations, bottomStations = 1:convert(Int,ceil(Workstations/2)), convert(Int, ceil(Workstations/2)+1):Workstations
+        stationsperpodcolumn = floor(x_rows / ceil(Workstations/2))
+        for i in topStations
+            Work_Loc[i,2] = Street_Width + (i-1)*(Street_Width + Group_width_x)*stationsperpodcolumn
+            Work_Loc[i,3] = 1*Street_Width + (1-1)*Py
+        end
+        for i in bottomStations
+            Work_Loc[i,2] = Street_Width + (i-length(topStations)-1)*(Street_Width + Group_width_x)*stationsperpodcolumn
+            Work_Loc[i,3] = y_rows*Street_Width + (y_rows-1)*Py
+        end
+    #Small warehouse (bottom row, equally spread)
+    else
+        bottomStations = 1:Workstations
+        stationsperpodcolumn = floor(x_rows / Workstations)
+        for i in bottomStations
+            Work_Loc[i,2] = Street_Width + (i-1)*(Street_Width + Group_width_x)*stationsperpodcolumn
+            Work_Loc[i,3] = y_rows*Street_Width + (y_rows-1)*Py
+        end
     end
 
     #Number of Pods We can fit:
-    Num_Pods = (x_rows * (y_rows-2)) * Px * Py
+    Num_Pods = (x_rows * length(storageloc_rows)) * Px * Py
 
     #Pod location dataframe
     Pod_Start = DataFrame(Array{Float64}(undef, Num_Pods, 3),[:Pod,:start_x,:start_y])
     Pod_Start.Pod = collect(1:Num_Pods)
-    for i = 1:(x_rows * (y_rows-2))
+    for i = 1:(x_rows * length(storageloc_rows))
         Pod_Start[((i-1)*(Px * Py)+1):(i*(Px * Py)),2] = repeat([PodLocations[i,1]],Px * Py)
         Pod_Start[((i-1)*(Px * Py)+1):(i*(Px * Py)),3] = repeat([PodLocations[i,2]],Px * Py)
     end

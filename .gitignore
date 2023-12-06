@@ -3,3 +3,6 @@ outputs
 data/greedysolutions
 tests
 figures
+temp.jl
+run_partitions_int.jl
+run_tables.jl

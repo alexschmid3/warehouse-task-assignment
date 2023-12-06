@@ -18,12 +18,7 @@ function reoptimizesubproblem(sp, currsol, currpartition, ipoutputflag=0, iptime
 
 	model = Model(() -> Gurobi.Optimizer(GRB_ENV)) #Model(Gurobi.Optimizer)
 	set_optimizer_attribute(model, "TimeLimit", timeforreooptimization) # iptimelimit)
-	set_optimizer_attribute(model, "OutputFlag", 1) #ipoutputflag)
-
-	println("Orders = ", sp.orders)
-	println("Pods = ", sp.pods)
-	println("Stations = ", sp.workstations)
-	println("Times = ", sp.times)
+	set_optimizer_attribute(model, "OutputFlag", 0) #ipoutputflag)
 		
 	#Variables
 	if (debugmode == 1) & (debugprintstatements == 1)
@@ -62,7 +57,9 @@ function reoptimizesubproblem(sp, currsol, currpartition, ipoutputflag=0, iptime
 	@constraint(model, stationassignment[m = sp.orders], sum(z[m, w] for w in sp.workstations) <= 1)
 	@constraint(model, orderdelivery_inprogress[m = sp.ordersinprogress, i = sp.itemson[m]], sum(h[m, i, p, currsol.stationassign[m], last(sp.times)] for p in sp.podswith[i]) == 1)
 	@constraint(model, orderdelivery_max[m = sp.orders, i = sp.itemson[m], w = sp.workstations], sum(h[m, i, p, w, last(sp.times)] for p in sp.podswith[i]) == z[m, w])
-	println("   Assignment constraint time = ", time()-asgn)
+	if debugmode == 1
+		println("   Assignment constraint time = ", time()-asgn)
+	end
 
 	#Linking constraints
 	lnk=time()
@@ -70,17 +67,23 @@ function reoptimizesubproblem(sp, currsol, currpartition, ipoutputflag=0, iptime
 	@constraint(model, podlinkzero[m = sp.orders, i = sp.itemson[m], p = sp.podswith[i], w = sp.workstations], h[m,i,p,w,sp.times[1]] <= sum(y[p,a] for a in setdiff(intersect(A_plus_p[p,nodes[w,sp.times[1]]], sp.arcset), A_queues)) + sp.y_known[p,nodes[w,sp.times[1]]] )
 	@constraint(model, workstationlink[m = sp.orders, i = sp.itemson[m], p = sp.podswith[i], w = sp.workstations, t = setdiff(sp.times,sp.times[1])], h[m,i,p,w,t] - h[m,i,p,w,t-tstep] <= z[m, w] )
 	@constraint(model, nondecreasing[m = sp.orders, i = sp.itemson[m], p = sp.podswith[i], w = sp.workstations, t = setdiff(sp.times,sp.times[1])], h[m,i,p,w,t] >= h[m,i,p,w,t-tstep] )
-	println("   Linking constraint time = ", time()-lnk)
+	if debugmode == 1
+		println("   Linking constraint time = ", time()-lnk)
+	end
 
 	#Inventory constraints
 	inv=time()
 	@constraint(model, maxinventory[i = sp.items, p = sp.podswith[i]], sum(sum(h[m,i,p,w,last(sp.times)] for w in sp.workstations) for m in intersect(sp.orders, sp.orderswith[i])) <= sp.remaininginventory[i,p])
-	println("   Inventory constraint time = ", time()-inv)
+	if debugmode == 1
+		println("   Inventory constraint time = ", time()-inv)
+	end
 
 	#Pod movement constraints
 	pm=time()
 	@constraint(model, podflowbalance[p = sp.pods, n in intersect(podnodeset[p], sp.nodeset)], sum(y[p,a] for a in intersect(A_minus_p[p,n], sp.arcset)) - sum(y[p,a] for a in intersect(A_plus_p[p,n], sp.arcset)) == sp.podsupply[p,n])
-	println("   Pod flow constraint time = ", time()-pm)
+	if debugmode == 1
+		println("   Pod flow constraint time = ", time()-pm)
+	end
 
 	#Workstation capacity constraints
 	oop=time()
@@ -90,20 +93,26 @@ function reoptimizesubproblem(sp, currsol, currpartition, ipoutputflag=0, iptime
 	@constraint(model, gconfig[m = sp.orders, i = sp.itemson[m], w = sp.workstations, t = sp.times], g[m,w,t] <= sum(h[m,i,p,w,t] for p in sp.podswith[i]))
 	@constraint(model, vconfig[m = sp.orders, w = sp.workstations, t = sp.times], v[m,w,t] == f[m,w,t] - g[m,w,t])
 	@constraint(model, stationcapacity[w = sp.workstations, t = sp.times], sum(v[m,w,t] for m in sp.orders) <= C[w] )
-	println("   Orders open constraint time = ", time()-oop)
-
+	if debugmode == 1
+		println("   Orders open constraint time = ", time()-oop)
+	end
 	#Workstation throughput constraints
 	tpt=time()
 	@constraint(model, stationthroughput[w = sp.workstations, t = setdiff(sp.times, sp.times[1])], itemprocesstime * sum(sum(sum(h[m,i,p,w,t] - h[m,i,p,w,t-tstep] for p in sp.podswith[i]) for i in sp.itemson[m]) for m in sp.orders) + podprocesstime * sum(sum(y[p,a] for a in intersect(A_plus_p[p,nodes[w,t]], A_space, sp.arcset)) for p in sp.pods) + podprocesstime * sum(sp.y_known[p, nodes[w,t]] for p in sp.pods) <= tstep)
 	@constraint(model, stationthroughput_first[w = sp.workstations, t = sp.times[1]], itemprocesstime * sum(sum(sum(h[m,i,p,w,t] for p in sp.podswith[i]) for i in sp.itemson[m]) for m in sp.orders) + podprocesstime * sum(sum(y[p,a] for a in intersect(A_plus_p[p,nodes[w,t]], A_space, sp.arcset)) for p in sp.pods) + podprocesstime * sum(sp.y_known[p, nodes[w,t]] for p in sp.pods) <= tstep)
-	println("   Throughput constraint time = ", time()-tpt)
+	if debugmode == 1
+		println("   Throughput constraint time = ", time()-tpt)
+	end
 
 	#Congestion
 	#@constraint(model, maxcongestion[l in partitionfloor.reducedintersections, t in max(0,sp.tstart):congestiontstep:min(horizon,sp.tend)], sum(sum(partitionfloor.congestioncontribution[a,l,t] * y[p,a] for a in intersect(partitionfloor.congestionarcs[l,t], sp.podarcset[p], sp.arcset)) for p in sp.pods) <= intersectionmaxpods[l] - sp.ambientcongestion[l,t])
 	#@constraint(model, maxcongestion[l in currpartition.intersections, t in max(0,sp.tstart):congestiontstep:min(horizon,sp.tend)], sum(congestionsignature[a][maps.mapintersectiontorowcolumn[l], maps.maptimetocol[t]] * y[p,a] for p in sp.pods) <= intersectionmaxpods[l] - sp.ambientcongestion[l,t])
 	ct1=time()
 	@constraint(model, maxcongestion[l in currpartition.intersections, t in max(0,sp.tstart):congestiontstep:min(horizon,sp.tend)], sum(sum(congestionsignature[a][maps.mapintersectiontorow[l], maps.maptimetocolumn[t]] * y[p,a] for a in sp.sp_podarcset_cong[p]) for p in sp.pods) <= intersectionmaxpods[l] - sum(currcong[p][maps.mapintersectiontorow[l],maps.maptimetocolumn[t]] for p in setdiff(pods, sp.pods)))
-	println("   Congestion constraint time = ", time()-ct1)
+	if debugmode == 1
+		println("   Congestion constraint time = ", time()-ct1)
+	end
+	
 	#====================================================#
 
 	#Solve IP

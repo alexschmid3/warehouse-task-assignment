@@ -1,9 +1,8 @@
 
-function checksolution(partition, currsol, printstatements)
+function checksolution(currpartition, currsol, printstatements)
 
-	
 	if printstatements == 1
-		for w in partition.workstations, t in times
+		for w in currpartition.workstations, t in times
 			println("---- $w, $t ----")
 			for (m,i,p) in currsol.itempodpicklist[w,t]
 				println("($m, $i, $p)")
@@ -13,7 +12,7 @@ function checksolution(partition, currsol, printstatements)
 	end
 
 	#Check whether the throughput constraint is violated and the pods are accounted for
-	for w in partition.workstations, t in times
+	for w in currpartition.workstations, t in times
 		podlist = []
 		for (m,i,p) in currsol.itempodpicklist[w,t]
 			podlist = union(podlist, p)
@@ -29,13 +28,13 @@ function checksolution(partition, currsol, printstatements)
 		end
 		@assert podlist == currsol.podsworkedat[w,t]
 	end
-
+	
 	#Cross-reference h with item pod pick list
 	timesassigned = Dict()
-	for m in partition.orders, i in itemson[m]
+	for m in currpartition.orders, i in itemson[m]
 		timesassigned[m,i] = []
 	end
-	for w in partition.workstations, t in times
+	for w in currpartition.workstations, t in times
 		for (m,i,p) in currsol.itempodpicklist[w,t]
 
 			push!(timesassigned[m,i], (p,w,t))
@@ -55,7 +54,7 @@ function checksolution(partition, currsol, printstatements)
 	end
 
 	#Ensure no item assigned twice
-	for m in partition.orders, i in itemson[m]
+	for m in currpartition.orders, i in itemson[m]
 		if printstatements == 1
 			println("Check 1.2 - $m, $i --> ", timesassigned[m,i])
 		end
@@ -63,7 +62,7 @@ function checksolution(partition, currsol, printstatements)
 	end
 
 	#Reverse cross check of picklist with h
-	for m in partition.orders, i in itemson[m], p in partition.podswith[i], w in partition.workstations
+	for m in currpartition.orders, i in itemson[m], p in currpartition.podswith[i], w in currpartition.workstations
 		for t in times
 			if currsol.h[m,i,p,w,t] >= 1e-4
 				if printstatements == 1
@@ -76,7 +75,7 @@ function checksolution(partition, currsol, printstatements)
 	end
 
 	#Cross-reference v with ordersopen
-	for w in partition.workstations, t in times
+	for w in currpartition.workstations, t in times
 		for m in currsol.ordersopen[w,t]
 			if printstatements == 1
 				println("Check 2 - $m, $w, $t")
@@ -86,10 +85,10 @@ function checksolution(partition, currsol, printstatements)
 	end
 
 	#Cross-reference h with v and station assignment
-	for m in partition.orders
+	for m in currpartition.orders
 		numassignedstations = 0
-		for w in partition.workstations
-			if sum(sum(sum(currsol.h[m,i,p,w,t] for t in times) for p in partition.podswith[i]) for i in itemson[m]) > 1e-4
+		for w in currpartition.workstations
+			if sum(sum(sum(currsol.h[m,i,p,w,t] for t in times) for p in currpartition.podswith[i]) for i in itemson[m]) > 1e-4
 				
 				#Check stored station assignment
 				if printstatements == 1
@@ -102,7 +101,7 @@ function checksolution(partition, currsol, printstatements)
 				mint, maxt = horizon*2, -1
 				for i in itemson[m]
 					for t in times
-						if sum(currsol.h[m,i,p,w,t] for p in partition.podswith[i]) > 1e-4
+						if sum(currsol.h[m,i,p,w,t] for p in currpartition.podswith[i]) > 1e-4
 							mint = min(mint, t)
 							maxt = max(maxt, t)
 							break
@@ -125,12 +124,12 @@ function checksolution(partition, currsol, printstatements)
 	end
 
 	#Check that all items from every order are delivered or the order is left open at the end of the window
-	for m in partition.orders
+	for m in currpartition.orders
 		deliveredlist = []
 		for i in itemson[m]
-			push!(deliveredlist, sum(sum(currsol.h[m,i,p,w,horizon] for p in partition.podswith[i]) for w in partition.workstations))
+			push!(deliveredlist, sum(sum(currsol.h[m,i,p,w,horizon] for p in currpartition.podswith[i]) for w in currpartition.workstations))
 		end
-		stillopenflag = sum(currsol.v[m,w,horizon] for w in partition.workstations)
+		stillopenflag = sum(currsol.v[m,w,horizon] for w in currpartition.workstations)
 		fulldeliveredflag = minimum(deliveredlist)
 		partiallydeliveredflag = maximum(deliveredlist)
 
@@ -147,6 +146,12 @@ function checksolution(partition, currsol, printstatements)
 			println("Check 6 - $m ($fulldeliveredflag, $partiallydeliveredflag, $stillopenflag)")
 		end
 		@assert deliveryokay == 1
+	end
+	
+	remainingcongestionspace = intersectiontimemaxpods - sum(currcong[p] for p in pods)
+	for l in 1:length(intersections), t in 1:length(0:congestiontstep:horizon)
+		println("Check 7 - $l, $t - ", remainingcongestionspace[l,t])
+		@assert remainingcongestionspace[l,t] >= -1e-4
 	end
 
 	println("Solution check passed")

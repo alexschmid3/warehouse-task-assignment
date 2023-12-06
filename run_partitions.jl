@@ -42,10 +42,10 @@ debugprintstatements = 0 			# When a bug is found, set this to 1 for next run to
 debugmode = 0					# 1 --> will perform solution consistency unit tests at each LSNS iteration, use for debugging when changing the code, 0 --> no solution checks, use for computational experiments
 
 #Initialize Gurobi
-const GRB_ENV = Gurobi.Env()
+#const GRB_ENV = Gurobi.Env()
 
 # Select the instancecd
-row_id = 1000 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1)
+row_id = 1124 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1)
 instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
 testingparamsfilename = "data/decomp_instance_parameters.csv"
 methodparamsfilename = "data/decomp_lsns_parameters.csv"
@@ -72,7 +72,7 @@ methodparms = CSV.read(methodparamsfilename, DataFrame)
 #Get ML training parameters
 run_id = methodparms[row_id, 1]
 instance_id = methodparms[row_id, 2]
-methodname = "synergy" #methodparms[row_id, 3]
+methodname = methodparms[row_id, 3]
 solutioninitialization = methodparms[row_id, 4]
 targetnumpods = methodparms[row_id, 5]
 targetnumorders = methodparms[row_id, 6]
@@ -191,6 +191,7 @@ warehousedistance = calcwarehousedistances()
 
 println("Instance translated")
 
+#=
 prearcs, arclength = getphysicalarcs(podspeed, loccoords)
 numarcs, arcs, arclookup, A_plus, A_minus, A_space, A_queues = createtimespacearcs(prearcs, numnodes) #Slow
 extendednumarcs, extendedarcs, arclookup, A_plus, A_minus, A_space = extendtimespacearcs(arclookup, A_space, A_plus, A_minus)
@@ -200,7 +201,7 @@ itemson, items, orderswith = orderitemtempfix(itemson)
 
 #Needed for Riley's outputs: Finish problem set up once the order items have been updated
 pods, podarcset, A_minus_p, A_plus_p, podnodeset, arcpodset = podarcsets(items, arclength) #Slower
-
+=#
 println("Instance prepared for optimization")
 
 #-----------------------------------------------------------------------------------#
@@ -216,7 +217,7 @@ function arcDesc(a)
 end
 
 #-----------------------------------------------------------------------------------#
-
+#=
 #Congestion initialization
 currcong, maps, congestionsignature, intersectionmaxpods, intersectiontimemaxpods = initializecongestion()
 
@@ -224,7 +225,7 @@ currcong, maps, congestionsignature, intersectionmaxpods, intersectiontimemaxpod
 
 #Read the desired ML model and get problem features
 beta, features, featuresfor, featurenums, featureinfo = getmlfeatures(mlmodelfilename)
-
+=#
 #-----------------------------------------------------------------------------------#
 
 println("--------------------Decompose instance-------------------")
@@ -240,7 +241,7 @@ if visualizationflag == 1
 	plot2 = Plots.bar(1:25, invlevels)
 	savefig(plot2,string(outputfolder, "/poditemdistribution.png"))
 end
-
+#=
 #Decompose problem into partitions
 numpartitions, partitions, partitioninfo, globalpartitionid = decomposeproblem(stationsperpartition, partitionobjective, beta, features, featureinfo, featurenums)
 globalpartition = partitioninfo[globalpartitionid]
@@ -299,7 +300,7 @@ for s in 1:numpartitions
 	tabulist, lastoptimizeddifference = [], zeros(length(windows))
 
 	#Improve solution iteratively via LSNS
-	for sp_iter in 1:5 #numsubproblemsevaluated
+	for sp_iter in 1:numsubproblemsevaluated
 
 		println("----- ITER $sp_iter -----")
 		iterationstarttime = time()
@@ -364,6 +365,4 @@ end
 #-----------------------------------------------------------------------------------#
 
 writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
-
-#-----------------------------------------------------------------------------------#
-
+=#

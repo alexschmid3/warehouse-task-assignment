@@ -1,5 +1,5 @@
 
-figuredirectory = string("outputs")
+figuredirectory = string("outputs/combine")
 
 #Get list of files
 folderlist = readdir(figuredirectory)

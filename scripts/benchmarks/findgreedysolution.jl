@@ -186,9 +186,9 @@ function findfeasibleorderassignment(gp, currpartition, currsol, currsol_greedys
     intersectionindices = [maps.mapintersectiontorow[i] for i in currpartition.intersections] 
     timeindices = [maps.maptimetocolumn[t] for t in max(0,gp.orderstarttime):congestiontstep:min(horizon,gp.orderendtime)]
     @constraint(model, maxcongestion[i in intersectionindices, t_con in timeindices],
-        sum(sum(congestionsignature[arcs[nodes[podstorageloc[p], t-arclength[gp.w,podstorageloc[p]]], nodes[gp.w,t]]][i,t_con] * y_m[p,t] for t in max(0,gp.podstarttime[p])+arclength[gp.w,podstorageloc[p]]:tstep:min(horizon, gp.podendtime[p])) for p in gp.relevantpods)
-        + sum(sum(congestionsignature[arcs[nodes[gp.w,t], nodes[podstorageloc[p], t+arclength[gp.w,podstorageloc[p]]]]][i,t_con] * y_m[p,t] for t in max(0,gp.podstarttime[p]):tstep:min(horizon, gp.podendtime[p])-arclength[gp.w,podstorageloc[p]]) for p in gp.relevantpods)
-        <= remainingcongestionspace[i,t_con])
+        sum(sum(congestionsignature[arcs[nodes[podstorageloc[p], t-arclength[gp.w,podstorageloc[p]]], nodes[gp.w,t]]][i,t_con] * y_m[p,t] for t in max(0+arclength[podstorageloc[p],gp.w],gp.podstarttime[p]):tstep:min(horizon, gp.podendtime[p])) for p in gp.relevantpods)
+        + sum(sum(congestionsignature[arcs[nodes[gp.w,t], nodes[podstorageloc[p], t+arclength[gp.w,podstorageloc[p]]]]][i,t_con] * z_m[p,t] for t in max(0,gp.podstarttime[p]):tstep:min(horizon-arclength[gp.w,podstorageloc[p]], gp.podendtime[p])) for p in gp.relevantpods)
+        <= max(1e-4, remainingcongestionspace[i,t_con]))
 
 	#====================================================#
 
@@ -274,6 +274,7 @@ end
 #-----------------------------------------------------------------------------------#
 
 #=greedyorders=[m for m in currpartition.orders if length(itemson[m]) >= 4]
+greedyorders = currpartition.orders
 greedypods=currpartition.pods
 greedypodswith=currpartition.podswith
 greedyworkstations=currpartition.workstations=#
@@ -289,6 +290,7 @@ function findgreedysolution(currpartition, currsol, greedyorders, greedypods, gr
     #Assign orders one at a time
 	totalobj = 0
 	println("======= GREEDY SOLUTION =======")
+	assignedorders = 0
     for m in sortedorders
 		println("----- ORDER $m (", length(itemson[m]), " items) -----")
 		
@@ -299,7 +301,7 @@ function findgreedysolution(currpartition, currsol, greedyorders, greedypods, gr
         sortedworkstations = [item[1] for item in sortedworkstationtups]
         #sortedworkstations = greedyworkstations[randperm(2)] 
 
-		capacitybuffer2 = 5*min(floor(length(itemson[m])/2),3)
+		capacitybuffer2 = max(itemprocesstime, 5*min(floor(length(itemson[m])/2),3)) 
         
         #Iterate over the workstations to find an assignment
         for w2 in sortedworkstations
@@ -310,8 +312,7 @@ function findgreedysolution(currpartition, currsol, greedyorders, greedypods, gr
             if feasible_flag == 1
 
                 #Format times and find pods with relevant items that aren't busy during the timeblock
-                sp_times = [t2 for t2 in orderstarttime:tstep:orderendtime]
-				sp_relevantpods, sp_relevantpods_t, podstarttime, podendtime = getpodstarttimes(relevantpods, orderstarttime, orderendtime, currsol, w2)
+                sp_relevantpods, sp_relevantpods_t, podstarttime, podendtime = getpodstarttimes(relevantpods, orderstarttime, orderendtime, currsol, w2)
 	
                 #Group together greedy problem elements into greedy problem (gp) object
                 gp = (m=m, w=w2, orderstarttime=orderstarttime, orderendtime=orderendtime, relevantpods=sp_relevantpods, relevantpods_t=sp_relevantpods_t, podstarttime=podstarttime, podendtime=podendtime)
@@ -323,6 +324,10 @@ function findgreedysolution(currpartition, currsol, greedyorders, greedypods, gr
                 if assignmentsuccessful == 1
 					currsol, currsol_greedysets = updategreedysolution(currsol, currsol_greedysets, gp, currpartition, h_assign, y_assign, z_assign)
                     totalobj += floor(assign_obj)
+					assignedorders += 1
+					if visualizationflag == 1
+						workstationviz(string(visualizationfolder, "/station_partition1_initial", assignedorders,"_order", m,".png"), currpartition, currsol)
+					end
 					break
 				end
 			end

@@ -1,6 +1,4 @@
 
-stationsperpartition = 2
-
 function createproblempartitions(stationsperpartition)
 
 	stationsin, storagelocsin, intersectionsin, podsin = Dict(), Dict(), Dict(), Dict()
@@ -15,9 +13,15 @@ function createproblempartitions(stationsperpartition)
 		podsin[s] = []
 	end
 
-	numpartitions_x = numpartitions/2
-	partition_x_length = warehouse_x_length_meters / numpartitions_x
-	partition_y_length = warehouse_y_length_meters / 2
+	if warehouse_y_length_meters > 45
+		numpartitions_x = numpartitions/2
+		partition_x_length = warehouse_x_length_meters / numpartitions_x
+		partition_y_length = warehouse_y_length_meters / 2
+	else
+		numpartitions_x = numpartitions
+		partition_x_length = warehouse_x_length_meters / numpartitions_x
+		partition_y_length = warehouse_y_length_meters 
+	end	
 
 	#Station and location distribution
 	partitionindex = 1
@@ -80,6 +84,9 @@ function maximizesynergyoforderassignments(partitionobjective, beta, features, f
 		@objective(model, Max, sum(sum(sum(sum(beta.mp[f] * features.mp[chop(featureinfo.names[f],head=3,tail=0)][m,p] * x[m,s] for f in featurenums.mp) for m in orders) for p in podsin[s]) for s in partitions)) 
 	elseif partitionobjective == "heuristic"
 		@objective(model, Min, 2*itembuff + sum(x[m,numpartitions+1] for m in orders)) #sum(sum(sum(sum(beta_mp[f] * mp_features[chop(featurenames[f],head=3,tail=0)][m,p] * x[m,s] for f in mp_featnums) for m in orders) for p in podsin[s]) for s in partitions) )
+	elseif partitionobjective == "none"
+		@objective(model, Max, 0)
+		@constraint(model, [m in orders], x[m,1] == 1)
 	end
 
 	#Constraints
