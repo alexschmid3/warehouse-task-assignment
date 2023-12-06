@@ -95,10 +95,10 @@ function warehouseviz(wsdrawingname, vizx)
 	for w in union(storagelocs,workstations)
 		Luxor.text(string(w), locPoints[w] + Point(3 * (vizx - 100) / warehouse_x_length_meters, 2 * (vizy - 100) / warehouse_y_length_meters), halign=:center,   valign = :middle)
 	end
-	fontsize(20)
-	for lbl in intersectionlabels
-		label(lbl[2], :N , lbl[1] + Point(0,-3))
-	end
+	#fontsize(20)
+	#for lbl in intersectionlabels
+	#	label(lbl[2], :N , lbl[1] + Point(0,-3))
+	#end
 
 	finish()
 	preview()
