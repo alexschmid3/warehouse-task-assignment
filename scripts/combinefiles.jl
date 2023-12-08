@@ -1,5 +1,5 @@
 
-figuredirectory = string("outputs/table0")
+figuredirectory = string("outputs/static/resub_mvg")
 
 #Get list of files
 filelist = readdir(figuredirectory)

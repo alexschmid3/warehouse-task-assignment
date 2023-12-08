@@ -1,54 +1,55 @@
 
-#include("run_decomp_dynamicml.jl")
-
 using JuMP, Gurobi, Plots, Random, CSV, DataFrames, Statistics, Dates, HDF5, LinearAlgebra, FileIO, JLD2, NearestNeighbors, SparseArrays
 
 #-----------------------------------------------------------------------------------#
 
-time()
 include("scripts/instancegeneration/readdata.jl")
 include("scripts/instancegeneration/datageneration.jl")
 include("scripts/instancegeneration/initializecongestion.jl")
 include("scripts/helper/remove.jl")
 include("scripts/helper/sortarcschronologically.jl")
 include("scripts/helper/getcurrentobjective.jl")
-include("scripts/benchmarks/synergylsns.jl")
-include("scripts/benchmarks/findgreedysolution.jl")
+include("scripts/helper/parsemethodname.jl")
+include("scripts/greedy/findgreedysolution.jl")
 include("scripts/decomposition/decomposeproblem.jl")
 include("scripts/decomposition/configurepartitioncongestion.jl")
 include("scripts/decomposition/writeglobalsolutionoutputs.jl")
+include("scripts/decomposition/updateglobalsolution.jl")
 include("scripts/lsns/parsetabucodes.jl")
-include("scripts/lsns/getmlfeatures.jl")
 include("scripts/lsns/enumeratesubproblemwindows.jl")
 include("scripts/lsns/createemptysolution.jl")
-include("scripts/lsns/updateglobalsolution.jl")
 include("scripts/lsns/updatesolvemetrics.jl")
-include("scripts/lsns/subproblemselection/selectrandomsubproblem.jl")
-include("scripts/lsns/subproblemselection/selectsynergisticsubproblem.jl")
-include("scripts/lsns/subproblemselection/selectlearnthenoptimizesubproblem.jl")
 include("scripts/lsns/constructsubproblem.jl")
 include("scripts/lsns/createemptysolution.jl")
 include("scripts/lsns/reoptimizesubproblem.jl")
 include("scripts/lsns/updatesolution.jl")
+include("scripts/lsns/modelfeatures/getlearningbenchmarkfeatures.jl")
+include("scripts/lsns/modelfeatures/preprocesslearningbenchmarkfeatures.jl")
+include("scripts/lsns/modelfeatures/getmlfeatures.jl")
+include("scripts/lsns/subproblemselection/selectrandomsubproblem.jl")
+include("scripts/lsns/subproblemselection/selectsynergisticsubproblem.jl")
+include("scripts/lsns/subproblemselection/selectlearnthenoptimizesubproblem.jl")
+include("scripts/lsns/subproblemselection/selectlearningbenchmarksubproblem.jl")
 include("scripts/test/checksolution.jl")
+include("scripts/figures/histograms.jl")
 
 println("Scripts imported")
 
 #-----------------------------------------------------------------------------------#
 
 #Debugging mode
-visualizationflag = 0
-debugprintstatements = 0 			# When a bug is found, set this to 1 for next run to get more detailed error info (warning: it's a lot of print statements, one for each unit test)
+visualizationflag = 0			# 1 --> Produce visualizations of warehouse and workstation solutions
+debugprintstatements = 0 		# When a bug is found, set this to 1 for next run to get more detailed error info (warning: it's a lot of print statements, one for each unit test)
 debugmode = 0					# 1 --> will perform solution consistency unit tests at each LSNS iteration, use for debugging when changing the code, 0 --> no solution checks, use for computational experiments
 
 #Initialize Gurobi
 const GRB_ENV = Gurobi.Env()
 
 # Select the instancecd
-row_id = 1 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1)
+row_id = 1 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
-testingparamsfilename = "data/decomp_instance_parameters.csv"
-methodparamsfilename = "data/decomp_lsns_parameters.csv"
+testingparamsfilename = "data/indiv_instance_parameters.csv"
+methodparamsfilename = "data/indiv_lsns_parameters.csv"
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 testingparms = CSV.read(testingparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
@@ -63,7 +64,7 @@ methodparms = CSV.read(methodparamsfilename, DataFrame)
 # Row 6 = targetnumorders
 # Row 7 = targetnumitems
 # Row 8 = subproblemsevaluated
-# Row 9 = subproblemtimeinterval
+# Row 9 = subproblemtimelength
 # Row 10 = timeforreooptimization
 # Row 11 = timeforsubproblemselection
 # Row 12 = tabutype
@@ -77,10 +78,7 @@ solutioninitialization = methodparms[row_id, 4]
 targetnumpods = methodparms[row_id, 5]
 targetnumorders = methodparms[row_id, 6]
 targetnumitems = methodparms[row_id, 7]
-numsubproblemsevaluated = 100 #methodparms[row_id, 8]
-if methodname == "LTO"
-	global numsubproblemsevaluated -= 50
-end
+numsubproblemsevaluated = methodparms[row_id, 8]
 subproblemtimelength = methodparms[row_id, 9]
 timeforreooptimization = methodparms[row_id, 10]
 timeforsubproblemselection = methodparms[row_id, 11]
@@ -94,6 +92,7 @@ numlocalintersections = 6
 numhyperlocalintersections = 3 
 maxworkstationspersubproblem = 2
 windowforcingflag, maxtabu, lastoptpenaltyflag = parsetabucodes(tabutype)
+shortmethodname, subproblembudget = parsemethodname(methodname)
 
 # Parameter Descriptions:
 # ==========================================
@@ -104,7 +103,6 @@ windowforcingflag, maxtabu, lastoptpenaltyflag = parsetabucodes(tabutype)
 # Row 5 = end of time horizon
 
 #Get ML training parameters from file
-#instance_id = testingparms[run_id, 1]
 warehouse_id = testingparms[instance_id, 2]
 random_seed = testingparms[instance_id, 3]
 horizonstart = testingparms[instance_id, 4]
@@ -226,7 +224,13 @@ currcong, maps, congestionsignature, intersectionmaxpods, intersectiontimemaxpod
 #-----------------------------------------------------------------------------------#
 
 #Read the desired ML model and get problem features
-beta, features, featuresfor, featurenums, featureinfo = getmlfeatures(mlmodelfilename)
+if shortmethodname == "learnbench"
+	beta = load(mlmodelfilename)["beta"]
+	lbfeatures = preprocesslearningbenchmarkfeatures()
+	features, featureinfo, featurenums = [], [], []
+else
+	beta, features, featuresfor, featurenums, featureinfo = getmlfeatures(mlmodelfilename)
+end
 
 #-----------------------------------------------------------------------------------#
 
@@ -250,7 +254,9 @@ globalpartition = partitioninfo[globalpartitionid]
 
 #Enumerate windows for the global partition
 windows_global, windowsduring_global, windowidlookup_global, windowscontaining_global = enumeratesubproblemwindows(globalpartition, 1, subproblemtimelength)
-windowsynergy_global = preprocesswindowsynergies(windows_global, windowidlookup_global, featureinfo, features, beta, featurenums)
+if shortmethodname != "learnbench"
+	windowsynergy_global = preprocesswindowsynergies(windows_global, windowidlookup_global, featureinfo, features, beta, featurenums)
+end
 
 #-----------------------------------------------------------------------------------#
 
@@ -265,9 +271,9 @@ for s in 1:numpartitions
 end
 solvemetrics = (solve_time=zeros(numpartitions+1), solvetime_init=zeros(numpartitions+1), solvetime_spsel=zeros(numpartitions+1), solvetime_sp=zeros(numpartitions+1), lsnsiterations=zeros(numpartitions+1))
 writeglobalsolutionoutputs_init(globalsolutionfilename)
-counter = 1
 
 #Solve each partition
+counter = 1
 for s in 1:numpartitions
 
 	println("===== PARTITION $s =====")
@@ -295,7 +301,9 @@ for s in 1:numpartitions
 
 	#Find subproblem windows
 	windows, windowsduring, windowidlookup, windowscontaining = enumeratesubproblemwindows(currpartition, maxworkstationspersubproblem, subproblemtimelength)
-	windowsynergy = preprocesswindowsynergies(windows, windowidlookup, featureinfo, features, beta, featurenums)
+	if shortmethodname != "learnbench"
+		windowsynergy = preprocesswindowsynergies(windows, windowidlookup, featureinfo, features, beta, featurenums)
+	end
 
 	#Initialize LSNS sets
 	inittime = time()
@@ -317,14 +325,14 @@ for s in 1:numpartitions
 		elseif methodname == "synergy"
 			sp_winid, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, tabulist = selectsynergisticsubproblem(currpartition, windows, currsol, targetnumorders, targetnumpods, rand(1:maxworkstationspersubproblem), tabulist)
 			predicted_obj = 0
+		elseif shortmethodname == "learnbench"
+			sp_winid, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, tabulist, predicted_obj = selectlearningbenchmarksubproblem(currpartition, currsol, windows, windowidlookup, tabulist, sp_iter)
 		end
 		spselectiontime = time() - spselectionstarttime
 		println("Selection time = ", spselectiontime, " seconds")
 
 		#Build subproblem structure
-		spconstructstarttime = time()
 		sp = constructsubproblem(currpartition, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, currsol)
-		println("Construction time = ", time() - spconstructstarttime, " seconds")
 
 		#Re-optimize subproblem
 		sp_obj, sp_solvetime, h_sp, y_sp, z_sp, f_sp, g_sp, v_sp, feasibleflag_sp = reoptimizesubproblem(sp, currsol, currpartition)
@@ -335,9 +343,7 @@ for s in 1:numpartitions
 		currsol = updatesolution(sp, currsol, currpartition, sp_obj, h_sp, y_sp, v_sp)
 		lastoptimizeddifference = updatelastoptimizeddifference(lastoptimizeddifference, tabulist, sp_winid, windows, predicted_obj, sp_obj)
 		iterationtime = time() - iterationstarttime
-		println("Update time = ", time() - spupdatestarttime, " seconds")
 		updatesolvemetrics(s, iterationtime, sp_solvetime, spselectiontime)
-		println("Total time = ", iterationtime, " seconds")
 
 		#Write solution metrics
 		writeglobalsolutionoutputs_iter(sp_iter, 0, iterationtime, spselectiontime, sp_solvetime, globalsolutionfilename, s, currpartition, currsol)
@@ -367,3 +373,6 @@ end
 #-----------------------------------------------------------------------------------#
 
 writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
+
+# writepickdistrib(string(outputfolder,"/pickdistrib.csv"), globalsolution)
+# writedistancedistrib(string(outputfolder,"/distdistrib.csv"), globalsolution)

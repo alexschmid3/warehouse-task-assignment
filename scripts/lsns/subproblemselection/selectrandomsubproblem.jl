@@ -38,18 +38,24 @@ end
 
 #-----------------------------------------------------------------------------------------------------#
 
-function filloutrandomorders1(partition, sp_window, currsol, assignedorders, unassignedorders, numadditionalorders)
+function filloutrandomorders1(currpartition, sp_window, currsol, assignedorders, unassignedorders, numadditionalorders)
 
 	sp_itemson = Dict()
 	for m in assignedorders
 		sp_itemson[m] = []
 		for i in itemson[m]
-			if (sum(sum(currsol.h[m,i,p,w,sp_window.tend] for p in partition.podswith[i]) for w in sp_window.workstations) > 0.01) && (sp_window.tstart >= 0) && (sum(sum(currsol.h[m,i,p,w,sp_window.tstart-tstep] for p in partition.podswith[i]) for w in sp_window.workstations) < 0.01)
+			#if (sum(sum(currsol.h[m,i,p,w,sp_window.tend] for p in currpartition.podswith[i]) for w in sp_window.workstations) > 0.01) && (sp_window.tstart >= 0) && (sum(sum(currsol.h[m,i,p,w,sp_window.tstart-tstep] for p in partition.podswith[i]) for w in sp_window.workstations) < 0.01)
+			#	push!(sp_itemson[m], i)
+			#elseif checkiteminpicklist(m, i, max(0,sp_window.tstart), min(horizon,sp_window.tend), sp_window.workstations, currsol)
+			#	push!(sp_itemson[m], i)
+			#	println("FOUND AN ISSUE = $m, $i")
+			#elseif (sp_window.tstart == -30) && (sum(sum(currsol.h[m,i,p,w,sp_window.tend] for p in currpartition.podswith[i]) for w in sp_window.workstations) > 0.01)
+			#	push!(sp_itemson[m], i)
+			#end
+			if checkiteminpicklist(m, i, max(0,sp_window.tstart), min(horizon,sp_window.tend), sp_window.workstations, currsol)
 				push!(sp_itemson[m], i)
-			elseif checkiteminpicklist(m, i, max(0,sp_window.tstart), min(horizon,sp_window.tend), sp_window.workstations, currsol)
-				push!(sp_itemson[m], i)
-				println("FOUND AN ISSUE = $m, $i")
-			elseif (sp_window.tstart == -30) && (sum(sum(currsol.h[m,i,p,w,sp_window.tend] for p in partition.podswith[i]) for w in sp_window.workstations) > 0.01)
+			#	println("FOUND AN ISSUE = $m, $i")
+			elseif (sp_window.tstart == -30) && (sum(sum(currsol.h[m,i,p,w,sp_window.tend] for p in currpartition.podswith[i]) for w in sp_window.workstations) > 0.01)
 				push!(sp_itemson[m], i)
 			end
 		end

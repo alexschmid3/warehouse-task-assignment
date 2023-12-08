@@ -39,17 +39,17 @@ function getentityfeatures_static(sp)
 
 	sp_times_reg = max(sp.times[1], 0):tstep:min(last(sp.times), horizon)
 
-	avg_centrality = mean([centrality[w] for w in sp.workstations])
-	sum_centrality = sum([centrality[w] for w in sp.workstations])
-	avg_horizonrelativetime = mean([horizonrelativetime[w] for w in sp_times_reg])
-	sum_horizonrelativetime = sum([horizonrelativetime[w] for w in sp_times_reg])
+	avg_centrality = mean([lbfeatures.centrality[w] for w in sp.workstations])
+	sum_centrality = sum([lbfeatures.centrality[w] for w in sp.workstations])
+	avg_horizonrelativetime = mean([lbfeatures.horizonrelativetime[w] for w in sp_times_reg])
+	sum_horizonrelativetime = sum([lbfeatures.horizonrelativetime[w] for w in sp_times_reg])
 	timeofday = 0
-	avg_avgdisttostations = mean([avgdisttostations[w] for w in sp.pods])
-	sum_avgdisttostations = sum([avgdisttostations[w] for w in sp.pods])
-	avg_ordersize = mean([ordersize[w] for w in sp.orders])
-	sum_ordersize = sum([ordersize[w] for w in sp.orders])
-	pct_oneitemflag = mean([oneitemflag[w] for w in sp.orders])
-	num_oneitemflag = sum([oneitemflag[w] for w in sp.orders])
+	avg_avgdisttostations = mean([lbfeatures.avgdisttostations[w] for w in sp.pods])
+	sum_avgdisttostations = sum([lbfeatures.avgdisttostations[w] for w in sp.pods])
+	avg_ordersize = mean([lbfeatures.ordersize[w] for w in sp.orders])
+	sum_ordersize = sum([lbfeatures.ordersize[w] for w in sp.orders])
+	pct_oneitemflag = mean([lbfeatures.oneitemflag[w] for w in sp.orders])
+	num_oneitemflag = sum([lbfeatures.oneitemflag[w] for w in sp.orders])
 
 	w_features = [avg_centrality sum_centrality]
 	t_features = [avg_horizonrelativetime sum_horizonrelativetime timeofday]
@@ -95,30 +95,30 @@ end
 
 function getsynergyfeatures_static(sp)
 
-	avg_itemoverlap = sum(sum(itemoverlap[m,p] for p in sp.pods) for m in sp.orders) / sum(sum(1 for p in sp.pods) for m in sp.orders)
-	sum_itemoverlap = sum(sum(itemoverlap[m,p] for p in sp.pods) for m in sp.orders)
-	avg_itemoverlappct = sum(sum(itemoverlappct[m,p] for p in sp.pods) for m in sp.orders) / sum(sum(1 for p in sp.pods) for m in sp.orders)
-	sum_itemoverlappct = sum(sum(itemoverlappct[m,p] for p in sp.pods) for m in sp.orders)
-	avg_overlapitemavginv = sum(sum(overlapitemavginv[m,p] for p in sp.pods) for m in sp.orders) / sum(sum(1 for p in sp.pods) for m in sp.orders)
-	sum_overlapitemavginv = sum(sum(overlapitemavginv[m,p] for p in sp.pods) for m in sp.orders)
-	avg_overlapitemavgaltpods = sum(sum(overlapitemavgaltpods[m,p] for p in sp.pods) for m in sp.orders) / sum(sum(1 for p in sp.pods) for m in sp.orders)
-	sum_overlapitemavgaltpods = sum(sum(overlapitemavgaltpods[m,p] for p in sp.pods) for m in sp.orders)
+	avg_itemoverlap = sum(sum(lbfeatures.itemoverlap[m,p] for p in sp.pods) for m in sp.orders) / sum(sum(1 for p in sp.pods) for m in sp.orders)
+	sum_itemoverlap = sum(sum(lbfeatures.itemoverlap[m,p] for p in sp.pods) for m in sp.orders)
+	avg_itemoverlappct = sum(sum(lbfeatures.itemoverlappct[m,p] for p in sp.pods) for m in sp.orders) / sum(sum(1 for p in sp.pods) for m in sp.orders)
+	sum_itemoverlappct = sum(sum(lbfeatures.itemoverlappct[m,p] for p in sp.pods) for m in sp.orders)
+	avg_overlapitemavginv = sum(sum(lbfeatures.overlapitemavginv[m,p] for p in sp.pods) for m in sp.orders) / sum(sum(1 for p in sp.pods) for m in sp.orders)
+	sum_overlapitemavginv = sum(sum(lbfeatures.overlapitemavginv[m,p] for p in sp.pods) for m in sp.orders)
+	avg_overlapitemavgaltpods = sum(sum(lbfeatures.overlapitemavgaltpods[m,p] for p in sp.pods) for m in sp.orders) / sum(sum(1 for p in sp.pods) for m in sp.orders)
+	sum_overlapitemavgaltpods = sum(sum(lbfeatures.overlapitemavgaltpods[m,p] for p in sp.pods) for m in sp.orders)
 
 	mp_features = [avg_itemoverlap sum_itemoverlap avg_itemoverlappct sum_itemoverlappct avg_overlapitemavginv sum_overlapitemavginv avg_overlapitemavgaltpods sum_overlapitemavgaltpods]
 	
 	pw_total = sum(sum(1 for p in sp.pods) for w in sp.workstations)
 
-	avg_distance = sum(sum(pwdistance[p,w] for p in sp.pods) for w in sp.workstations) / pw_total
-	sum_distance = sum(sum(pwdistance[p,w] for p in sp.pods) for w in sp.workstations)
-	avg_xsteps = sum(sum(xsteps[p,w] for p in sp.pods) for w in sp.workstations) / pw_total
-	sum_xsteps = sum(sum(xsteps[p,w] for p in sp.pods) for w in sp.workstations)
-	avg_ysteps = sum(sum(ysteps[p,w] for p in sp.pods) for w in sp.workstations) / pw_total
-	sum_ysteps = sum(sum(ysteps[p,w] for p in sp.pods) for w in sp.workstations)
+	avg_distance = sum(sum(lbfeatures.pwdistance[p,w] for p in sp.pods) for w in sp.workstations) / pw_total
+	sum_distance = sum(sum(lbfeatures.pwdistance[p,w] for p in sp.pods) for w in sp.workstations)
+	avg_xsteps = sum(sum(lbfeatures.xsteps[p,w] for p in sp.pods) for w in sp.workstations) / pw_total
+	sum_xsteps = sum(sum(lbfeatures.xsteps[p,w] for p in sp.pods) for w in sp.workstations)
+	avg_ysteps = sum(sum(lbfeatures.ysteps[p,w] for p in sp.pods) for w in sp.workstations) / pw_total
+	sum_ysteps = sum(sum(lbfeatures.ysteps[p,w] for p in sp.pods) for w in sp.workstations)
 	
 	pw_features = [avg_distance sum_distance avg_xsteps sum_xsteps avg_ysteps sum_ysteps]
 
 	#Pod-workstation-time congestion features
-	existingcong = Dict()
+	#=existingcong = Dict()
 	relevantintersections = findrelevantintersection()
 	for s in storagelocs, w in sp.workstations, t in max(sp.tstart,arclength[s,w]):tstep:min(sp.tend, horizon)
 		int1, int2 = maploctointersection[s], maploctointersection[w]
@@ -139,47 +139,43 @@ function getsynergyfeatures_static(sp)
 				existingcong[p,w,t] = 0
 			end
 		end
-	end
+	end=#
 
-	avg_existingcong = sum(sum(sum(existingcong[p,w,t] for p in sp.pods) for t in max(0,sp.tstart):tstep:min(horizon,sp.tend)) for w in sp.workstations) / sum(sum(sum(1 for p in sp.pods) for t in max(0,sp.tstart):tstep:min(horizon,sp.tend)) for w in sp.workstations)
-	sum_existingcong = sum(sum(sum(existingcong[p,w,t] for p in sp.pods) for t in max(0,sp.tstart):tstep:min(horizon,sp.tend)) for w in sp.workstations)
+	avg_existingcong = 0 #sum(sum(sum(existingcong[p,w,t] for p in sp.pods) for t in max(0,sp.tstart):tstep:min(horizon,sp.tend)) for w in sp.workstations) / sum(sum(sum(1 for p in sp.pods) for t in max(0,sp.tstart):tstep:min(horizon,sp.tend)) for w in sp.workstations)
+	sum_existingcong = 0 #sum(sum(sum(existingcong[p,w,t] for p in sp.pods) for t in max(0,sp.tstart):tstep:min(horizon,sp.tend)) for w in sp.workstations)
 
 	pwt_features = [avg_existingcong sum_existingcong]
 
-	#Workstation-time congestion features
+
+	#Congestion pre-processing
+	allcong = sum(currcong[p] for p in pods)
+	maxcong = zeros(length(intersections), length(0:congestiontstep:horizon))
+	for i in intersections, t in 1:length(0:congestiontstep:horizon)
+		maxcong[maps.mapintersectiontorow[i], t] = intersectionmaxpods[i]
+	end
+	normalizedcong = allcong ./ maxcong
+
+	#Initialize
 	queuecong, avglocalcong, maxlocalcong, avghyperlocalcong, maxhyperlocalcong = Dict(), Dict(), Dict(), Dict(), Dict()
+
+	#Workstation-time congestion features
 	kdtree = KDTree(transpose(intcoords_nn))
-	mappingnum = reducedintersections[1] - 1
-	for w in sp.workstations, t in max(sp.tstart, tstep):tstep:min(sp.tend, horizon)
+	for w in sp.workstations, t in max(sp.tstart,0):tstep:min(sp.tend, horizon)
 		#Queue congestion
-		q = maploctointersection[w]
-		queuecong[w,t] = mean([congestionat[q,t2] / intersectionmaxpods[q] for t2 in t-tstep:congestiontstep:t])
-		
+		q = maps.mapintersectiontorow[maploctointersection[w]]
+		queuecong[w,t] = mean([normalizedcong[q,maps.maptimetocolumn[t2]] for t2 in max(0,t-tstep):congestiontstep:t])
+	
 		#Local congestion
 		closeints, dists = knn(kdtree, [intcoords[q][1], intcoords[q][2]], numlocalintersections, true)
-		congestionnearworkstation = []
-		for i in intersect([i2 + minimum(intersections) - 1 for i2 in closeints], reducedintersections)
-			push!(congestionnearworkstation, mean([congestionat[i,t2] / intersectionmaxpods[i] for t2 in t-tstep:congestiontstep:t]))
-		end
+		congestionnearworkstation = [sum(normalizedcong[maps.mapintersectiontorow[i+minimum(intersections)-1],maps.maptimetocolumn[t2]] for t2 in max(0,t-tstep):congestiontstep:t) for i in closeints]
 		avglocalcong[w,t] = mean(congestionnearworkstation)
 		maxlocalcong[w,t] = maximum(congestionnearworkstation)
 
 		#Hyper local congestion
 		closestints, dists = knn(kdtree, [intcoords[q][1], intcoords[q][2]], numhyperlocalintersections, true)
-		congestionnearworkstation = []
-		for i in intersect([i2 + minimum(intersections) - 1 for i2 in closeints], reducedintersections)
-			push!(congestionnearworkstation, mean([congestionat[i,t2] / intersectionmaxpods[i] for t2 in t-tstep:congestiontstep:t]))
-		end
-		avghyperlocalcong[w,t] = mean(congestionnearworkstation)
-		maxhyperlocalcong[w,t] = maximum(congestionnearworkstation)
-	end
-
-	for w in sp.workstations
-		queuecong[w,0] = 0
-		avglocalcong[w,0] = 0
-		maxlocalcong[w,0] = 0
-		avghyperlocalcong[w,0] = 0
-		maxhyperlocalcong[w,0] = 0
+		congestionnearestworkstation = [sum(normalizedcong[maps.mapintersectiontorow[i+minimum(intersections)-1],maps.maptimetocolumn[t2]] for t2 in max(0,t-tstep):congestiontstep:t) for i in closestints]
+		avghyperlocalcong[w,t] = mean(congestionnearestworkstation)
+		maxhyperlocalcong[w,t] = maximum(congestionnearestworkstation)
 	end
 
 	avgtotal = sum(sum(1 for t in max(0,sp.tstart):tstep:min(horizon,sp.tend)) for w in sp.workstations)
@@ -207,11 +203,10 @@ function capacityslackfeatures(sp, currsol)
 	sp_times_reg = max(sp.times[1], 0):tstep:min(last(sp.times), horizon)
 
 	#Slack in capacity constraints
-	stationitemspicked = sum(sum(sum(sum(sum(h_currsol[m,i,p,w,t] - h_currsol[m,i,p,w,t-tstep] for p in sp.podswith[i]) for i in sp.itemson[m]) for m in orders if sp.itemson[m] != []) for t in setdiff(sp.times, sp.times[1])) for w in sp.workstations) + sum(sum(sum(sum(h_currsol[m,i,p,w,sp_times[1]] for p in sp.podswith[i]) for i in sp.itemson[m]) for m in sp.orders if sp.itemson[m] != []) for w in sp.workstations)
-	stationpodspicked = sum(sum(length(currsol.podsworkedat[w,t]) for w in sp.workstations) for t in sp_times_reg)
-	stationmissingthroughput = sum(sum(tstep for t in sp_times_reg) for w in sp_workstations) - stationitemspicked*itemprocesstime - stationpodspicked*podprocesstime
-	stationidlepct = stationmissingthroughput / sum(sum(tstep for t in sp_times_reg) for w in sp_workstations)
-	orderslottimessopen = sum(sum(C[w] for t in sp_times_reg) for w in sp_workstations) - sum(sum(sum(v_currsol[m,w,t] for m in orders) for t in sp_times_reg) for w in sp_workstations)  
+	stationitemspicked = sum(sum(length(currsol.itempodpicklist[w,t]) for t in sp_times_reg) for w in sp.workstations) 
+	stationmissingthroughput = sum(sum(tstep for t in sp_times_reg) for w in sp.workstations) - itemprocesstime*stationitemspicked - podprocesstime*sum(sum(length(currsol.podsworkedat[w,t]) for t in sp_times_reg) for w in sp.workstations)
+	stationidlepct = stationmissingthroughput / sum(sum(tstep for t in sp_times_reg) for w in sp.workstations)
+	orderslottimessopen = sum(sum(C[w] for t in sp_times_reg) for w in sp.workstations) - sum(sum(sum(currsol.v[m,w,t] for m in orders) for t in sp_times_reg) for w in sp.workstations)  
 
 	capacityslackparms = [stationmissingthroughput stationidlepct orderslottimessopen]
 
@@ -221,9 +216,9 @@ end
 
 #-------------------------------------------------------------------------#
 
-function compatibilityfeatures(sp_workstations, sp_times, sp_orders)
+function compatibilityfeatures(sp)
 
-	sp_times_reg = max(sp_times[1], 0):tstep:min(last(sp_times), horizon)
+	#=sp_times_reg = max(sp.times[1], 0):tstep:min(last(sp.times), horizon)
 
 	#"Synergy" with other orders that could fill in gaps
 	if (unassignedorders == []) || (setdiff(sp_orders, unassignedorders) == []) 
@@ -235,13 +230,15 @@ function compatibilityfeatures(sp_workstations, sp_times, sp_orders)
 		end
 	end
 	easyoneitemorders = 0
-	for t in sp_times_reg, w in sp_workstations
+	for t in sp_times_reg, w in sp.workstations
 		if (podsworkedat[w,t] != []) & (unassignedorders != [])
 			for m in unassignedorders, p in podsworkedat[w,t]
 				easyoneitemorders += orderpodcompat[m,p] 
 			end
 		end
-	end	
+	end	=#
+	podcompatibilitywithunassignedorders = 0
+	easyoneitemorders = 0
 	compatibilityparms = [podcompatibilitywithunassignedorders easyoneitemorders]
 
 	return compatibilityparms
@@ -250,19 +247,12 @@ end
 
 #-------------------------------------------------------------------------#
 
-function stationstatusfeatures(sp_workstations, sp_times, sp_tstart, sp_tend, sp_orders, sp_itemson, subprobArcSet, y_known, sp_workedorders, stationitemspicked)
-
-	sp_times_reg = max(sp_times[1], 0):tstep:min(last(sp_times), horizon)
+function stationstatusfeatures(sp, stationitemspicked)
 
 	#Station current stats 
-	totalworkedorders = length(sp_workedorders)
-	if sp_workedorders != []
-		stationavgordersize = sum(length(itemson[m]) for m in sp_workedorders) / totalworkedorders
-		stationavgorderinventory = 0 #sum(sum(sum(inventory[i,p] for p in podswith[i]) for i in sp_itemson[m]) for m in sp_workedorders if sp_itemson[m] != []) / sum(length(sp_itemson[m]) for m in sp_workedorders if sp_itemson[m] != []) 								
-	else
-		stationavgordersize = 0
-		stationavgorderinventory = 0
-	end
+	totalworkedorders = 0 #length(sp_workedorders)
+	stationavgordersize = 0 #sum(length(itemson[m]) for m in sp_workedorders) / totalworkedorders
+	stationavgorderinventory = 0 #sum(sum(sum(inventory[i,p] for p in podswith[i]) for i in sp_itemson[m]) for m in sp_workedorders if sp_itemson[m] != []) / sum(length(sp_itemson[m]) for m in sp_workedorders if sp_itemson[m] != []) 								
 	stationpodsvisited = 0 # sum(sum(sum(sum(y_currsol[p,a] for a in setdiff(intersect(A_plus_p[p,nodes[w,t]], subprobArcSet), A_queues)) for t in setdiff(sp_times_reg,last(sp_times_reg)) if setdiff(intersect(A_plus_p[p,nodes[w,t]], subprobArcSet), A_queues) != []) for w in sp_workstations) for p in pods) + sum(sum(sum(y_known[p,nodes[w,t]] for w in sp_workstations) for t in sp_times_reg) for p in pods)
 	avgpicksperpod = 0 #stationitemspicked / stationpodsvisited
 	#podavgdistancetraveled = sum(sum(sum(abs.(loccoords[w,:] - loccoords[podstorageloc[p],:])) * (sum(sum(y[p,a] for a in setdiff(intersect(A_plus_p[p,nodes[w,t]], subprobArcSet), A_queues)) for t in setdiff(sp_times, last(sp_times))) + y_known[p,nodes[w,last(sp_times)]]) for w in sp_workstations) for p in pods)	/ stationpodsvisited
@@ -274,13 +264,13 @@ end
 
 #-------------------------------------------------------------------------#
 
-function algorithmcontolfeatures(subproblem_id, lsnsiter)
+function algorithmcontolfeatures(sp_winid, lsnsiter)
 
 	#Algorithm control
 	lsnsiterationssofar = lsnsiter
-	recentlyoptimized_flag = windowrecentlyreoptimized[subproblem_id]
-	totalsubproblemreoptimizations = windowreoptimizedcount[subproblem_id]
-	mostrecentimprovement = mostrecentwindowimprovement[subproblem_id]
+	recentlyoptimized_flag = 0 #windowrecentlyreoptimized[sp_winid]
+	totalsubproblemreoptimizations = 0 #windowreoptimizedcount[sp_winid]
+	mostrecentimprovement = 0# #mostrecentwindowimprovement[sp_winid]
 
 	algcontrolparms = [lsnsiterationssofar recentlyoptimized_flag totalsubproblemreoptimizations mostrecentimprovement]
 	
@@ -290,12 +280,12 @@ end
 
 #-------------------------------------------------------------------------#
 
-function calculateadditionalfeatures(subproblem_id, lsnsiter, sp_workstations, sp_times, sp_tstart, sp_tend, sp_orders, sp_itemson, ambientcongestion, subprobArcSet, y_known, assignedorders)
-
-	capacityslackparms, stationitemspicked = capacityslackfeatures(sp_workstations, sp_times, sp_orders, sp_itemson, subprobArcSet)
-	compatibilityparms = compatibilityfeatures(sp_workstations, sp_times, sp_orders)
-	stationcurrentstatparms = stationstatusfeatures(sp_workstations, sp_times, sp_tstart, sp_tend, sp_orders, sp_itemson, subprobArcSet, y_known, assignedorders, stationitemspicked)
-	algcontrolparms = algorithmcontolfeatures(subproblem_id, lsnsiter)
+function calculateadditionalfeatures(sp_winid, lsnsiter, sp, currsol)
+	
+	capacityslackparms, stationitemspicked = capacityslackfeatures(sp, currsol)
+	compatibilityparms = compatibilityfeatures(sp)
+	stationcurrentstatparms = stationstatusfeatures(sp, stationitemspicked)
+	algcontrolparms = algorithmcontolfeatures(sp_winid, lsnsiter)
 
 	features = hcat(capacityslackparms, compatibilityparms, stationcurrentstatparms, algcontrolparms)
 
@@ -305,13 +295,13 @@ end
 
 #-------------------------------------------------------------------------#
 
-function getsubproblemfeatures(sp, lsnsiter)
+function getsubproblemfeatures(sp, lsnsiter, sp_winid, currsol)
 
-    id_list = [run_id instance_id warehouse_id sp.winid]
+    id_list = [run_id instance_id warehouse_id sp_winid]
 	static_features = getinstancefeatures_static()
 	w_features, t_features, p_features, m_features = getentityfeatures_static(sp)
 	mp_features, pw_features, pwt_features, wt_features = getsynergyfeatures_static(sp)
-	additional_features = calculateadditionalfeatures(subproblem_id, lsnsiter, sp_workstations, sp_times, sp_tstart, sp_tend, sp_orders, sp_itemson, ambientcongestion, subprobArcSet, y_known, assignedorders)
+	additional_features = calculateadditionalfeatures(sp_winid, lsnsiter, sp, currsol)
 
 	return hcat(id_list, static_features, w_features, t_features, p_features, m_features, mp_features, pw_features, pwt_features, wt_features, additional_features)
 
