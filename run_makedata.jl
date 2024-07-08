@@ -151,9 +151,9 @@ partitionobjective = "none"
 
 #Training data
 dynamicmlpass = 0
+staticmlpass = 0
 dynamicinstanceoutputfilename = string("trainingdata/dynamic/features_wh", warehouse_id, "_pass", dynamicmlpass, "_instance", instance_id, "_run", run_id,".jld2")
 staticinstanceoutputfilename = string("trainingdata/static/features_wh", warehouse_id, "_pass", staticmlpass, "_instance", instance_id, "_run", run_id, ".csv")
-staticmlpass = 0
 
 println("Parameters read")
 
