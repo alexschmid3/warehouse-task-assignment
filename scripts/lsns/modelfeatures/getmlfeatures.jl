@@ -54,9 +54,9 @@ function getinstancefeatures(currpartition, currsol)
 	currentobjective = sum(sum(length(currsol.itempodpicklist[w,t]) for t in times) for w in currpartition.workstations)
 	timeused = podprocesstime * sum(sum(length(currsol.podsworkedat[w,t]) for t in times) for w in currpartition.workstations) + itemprocesstime * sum(sum(length(currsol.itempodpicklist[w,t]) for t in times) for w in currpartition.workstations)
  
-	instance_features = Dict("lsnsiterationsbefore" => lsnsiterationsbefore,
+	instance_features = Dict("lsnsiterationsbefore" => 0,
 							"dynamicmlpass" => dynamicmlpass, 
-							"greedymethod" => orderprioritization, 
+							"greedymethod" => solutioninitialization, 
 							"throughpututilization" => currentobjective / (horizon * numworkstations / (podprocesstime + itemprocesstime)), 
 							"timeutilization" => timeused / (horizon * numworkstations), 
 							"podsperitem" => numpods * num_items_per_pod / num_unique_items , 
@@ -192,7 +192,9 @@ function getmlfeatures(mlmodelfilename)
 	#mldata = load(mlmodelfilename)
 	#beta_wt, beta_mp, beta_pw, beta_pwt, beta_t, beta_w = mldata["beta_wt"], mldata["beta_mp"], mldata["beta_pw"], mldata["beta_pwt"], mldata["shifts"][4], mldata["shifts"][3]
 	#beta = (wt=beta_wt, mp=beta_mp, pw=beta_pw, pwt=beta_pwt, t=beta_t, w=beta_w)
-	if mlmodelfilename == "models/mlmodel_wh2.jld2"
+	if mlmodelfilename == ""
+		beta = (wt = Dict(13 => 0.0, 2 => 0.0, 10 => 0.0, 11 => 0.0, 12 => 0.0, 14 => 0.0, 3 => 0.0, 1 => 0.0), mp=Dict(5 =>  0.0, 4 => 0.0, 16 => 0.0, 7 => 0.0, 15 => 0.0, 6 =>  0.0, 18 => 0.0, 17 => 0.0), t = 0.0, w = 0.0, pw = Dict(5 => 0.0, 4 => 0.0, 21 => 0.0, 20 => 0.0, 1 => 0.0, 19 => 0.0), pwt = Dict(5 => 0.0, 4 => 0.0, 22 => 0.0, 2 => 0.0, 3 => 0.0, 1 => 0.0))
+	elseif mlmodelfilename == "models/mlmodel_wh2.jld2"
 		beta = (wt = Dict(13 => 2.5600584713264474, 2 => 0.0, 10 => -0.40109211853918064, 11 => 0.0, 12 => -0.05043682643320213, 14 => 0.0, 3 => 0.0, 1 => 0.607447336638065), mp=Dict(5 =>  0.0, 4 => -0.002176404137823992, 16 => 0.0, 7 => 0.19103193629980503, 15 => 0.08261184720499964, 6 =>  0.0, 18 => -0.005315607731556266, 17 => 0.0), t = 2.8759661851642013, w = -11.890577826920186, pw = Dict(5 => 0.0, 4 => 0.0, 21 => 0.018609090014792447, 20 => -0.012013416644662994, 1 => 0.0, 19 => 0.0), pwt = Dict(5 => -0.704737897235883, 4 => 0.0, 22 => 0.040319450361324456, 2 => 0.0, 3 => 0.0, 1 => 0.0))
 		#beta = (wt = Dict(13 => 0.0, 2 => 0.0, 10 => -1.4961831312534941, 11 => 3.4490407010271285, 12 => 0.0, 14 => 1.4237052201931832, 3 => 0.0, 1 => -0.06685921041384356), mp=Dict(5 => 0.0, 4 => -0.004418310859418085, 16 => 0.0, 7 => 0.07945124286152572, 15 => 0.12974755697656148, 6 => 0.0, 18 => 0.0, 17 => -0.008203402756941756), t = 3.065438071374471, w = -0.6298225932825006, pw = Dict(5 => 0.0, 4 => 0.0, 21 => 0.024773565764949153, 20 => 6.456436723863672e-5, 1 => 0.0, 19 => 0.0), pwt = Dict(5 => -0.7131759433379721, 4 => 0.0, 22 => 0.0, 2 => 0.0, 3 => 0.0, 1 => 0.0))
 	elseif mlmodelfilename == "models/mlmodel_wh1.jld2"

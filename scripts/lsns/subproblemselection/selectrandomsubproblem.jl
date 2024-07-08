@@ -133,6 +133,6 @@ function selectrandomsubproblem(partition, windows, windowidlookup, currsol, tar
 	#Get the pods
 	sp_pods = findnecessarypods1(partition, targetnumpods, currsol, sp_orders, sp_window, sp_items)
 
-	return sp_winid, sp_orders, sp_window, sp_pods, sp_itemson, sp_items
+	return sp_winid, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, assignedorders
 
 end

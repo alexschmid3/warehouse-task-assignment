@@ -14,7 +14,7 @@ end
 
 #-----------------------------------------------------------------------------------------------------#
 
-function reoptimizesubproblem(sp, currsol, currpartition, ipoutputflag=0, iptimelimit=300)
+function reoptimizesubproblem(sp, currsol, currpartition, turnoffcongestion_flag, ipoutputflag=0, iptimelimit=300)
 
 	model = Model(() -> Gurobi.Optimizer(GRB_ENV)) #Model(Gurobi.Optimizer)
 	set_optimizer_attribute(model, "TimeLimit", timeforreooptimization) # iptimelimit)
@@ -108,7 +108,9 @@ function reoptimizesubproblem(sp, currsol, currpartition, ipoutputflag=0, iptime
 	#@constraint(model, maxcongestion[l in partitionfloor.reducedintersections, t in max(0,sp.tstart):congestiontstep:min(horizon,sp.tend)], sum(sum(partitionfloor.congestioncontribution[a,l,t] * y[p,a] for a in intersect(partitionfloor.congestionarcs[l,t], sp.podarcset[p], sp.arcset)) for p in sp.pods) <= intersectionmaxpods[l] - sp.ambientcongestion[l,t])
 	#@constraint(model, maxcongestion[l in currpartition.intersections, t in max(0,sp.tstart):congestiontstep:min(horizon,sp.tend)], sum(congestionsignature[a][maps.mapintersectiontorowcolumn[l], maps.maptimetocol[t]] * y[p,a] for p in sp.pods) <= intersectionmaxpods[l] - sp.ambientcongestion[l,t])
 	ct1=time()
-	@constraint(model, maxcongestion[l in currpartition.intersections, t in max(0,sp.tstart):congestiontstep:min(horizon,sp.tend)], sum(sum(congestionsignature[a][maps.mapintersectiontorow[l], maps.maptimetocolumn[t]] * y[p,a] for a in sp.sp_podarcset_cong[p]) for p in sp.pods) <= intersectionmaxpods[l] - sum(currcong[p][maps.mapintersectiontorow[l],maps.maptimetocolumn[t]] for p in setdiff(pods, sp.pods)))
+	if turnoffcongestion_flag == 0
+		@constraint(model, maxcongestion[l in currpartition.intersections, t in max(0,sp.tstart):congestiontstep:min(horizon,sp.tend)], sum(sum(congestionsignature[a][maps.mapintersectiontorow[l], maps.maptimetocolumn[t]] * y[p,a] for a in sp.sp_podarcset_cong[p]) for p in sp.pods) <= intersectionmaxpods[l] - sum(currcong[p][maps.mapintersectiontorow[l],maps.maptimetocolumn[t]] for p in setdiff(pods, sp.pods)))
+	end
 	if debugmode == 1
 		println("   Congestion constraint time = ", time()-ct1)
 	end

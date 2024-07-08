@@ -188,6 +188,18 @@ function getphysicalarcs(podspeed, loccoords)
 		arclength[w, s] = leng
 	end
 
+	if stationtostation_flag == 1
+		for w1 in workstations, w2 in [w for w in workstations if w < w1]
+			manhattandist = abs(loccoords[w1,1] - loccoords[w2,1]) +  abs(loccoords[w1,2] - loccoords[w2,2])
+			arclengthraw = manhattandist / podspeed
+			leng = tstep * ceil(arclengthraw / tstep)
+			push!(prearcs, (w1, w2, manhattandist, arclengthraw, leng))
+			push!(prearcs, (w2, w1, manhattandist, arclengthraw, leng))
+			arclength[w1, w2] = leng
+			arclength[w2, w1] = leng
+		end
+	end
+
 	return prearcs, arclength
 
 end

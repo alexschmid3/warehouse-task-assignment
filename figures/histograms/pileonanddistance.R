@@ -46,7 +46,7 @@ dev.off()
 #---------------------------------------------------------------#
 
 #Group the pods by picks
-bigpickmin = 3
+bigpickmin = 2
 
 aggdata_stg <- ddata %>%
   select(disttraveled, itempicks) %>%
