@@ -312,7 +312,7 @@ function compatibilityfeatures(sp_workstations, sp_times, sp_orders, currsol)
 		podcompatibilitywithunassignedorders = 0
 	else
 		podcompatibilitywithunassignedorders = 0
-		for m1 in setdiff(sp_orders, currsol.unassignedorders), m2 in intersect(sp_orders, unassignedorders)
+		for m1 in setdiff(sp_orders, currsol.unassignedorders), m2 in intersect(sp_orders, currsol.unassignedorders)
 			podcompatibilitywithunassignedorders += orderordercompat[m1, m2] 
 		end
 	end
