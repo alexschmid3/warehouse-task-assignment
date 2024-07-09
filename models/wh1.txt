@@ -1,0 +1,592 @@
+features_wh1_pass0_instance100_run199.jld2
+Instance 1199 has no congestion
+features_wh1_pass0_instance100_run200.jld2
+Instance 1200 has no congestion
+features_wh1_pass0_instance10_run19.jld2
+Instance 1019 has no congestion
+features_wh1_pass0_instance10_run20.jld2
+Instance 1020 has no congestion
+features_wh1_pass0_instance11_run21.jld2
+Instance 1021 has no congestion
+features_wh1_pass0_instance11_run22.jld2
+Instance 1022 has no congestion
+features_wh1_pass0_instance12_run23.jld2
+Instance 1023 has no congestion
+features_wh1_pass0_instance12_run24.jld2
+Instance 1024 has no congestion
+features_wh1_pass0_instance13_run25.jld2
+Instance 1025 has no congestion
+features_wh1_pass0_instance13_run26.jld2
+Instance 1026 has no congestion
+features_wh1_pass0_instance14_run27.jld2
+Instance 1027 has no congestion
+features_wh1_pass0_instance14_run28.jld2
+Instance 1028 has no congestion
+features_wh1_pass0_instance15_run29.jld2
+Instance 1029 has no congestion
+features_wh1_pass0_instance15_run30.jld2
+Instance 1030 has no congestion
+features_wh1_pass0_instance16_run31.jld2
+Instance 1031 has no congestion
+features_wh1_pass0_instance16_run32.jld2
+Instance 1032 has no congestion
+features_wh1_pass0_instance17_run33.jld2
+Instance 1033 has no congestion
+features_wh1_pass0_instance17_run34.jld2
+Instance 1034 has no congestion
+features_wh1_pass0_instance18_run35.jld2
+Instance 1035 has no congestion
+features_wh1_pass0_instance18_run36.jld2
+Instance 1036 has no congestion
+features_wh1_pass0_instance19_run37.jld2
+Instance 1037 has no congestion
+features_wh1_pass0_instance19_run38.jld2
+Instance 1038 has no congestion
+features_wh1_pass0_instance1_run1.jld2
+Instance 1001 has no congestion
+features_wh1_pass0_instance1_run2.jld2
+Instance 1002 has no congestion
+features_wh1_pass0_instance20_run39.jld2
+Instance 1039 has no congestion
+features_wh1_pass0_instance20_run40.jld2
+Instance 1040 has no congestion
+features_wh1_pass0_instance21_run41.jld2
+Instance 1041 has no congestion
+features_wh1_pass0_instance21_run42.jld2
+Instance 1042 has no congestion
+features_wh1_pass0_instance22_run43.jld2
+Instance 1043 has no congestion
+features_wh1_pass0_instance22_run44.jld2
+Instance 1044 has no congestion
+features_wh1_pass0_instance23_run45.jld2
+Instance 1045 has no congestion
+features_wh1_pass0_instance23_run46.jld2
+Instance 1046 has no congestion
+features_wh1_pass0_instance24_run47.jld2
+Instance 1047 has no congestion
+features_wh1_pass0_instance24_run48.jld2
+Instance 1048 has no congestion
+features_wh1_pass0_instance25_run49.jld2
+Instance 1049 has no congestion
+features_wh1_pass0_instance25_run50.jld2
+Instance 1050 has no congestion
+features_wh1_pass0_instance26_run51.jld2
+Instance 1051 has no congestion
+features_wh1_pass0_instance26_run52.jld2
+Instance 1052 has no congestion
+features_wh1_pass0_instance27_run53.jld2
+Instance 1053 has no congestion
+features_wh1_pass0_instance27_run54.jld2
+Instance 1054 has no congestion
+features_wh1_pass0_instance28_run55.jld2
+Instance 1055 has no congestion
+features_wh1_pass0_instance28_run56.jld2
+Instance 1056 has no congestion
+features_wh1_pass0_instance29_run57.jld2
+Instance 1057 has no congestion
+features_wh1_pass0_instance29_run58.jld2
+Instance 1058 has no congestion
+features_wh1_pass0_instance2_run3.jld2
+Instance 1003 has no congestion
+features_wh1_pass0_instance2_run4.jld2
+Instance 1004 has no congestion
+features_wh1_pass0_instance30_run59.jld2
+Instance 1059 has no congestion
+features_wh1_pass0_instance30_run60.jld2
+Instance 1060 has no congestion
+features_wh1_pass0_instance31_run61.jld2
+Instance 1061 has no congestion
+features_wh1_pass0_instance31_run62.jld2
+Instance 1062 has no congestion
+features_wh1_pass0_instance32_run63.jld2
+Instance 1063 has no congestion
+features_wh1_pass0_instance32_run64.jld2
+Instance 1064 has no congestion
+features_wh1_pass0_instance33_run65.jld2
+Instance 1065 has no congestion
+features_wh1_pass0_instance33_run66.jld2
+Instance 1066 has no congestion
+features_wh1_pass0_instance34_run67.jld2
+Instance 1067 has no congestion
+features_wh1_pass0_instance34_run68.jld2
+Instance 1068 has no congestion
+features_wh1_pass0_instance35_run69.jld2
+Instance 1069 has no congestion
+features_wh1_pass0_instance35_run70.jld2
+Instance 1070 has no congestion
+features_wh1_pass0_instance36_run71.jld2
+Instance 1071 has no congestion
+features_wh1_pass0_instance36_run72.jld2
+Instance 1072 has no congestion
+features_wh1_pass0_instance37_run73.jld2
+Instance 1073 has no congestion
+features_wh1_pass0_instance37_run74.jld2
+Instance 1074 has no congestion
+features_wh1_pass0_instance38_run75.jld2
+Instance 1075 has no congestion
+features_wh1_pass0_instance38_run76.jld2
+Instance 1076 has no congestion
+features_wh1_pass0_instance39_run77.jld2
+Instance 1077 has no congestion
+features_wh1_pass0_instance39_run78.jld2
+Instance 1078 has no congestion
+features_wh1_pass0_instance3_run5.jld2
+Instance 1005 has no congestion
+features_wh1_pass0_instance3_run6.jld2
+Instance 1006 has no congestion
+features_wh1_pass0_instance40_run79.jld2
+Instance 1079 has no congestion
+features_wh1_pass0_instance40_run80.jld2
+Instance 1080 has no congestion
+features_wh1_pass0_instance41_run81.jld2
+Instance 1081 has no congestion
+features_wh1_pass0_instance41_run82.jld2
+Instance 1082 has no congestion
+features_wh1_pass0_instance42_run83.jld2
+Instance 1083 has no congestion
+features_wh1_pass0_instance42_run84.jld2
+Instance 1084 has no congestion
+features_wh1_pass0_instance43_run85.jld2
+Instance 1085 has no congestion
+features_wh1_pass0_instance43_run86.jld2
+Instance 1086 has no congestion
+features_wh1_pass0_instance44_run87.jld2
+Instance 1087 has no congestion
+features_wh1_pass0_instance44_run88.jld2
+Instance 1088 has no congestion
+features_wh1_pass0_instance45_run89.jld2
+Instance 1089 has no congestion
+features_wh1_pass0_instance45_run90.jld2
+Instance 1090 has no congestion
+features_wh1_pass0_instance46_run91.jld2
+Instance 1091 has no congestion
+features_wh1_pass0_instance46_run92.jld2
+Instance 1092 has no congestion
+features_wh1_pass0_instance47_run93.jld2
+Instance 1093 has no congestion
+features_wh1_pass0_instance47_run94.jld2
+Instance 1094 has no congestion
+features_wh1_pass0_instance48_run95.jld2
+Instance 1095 has no congestion
+features_wh1_pass0_instance48_run96.jld2
+Instance 1096 has no congestion
+features_wh1_pass0_instance49_run97.jld2
+Instance 1097 has no congestion
+features_wh1_pass0_instance49_run98.jld2
+Instance 1098 has no congestion
+features_wh1_pass0_instance4_run7.jld2
+Instance 1007 has no congestion
+features_wh1_pass0_instance4_run8.jld2
+Instance 1008 has no congestion
+features_wh1_pass0_instance50_run100.jld2
+Instance 1100 has no congestion
+features_wh1_pass0_instance50_run99.jld2
+Instance 1099 has no congestion
+features_wh1_pass0_instance51_run101.jld2
+Instance 1101 has no congestion
+features_wh1_pass0_instance51_run102.jld2
+Instance 1102 has no congestion
+features_wh1_pass0_instance52_run103.jld2
+Instance 1103 has no congestion
+features_wh1_pass0_instance52_run104.jld2
+Instance 1104 has no congestion
+features_wh1_pass0_instance53_run105.jld2
+Instance 1105 has no congestion
+features_wh1_pass0_instance53_run106.jld2
+Instance 1106 has no congestion
+features_wh1_pass0_instance54_run107.jld2
+Instance 1107 has no congestion
+features_wh1_pass0_instance54_run108.jld2
+Instance 1108 has no congestion
+features_wh1_pass0_instance55_run109.jld2
+Instance 1109 has no congestion
+features_wh1_pass0_instance55_run110.jld2
+Instance 1110 has no congestion
+features_wh1_pass0_instance56_run111.jld2
+Instance 1111 has no congestion
+features_wh1_pass0_instance56_run112.jld2
+Instance 1112 has no congestion
+features_wh1_pass0_instance57_run113.jld2
+Instance 1113 has no congestion
+features_wh1_pass0_instance57_run114.jld2
+Instance 1114 has no congestion
+features_wh1_pass0_instance58_run115.jld2
+Instance 1115 has no congestion
+features_wh1_pass0_instance58_run116.jld2
+Instance 1116 has no congestion
+features_wh1_pass0_instance59_run117.jld2
+Instance 1117 has no congestion
+features_wh1_pass0_instance59_run118.jld2
+Instance 1118 has no congestion
+features_wh1_pass0_instance5_run10.jld2
+Instance 1010 has no congestion
+features_wh1_pass0_instance5_run9.jld2
+Instance 1009 has no congestion
+features_wh1_pass0_instance60_run119.jld2
+Instance 1119 has no congestion
+features_wh1_pass0_instance60_run120.jld2
+Instance 1120 has no congestion
+features_wh1_pass0_instance61_run121.jld2
+Instance 1121 has no congestion
+features_wh1_pass0_instance61_run122.jld2
+Instance 1122 has no congestion
+features_wh1_pass0_instance62_run123.jld2
+Instance 1123 has no congestion
+features_wh1_pass0_instance62_run124.jld2
+Instance 1124 has no congestion
+features_wh1_pass0_instance63_run125.jld2
+Instance 1125 has no congestion
+features_wh1_pass0_instance63_run126.jld2
+Instance 1126 has no congestion
+features_wh1_pass0_instance64_run127.jld2
+Instance 1127 has no congestion
+features_wh1_pass0_instance64_run128.jld2
+Instance 1128 has no congestion
+features_wh1_pass0_instance65_run129.jld2
+Instance 1129 has no congestion
+features_wh1_pass0_instance65_run130.jld2
+Instance 1130 has no congestion
+features_wh1_pass0_instance66_run131.jld2
+Instance 1131 has no congestion
+features_wh1_pass0_instance66_run132.jld2
+Instance 1132 has no congestion
+features_wh1_pass0_instance67_run133.jld2
+Instance 1133 has no congestion
+features_wh1_pass0_instance67_run134.jld2
+Instance 1134 has no congestion
+features_wh1_pass0_instance68_run135.jld2
+Instance 1135 has no congestion
+features_wh1_pass0_instance68_run136.jld2
+Instance 1136 has no congestion
+features_wh1_pass0_instance69_run137.jld2
+Instance 1137 has no congestion
+features_wh1_pass0_instance69_run138.jld2
+Instance 1138 has no congestion
+features_wh1_pass0_instance6_run11.jld2
+Instance 1011 has no congestion
+features_wh1_pass0_instance6_run12.jld2
+Instance 1012 has no congestion
+features_wh1_pass0_instance70_run139.jld2
+Instance 1139 has no congestion
+features_wh1_pass0_instance70_run140.jld2
+Instance 1140 has no congestion
+features_wh1_pass0_instance71_run141.jld2
+Instance 1141 has no congestion
+features_wh1_pass0_instance71_run142.jld2
+Instance 1142 has no congestion
+features_wh1_pass0_instance72_run143.jld2
+Instance 1143 has no congestion
+features_wh1_pass0_instance72_run144.jld2
+Instance 1144 has no congestion
+features_wh1_pass0_instance73_run145.jld2
+Instance 1145 has no congestion
+features_wh1_pass0_instance73_run146.jld2
+Instance 1146 has no congestion
+features_wh1_pass0_instance74_run147.jld2
+Instance 1147 has no congestion
+features_wh1_pass0_instance74_run148.jld2
+Instance 1148 has no congestion
+features_wh1_pass0_instance75_run149.jld2
+Instance 1149 has no congestion
+features_wh1_pass0_instance75_run150.jld2
+Instance 1150 has no congestion
+features_wh1_pass0_instance76_run151.jld2
+Instance 1151 has no congestion
+features_wh1_pass0_instance76_run152.jld2
+Instance 1152 has no congestion
+features_wh1_pass0_instance77_run153.jld2
+Instance 1153 has no congestion
+features_wh1_pass0_instance77_run154.jld2
+Instance 1154 has no congestion
+features_wh1_pass0_instance78_run155.jld2
+Instance 1155 has no congestion
+features_wh1_pass0_instance78_run156.jld2
+Instance 1156 has no congestion
+features_wh1_pass0_instance79_run157.jld2
+Instance 1157 has no congestion
+features_wh1_pass0_instance79_run158.jld2
+Instance 1158 has no congestion
+features_wh1_pass0_instance7_run13.jld2
+Instance 1013 has no congestion
+features_wh1_pass0_instance7_run14.jld2
+Instance 1014 has no congestion
+features_wh1_pass0_instance80_run159.jld2
+Instance 1159 has no congestion
+features_wh1_pass0_instance80_run160.jld2
+Instance 1160 has no congestion
+features_wh1_pass0_instance81_run161.jld2
+Instance 1161 has no congestion
+features_wh1_pass0_instance81_run162.jld2
+Instance 1162 has no congestion
+features_wh1_pass0_instance82_run163.jld2
+Instance 1163 has no congestion
+features_wh1_pass0_instance82_run164.jld2
+Instance 1164 has no congestion
+features_wh1_pass0_instance83_run165.jld2
+Instance 1165 has no congestion
+features_wh1_pass0_instance83_run166.jld2
+Instance 1166 has no congestion
+features_wh1_pass0_instance84_run167.jld2
+Instance 1167 has no congestion
+features_wh1_pass0_instance84_run168.jld2
+Instance 1168 has no congestion
+features_wh1_pass0_instance85_run169.jld2
+Instance 1169 has no congestion
+features_wh1_pass0_instance85_run170.jld2
+Instance 1170 has no congestion
+features_wh1_pass0_instance86_run171.jld2
+Instance 1171 has no congestion
+features_wh1_pass0_instance86_run172.jld2
+Instance 1172 has no congestion
+features_wh1_pass0_instance87_run173.jld2
+Instance 1173 has no congestion
+features_wh1_pass0_instance87_run174.jld2
+Instance 1174 has no congestion
+features_wh1_pass0_instance88_run175.jld2
+Instance 1175 has no congestion
+features_wh1_pass0_instance88_run176.jld2
+Instance 1176 has no congestion
+features_wh1_pass0_instance89_run177.jld2
+Instance 1177 has no congestion
+features_wh1_pass0_instance89_run178.jld2
+Instance 1178 has no congestion
+features_wh1_pass0_instance8_run15.jld2
+Instance 1015 has no congestion
+features_wh1_pass0_instance8_run16.jld2
+Instance 1016 has no congestion
+features_wh1_pass0_instance90_run179.jld2
+Instance 1179 has no congestion
+features_wh1_pass0_instance90_run180.jld2
+Instance 1180 has no congestion
+features_wh1_pass0_instance91_run181.jld2
+Instance 1181 has no congestion
+features_wh1_pass0_instance91_run182.jld2
+Instance 1182 has no congestion
+features_wh1_pass0_instance92_run183.jld2
+Instance 1183 has no congestion
+features_wh1_pass0_instance92_run184.jld2
+Instance 1184 has no congestion
+features_wh1_pass0_instance93_run185.jld2
+Instance 1185 has no congestion
+features_wh1_pass0_instance93_run186.jld2
+Instance 1186 has no congestion
+features_wh1_pass0_instance94_run187.jld2
+Instance 1187 has no congestion
+features_wh1_pass0_instance94_run188.jld2
+Instance 1188 has no congestion
+features_wh1_pass0_instance95_run189.jld2
+Instance 1189 has no congestion
+features_wh1_pass0_instance95_run190.jld2
+Instance 1190 has no congestion
+features_wh1_pass0_instance96_run191.jld2
+Instance 1191 has no congestion
+features_wh1_pass0_instance96_run192.jld2
+Instance 1192 has no congestion
+features_wh1_pass0_instance97_run193.jld2
+Instance 1193 has no congestion
+features_wh1_pass0_instance97_run194.jld2
+Instance 1194 has no congestion
+features_wh1_pass0_instance98_run195.jld2
+Instance 1195 has no congestion
+features_wh1_pass0_instance98_run196.jld2
+Instance 1196 has no congestion
+features_wh1_pass0_instance99_run197.jld2
+Instance 1197 has no congestion
+features_wh1_pass0_instance99_run198.jld2
+Instance 1198 has no congestion
+features_wh1_pass0_instance9_run17.jld2
+Instance 1017 has no congestion
+features_wh1_pass0_instance9_run18.jld2
+Instance 1018 has no congestion
+Set parameter GURO_PAR_SPECIAL
+Set parameter TokenServer to value "engaging-license-001"
+Set parameter TimeLimit to value 3600
+Set parameter IntegralityFocus to value 1
+Set parameter IntegralityFocus to value 1
+Set parameter TimeLimit to value 3600
+Gurobi Optimizer version 9.5.1 build v9.5.1rc2 (linux64)
+Thread count: 48 physical cores, 48 logical processors, using up to 32 threads
+Optimize a model with 117694 rows, 80061 columns and 1152984 nonzeros
+Model fingerprint: 0x7367d52b
+Variable types: 80032 continuous, 29 integer (29 binary)
+Coefficient statistics:
+  Matrix range     [5e-01, 1e+04]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [0e+00, 0e+00]
+  RHS range        [1e+00, 4e+01]
+Found heuristic solution: objective 652560.00001
+Found heuristic solution: objective 652560.00001
+Presolve removed 80063 rows and 42431 columns
+Presolve time: 1.26s
+Presolved: 37631 rows, 37630 columns, 601789 nonzeros
+Variable types: 37625 continuous, 5 integer (5 binary)
+
+Deterministic concurrent LP optimizer: primal and dual simplex (primal and dual model)
+Showing first log only...
+
+Root relaxation presolved: 37631 rows, 37630 columns, 601789 nonzeros
+
+Concurrent spin time: 0.00s
+
+Solved with primal simplex (dual model)
+
+Root relaxation: objective 1.375430e+05, 146243 iterations, 2.93 seconds (1.98 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 137542.990    0    2 652560.000 137542.990  78.9%     -    4s
+     0     0 137542.990    0    2 652560.000 137542.990  78.9%     -    5s
+     0     2 137542.990    0    2 652560.000 137542.990  78.9%     -    6s
+     3     8 139351.313    2    2 652560.000 137542.990  78.9%  1072   27s
+     7    16 139515.584    3    1 652560.000 139351.313  78.6%  2590   66s
+*   15     0               4    139632.92527 139515.584  0.08%  3945   92s
+
+Explored 31 nodes (232035 simplex iterations) in 100.92 seconds (175.17 work units)
+Thread count was 32 (of 48 available processors)
+
+Solution count 1: 139633
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.396329252659e+05, best bound 1.396329252659e+05, gap 0.0000%
+
+User-callback calls 32555, time in user-callback 0.05 sec
+------------------------------------------
+wt_queuecong = 0.0
+wt_avglocalcong = 0.0
+wt_maxlocalcong = 0.0
+wt_avghyperlocalcong = 0.0
+wt_maxhyperlocalcong = 0.0
+w_centrality = -0.5669892520504196
+t_horizonrelativetime = 0.0
+t_timeofday = 0.0
+------------------------------------------
+mp_itemoverlap = 0.5434717743020531
+mp_itemoverlappct = 0.0
+mp_overlapitemavginv = -0.021314197110971638
+mp_overlapitemavgaltpods = 0.0
+m_ordersize = -0.21749573951768308
+m_oneitemflag = 0.0
+p_avgdisttostations = -0.025205160001686874
+p_pctusefulitems = 0.0
+------------------------------------------
+pw_distance = 0.0
+pw_xsteps = 0.018960320288928006
+pw_ysteps = 0.022949111707493274
+p_avgdisttostations = 0.0
+p_pctusefulitems = 0.0
+w_centrality = 0.0
+------------------------------------------
+pwt_existingcong = 0.0
+p_avgdisttostations = 0.0
+p_pctusefulitems = 1.1785139064075256
+w_centrality = 0.0
+t_horizonrelativetime = 0.0
+t_timeofday = 0.0
+------------------------------------------
+beta_m = 0.0
+beta_p = 0.0
+beta_w = 1.733846439541626
+beta_t = -0.5188173600880638
+------------------------------------------
+Training mean absolute error = 3.7123581013462963
+Training mean squared error = 21.808624965030738
+Training R_squared = 0.4309840684011125
+Set parameter GURO_PAR_SPECIAL
+Set parameter TokenServer to value "engaging-license-001"
+Set parameter TimeLimit to value 3600
+Set parameter IntegralityFocus to value 1
+Set parameter IntegralityFocus to value 1
+Set parameter TimeLimit to value 3600
+Gurobi Optimizer version 9.5.1 build v9.5.1rc2 (linux64)
+Thread count: 48 physical cores, 48 logical processors, using up to 32 threads
+Optimize a model with 117689 rows, 80061 columns and 1152979 nonzeros
+Model fingerprint: 0xcc85425a
+Variable types: 80032 continuous, 29 integer (29 binary)
+Coefficient statistics:
+  Matrix range     [5e-01, 1e+04]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [0e+00, 0e+00]
+  RHS range        [1e+00, 4e+01]
+Found heuristic solution: objective 652560.00001
+Found heuristic solution: objective 652560.00001
+Presolve removed 80058 rows and 42431 columns
+Presolve time: 1.25s
+Presolved: 37631 rows, 37630 columns, 601789 nonzeros
+Variable types: 37625 continuous, 5 integer (5 binary)
+
+Deterministic concurrent LP optimizer: primal and dual simplex (primal and dual model)
+Showing first log only...
+
+Root relaxation presolved: 37631 rows, 37630 columns, 601789 nonzeros
+
+Concurrent spin time: 0.00s
+
+Solved with primal simplex (dual model)
+
+Root relaxation: objective 1.375430e+05, 146243 iterations, 2.76 seconds (1.98 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 137542.990    0    2 652560.000 137542.990  78.9%     -    4s
+     0     0 137542.990    0    2 652560.000 137542.990  78.9%     -    4s
+     0     2 137542.990    0    2 652560.000 137542.990  78.9%     -    6s
+     3     8 139351.313    2    2 652560.000 137542.990  78.9%  1072   29s
+     7    16 139515.584    3    1 652560.000 139351.313  78.6%  2590   68s
+*   15     0               4    139632.92527 139515.584  0.08%  3945   94s
+
+Explored 31 nodes (232035 simplex iterations) in 102.90 seconds (175.18 work units)
+Thread count was 32 (of 48 available processors)
+
+Solution count 1: 139633
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.396329252659e+05, best bound 1.396329252659e+05, gap 0.0000%
+
+User-callback calls 29251, time in user-callback 0.04 sec
+------------------------------------------
+wt_queuecong = -10000.0
+wt_avglocalcong = -10000.0
+wt_maxlocalcong = 0.0
+wt_avghyperlocalcong = -10000.0
+wt_maxhyperlocalcong = 0.0
+w_centrality = -0.5669892520504196
+t_horizonrelativetime = 0.0
+t_timeofday = 0.0
+------------------------------------------
+mp_itemoverlap = 0.5434717743020531
+mp_itemoverlappct = 0.0
+mp_overlapitemavginv = -0.021314197110971638
+mp_overlapitemavgaltpods = 0.0
+m_ordersize = -0.21749573951768308
+m_oneitemflag = 0.0
+p_avgdisttostations = -0.025205160001686874
+p_pctusefulitems = 0.0
+------------------------------------------
+pw_distance = 0.0
+pw_xsteps = 0.018960320288928006
+pw_ysteps = 0.022949111707493274
+p_avgdisttostations = 0.0
+p_pctusefulitems = 0.0
+w_centrality = 0.0
+------------------------------------------
+pwt_existingcong = 0.0
+p_avgdisttostations = 0.0
+p_pctusefulitems = 1.1785139064075256
+w_centrality = 0.0
+t_horizonrelativetime = 0.0
+t_timeofday = 0.0
+------------------------------------------
+beta_m = 0.0
+beta_p = 0.0
+beta_w = 1.733846439541626
+beta_t = -0.5188173600880638
+------------------------------------------
+Training mean absolute error = 3.7123581013462963
+Training mean squared error = 21.808624965030738
+Training R_squared = 0.4309840684011125
+-------------------------------------------------------------------------------------
+TEST
+-------------------------------------------------------------------------------------
+Full ML model saved
