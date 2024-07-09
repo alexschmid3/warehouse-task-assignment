@@ -388,6 +388,23 @@ function podarcsets(items, arclength)
 		push!(A_minus_p[p,nodes[s, t + arclength[w, s]]], a_return)
 	end
 
+	#Station to station arcs
+	if stationtostation_flag == 1
+		for p in pods, w1 in workstations, w2 in [w for w in workstations if w>w1], t in 0:tstep:horizon-arclength[w1,w2]
+			a_leave = arcs[nodes[w1, t], nodes[w2, t + arclength[w1, w2]]]
+			a_return = arcs[nodes[w2, t], nodes[w1, t + arclength[w2, w1]]]
+			
+			push!(podarcset[p], a_leave)
+			push!(podarcset[p], a_return)
+			push!(arcpodset[a_leave], p)
+			push!(arcpodset[a_return], p)
+			push!(A_plus_p[p, nodes[w1, t]], a_leave)
+			push!(A_plus_p[p, nodes[w2, t]], a_return)
+			push!(A_minus_p[p, nodes[w2, t + arclength[w1, w2]]], a_leave)
+			push!(A_minus_p[p, nodes[w1, t + arclength[w2, w1]]], a_return)
+		end
+	end
+
 	#Stationary arcs
 	for p in pods, t in 0:tstep:horizon-tstep
 		s = podstorageloc[p]

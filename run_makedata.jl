@@ -436,7 +436,7 @@ for s in 1:numpartitions
 
     #Save dynamic
     instance_features = getinstancefeatures(currpartition, currsol)
-    save(dynamicinstanceoutputfilename, Dict("instance_features" => instance_features, "w_features" => w_features, "t_features" => t_features, "m_features" => m_features, "p_features" => p_features, "i_features" => i_features, "wt_features" => wt_features, "mp_features" => mp_features, "pw_features" => pw_features, "pwt_features" => pwt_features, "subproblemdata" => subproblemarray))
+    save(dynamicinstanceoutputfilename, Dict("instance_features" => instance_features, "w_features" => w_features, "t_features" => t_features, "m_features" => m_features, "p_features" => p_features, "i_features" => i_features, "wt_features" => wt_features, "mp_features" => mp_features, "pw_features" => pw_features, "pwt_features" => pwt_features, "subproblemdata" => subproblemarray, "maps" => maps))
 
 	#Update global solution
 	#updateglobalsolution(currpartition, currsol)

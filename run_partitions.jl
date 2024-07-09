@@ -46,10 +46,10 @@ debugmode = 0					# 1 --> will perform solution consistency unit tests at each L
 const GRB_ENV = Gurobi.Env()
 
 # Select the instancecd
-row_id = 1 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
+row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
-testingparamsfilename = "data/indiv_instance_parameters.csv"
-methodparamsfilename = "data/indiv_lsns_parameters.csv"
+testingparamsfilename = "data/decomp_instance_parameters.csv"
+methodparamsfilename = "data/extensions/multistop/test_run_parameters.csv"
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 testingparms = CSV.read(testingparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
@@ -85,6 +85,7 @@ timeforsubproblemselection = methodparms[row_id, 11]
 tabutype = methodparms[row_id, 12]
 mlmodelname = methodparms[row_id, 13]
 partitionobjective = methodparms[row_id, 14]
+stationtostation_flag = methodparms[row_id, 15]
 minnumpods = targetnumpods - 10
 minnumorders = targetnumorders - 10
 minnumitems = targetnumitems - 10
@@ -151,7 +152,7 @@ println("Parameters read")
 
 #Files
 mlmodelfilename = string("models/", mlmodelname, ".jld2")
-outputfolder = string("outputs/run", run_id,"_", today())
+outputfolder = string("outputs/multistop/run", run_id,"_", today())
 globalsolutionfilename = string(outputfolder, "/output.csv")
 if !(isdir(outputfolder))
 	mkdir(outputfolder)
@@ -335,7 +336,7 @@ for s in 1:numpartitions
 		sp = constructsubproblem(currpartition, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, currsol)
 
 		#Re-optimize subproblem
-		sp_obj, sp_solvetime, h_sp, y_sp, z_sp, f_sp, g_sp, v_sp, feasibleflag_sp = reoptimizesubproblem(sp, currsol, currpartition)
+		sp_obj, sp_solvetime, h_sp, y_sp, z_sp, f_sp, g_sp, v_sp, feasibleflag_sp = reoptimizesubproblem(sp, currsol, currpartition, 0)
 		println("Re-opt time = ", sp_solvetime, " seconds")
 
 		#Update solution
@@ -370,9 +371,49 @@ for s in 1:numpartitions
 
 end
 
+#workstationviz(string(visualizationfolder,"/station_partition", 1,"_initial.png"), partitioninfo[1], partitionsolution[1])
+
 #-----------------------------------------------------------------------------------#
 
+include("scripts/decomposition/writeglobalsolutionoutputs.jl")
 writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 
 # writepickdistrib(string(outputfolder,"/pickdistrib.csv"), globalsolution)
 # writedistancedistrib(string(outputfolder,"/distdistrib.csv"), globalsolution)
+
+#-----------------------------------------------------------------------------------#
+
+println("Done!")
+
+#-----------------------------------------------------------------------------------#
+
+#=
+include("scripts/visualizations/timespacenetworkviz.jl")
+numlocs = maximum(workstations)
+for p in partitioninfo[1].pods
+	wtowarcs = [a for a in 1:numarcs if (nodelookup[arclookup[a][1]][1] in workstations) & (nodelookup[arclookup[a][2]][1] in workstations) & (nodelookup[arclookup[a][1]][1] != nodelookup[arclookup[a][2]][1])]
+	tsnarcs = setdiff(podarcset[p], wtowarcs)
+
+	arclistlist = [tsnarcs, wtowarcs]
+	colorlist = [(150,150,150), (255,0,0)]
+	thicknesslist = [5,8]
+	dashlist = ["solid", "solid"]
+	fractlist = [0,0]
+	timespacenetwork(string(visualizationfolder, "/tsn_pod", p,".png"), arclistlist, colorlist, thicknesslist, dashlist, fractlist, 4000, 2000)
+end
+
+for p in partitioninfo[1].pods
+	p=48
+	wtowarcs = [a for a in 1:numarcs if (nodelookup[arclookup[a][1]][1] in workstations) & (nodelookup[arclookup[a][2]][1] in workstations) & (nodelookup[arclookup[a][1]][1] != nodelookup[arclookup[a][2]][1])]
+	tsnarcs = setdiff(podarcset[p], wtowarcs)
+	usedarcs = [a for a in podarcset[p] if partitionsolution[1].y[p,a] > 1e-4]
+
+	arclistlist = [tsnarcs, wtowarcs, usedarcs]
+	colorlist = [(180,180,180), (180,180,180), (132,14,14)]
+	thicknesslist = [3,3,10]
+	dashlist = ["solid", "solid", "solid"]
+	fractlist = [0,0,0]
+	timespacenetwork(string(visualizationfolder, "/tsn_pod", p,"_path.png"), arclistlist, colorlist, thicknesslist, dashlist, fractlist, 4000, 2000)
+end
+=#
+

@@ -2,7 +2,9 @@
 function writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 
 	objective, solve_time, solvetime_init, solvetime_sp, time_utilization, throughput_utilization, bestthroughput_utilization, total_orders_worked, total_orders_completed, congestion_utilization, max_congestion, pods_used, unique_pods_used, items_picked_per_pod, pod_distance_travelled, order_open_time_per_item, orders_size_1, orders_size_2, orders_size_3, orders_size_4, orders_size_5, orders_size_6, orders_size_7, orders_size_8, orders_size_9, orders_size_10, orders_size_large = zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1)
+	totalpodtrips, totalpodstops, multistoptrips, multistoppods, multitrippods, usefulitemsperpod = zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1)
 
+	usefulnumerator, usefuldenominator = 0, 0
 	for s in 1:numpartitions
 		currpartition = partitioninfo[s]
 		objective[s] += sum(sum(length(partitionsolution[s].itempodpicklist[w,t]) for t in times) for w in currpartition.workstations)
@@ -62,8 +64,37 @@ function writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 		orders_size_9[s] = length([m for m in orderscompleted if length(itemson[m]) == 9])
 		orders_size_10[s] = length([m for m in orderscompleted if length(itemson[m]) == 10])
 		orders_size_large[s] = length([m for m in orderscompleted if length(itemson[m]) >= 11])
+	
+		#Reporting for multi-stop analysis
+		totalstopsperpod_dict = Dict()
+		totaltripsperpod_dict = Dict()
+		for p in currpartition.pods
+			totalstopsperpod_dict[p] = 0
+			totaltripsperpod_dict[p] = sum(sum(partitionsolution[s].y[p,a] for a in intersect(A_plus[extendednodes[podstorageloc[p],t]], A_space, podarcset[p])) for t in -tstep:tstep:horizon) 
+		end
+		for t in times, w in currpartition.workstations, p in unique([p[3] for p in [item for item in partitionsolution[s].itempodpicklist[w,t]]]) #p in partitionsolution[s].podsworkedat[w,t]
+			totalstopsperpod_dict[p] += 1
+		end
+		for p in currpartition.pods
+			totaltripsperpod_dict[p] = min(totaltripsperpod_dict[p], totalstopsperpod_dict[p])
+		end
+		totalstopsperpod = collect(values(totalstopsperpod_dict))
+		totaltripsperpod = collect(values(totaltripsperpod_dict)) #[sum(sum(partitionsolution[s].y[p,a] for a in intersect(A_plus[nodes[podstorageloc[p],t]], A_space)) for t in times) for p in currpartition.pods]
+
+		totalpodtrips[s] += sum(totaltripsperpod)
+		totalpodstops[s] += sum(totalstopsperpod) 
+		multistoptrips[s] += totalpodstops[s] - totalpodtrips[s]
+		multistoppods[s] += length([p for p in pods if totalstopsperpod_dict[p] >= 2])
+		multitrippods[s] += length([p for p in pods if totaltripsperpod_dict[p] >= 2])
+
+		#Useful items
+		usefulitems = [length(intersect(items, podstartinventory[p])) for p in currpartition.pods]
+		usefulitemsperpod[s] += sum(usefulitems) / sum(num_items_per_pod for p in currpartition.pods)
+		usefulnumerator += sum(usefulitems) 
+		usefuldenominator += sum(num_items_per_pod for p in currpartition.pods)
 
 	end
+	usefulitemsperpod[numpartitions+1] += usefulnumerator / usefuldenominator
 
 	df = DataFrame(
 			row_id = [row_id for s in 1:numpartitions+1],
@@ -87,7 +118,7 @@ function writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 			congestion_utilization = congestion_utilization,
 			max_congestion = max_congestion,
 			pods_used = pods_used,
-			unique_pods_used  = unique_pods_used,
+			unique_pods_used = unique_pods_used,
 			items_picked_per_pod = items_picked_per_pod,
 			pod_distance_travelled = pod_distance_travelled,
 			order_open_time_per_item = order_open_time_per_item,
@@ -101,7 +132,13 @@ function writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 			orders_size_8 = orders_size_8,
 			orders_size_9 = orders_size_9,
 			orders_size_10 = orders_size_10,
-			orders_size_large = orders_size_large
+			orders_size_large = orders_size_large,
+			totalpodtrips = totalpodtrips, 
+			totalpodstops = totalpodstops, 
+			multistoptrips = multistoptrips, 
+			multistoppods = multistoppods, 
+			multitrippods = multitrippods,
+			usefulitemsperpod = usefulitemsperpod
 		)
 
 	CSV.write(globalsolutionfilename, df, append=true)
@@ -148,7 +185,13 @@ function writeglobalsolutionoutputs_init(globalsolutionfilename)
 			orders_size_8 = [],
 			orders_size_9 = [],
 			orders_size_10 = [],
-			orders_size_large = []
+			orders_size_large = [],
+			totalpodtrips = [], 
+			totalpodstops = [], 
+			multistoptrips = [], 
+			multistoppods = [], 
+			multitrippods = [],
+			usefulitemsperpod = []
 		)
 
 	CSV.write(globalsolutionfilename, df)
@@ -229,7 +272,13 @@ function writeglobalsolutionoutputs_iter(sp_iter, inittime, iterationtime, spsel
 			orders_size_8 = length([m for m in orderscompleted if length(itemson[m]) == 8]),
 			orders_size_9 = length([m for m in orderscompleted if length(itemson[m]) == 9]),
 			orders_size_10 = length([m for m in orderscompleted if length(itemson[m]) == 10]),
-			orders_size_large = length([m for m in orderscompleted if length(itemson[m]) >= 11])
+			orders_size_large = length([m for m in orderscompleted if length(itemson[m]) >= 11]),
+			totalpodtrips = [0], 
+			totalpodstops = [0], 
+			multistoptrips = [0], 
+			multistoppods = [0], 
+			multitrippods = [0],
+			usefulitemsperpod = [0]
 		)	
 
 	CSV.write(globalsolutionfilename, df, append=true)

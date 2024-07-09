@@ -1,4 +1,4 @@
-experiment,warehouse,random_seed,horizon_start,horizon_end,workstationsperpartition
+test_instance_id,warehouse_id,random_seed,horizon_start,horizon_end,workstationsperpartition
 1,1,28118,6300,7200,2
 2,1,29918,7200,8100,2
 3,1,40835,8100,9000,2
