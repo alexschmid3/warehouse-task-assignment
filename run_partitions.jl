@@ -48,7 +48,7 @@ const GRB_ENV = Gurobi.Env()
 # Select the instancecd
 row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
-testingparamsfilename = "data/test_instance_parameters.csv"
+testingparamsfilename = "data/decomp_instance_parameters.csv"
 methodparamsfilename = "data/extensions/multistop/test_run_parameters.csv"
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 testingparms = CSV.read(testingparamsfilename, DataFrame)
