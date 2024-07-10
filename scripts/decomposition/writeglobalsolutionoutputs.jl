@@ -32,8 +32,10 @@ function writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 
 		intindices, timeindices = [maps.mapintersectiontorow[i] for i in currpartition.intersections], [maps.maptimetocolumn[t] for t in 0:congestiontstep:horizon]
 		allcongestionvalues = sum(currcong[p][intindices, timeindices] for p in currpartition.pods)
-		congestion_utilization[s] += mean(allcongestionvalues)
-		max_congestion[s] += maximum(allcongestionvalues) 
+		allcongestionmaxes = map(Int, (intersectionmaxpods[l] for l=currpartition.intersections, j=1:length(0:congestiontstep:horizon))) 
+		congestionutilization = allcongestionvalues ./ allcongestionmaxes
+		congestion_utilization[s] += sum(allcongestionvalues) / sum(allcongestionmaxes)
+		max_congestion[s] += maximum(congestionutilization) 
 
 		pods_used[s] += length(podsworked)
 		unique_pods_used[s] += length(unique!(podsworked))
@@ -219,6 +221,8 @@ function writeglobalsolutionoutputs_iter(sp_iter, inittime, iterationtime, spsel
 	orderscompleted = [m for m in ordersworked if itemsdone[m] >= length(itemson[m])]
 	intindices, timeindices = [maps.mapintersectiontorow[i] for i in currpartition.intersections], [maps.maptimetocolumn[t] for t in 0:congestiontstep:horizon]
 	allcongestionvalues = sum(currcong[p][intindices, timeindices] for p in currpartition.pods)
+	allcongestionmaxes = map(Int, (intersectionmaxpods[l] for l=currpartition.intersections, j=1:length(0:congestiontstep:horizon))) 
+	congestionutilization = allcongestionvalues ./ allcongestionmaxes	
 	orderopentime = Dict()
 	for m in currpartition.orders
 		orderopentime[m] = 0
@@ -255,8 +259,8 @@ function writeglobalsolutionoutputs_iter(sp_iter, inittime, iterationtime, spsel
 			bestthroughput_utilization = [(podprocesstime * sum(sum(min(1,length(currsol.podsworkedat[w,t])) for t in times) for w in currpartition.workstations) + itemprocesstime * sum(sum(length(currsol.itempodpicklist[w,t]) for t in times) for w in currpartition.workstations)) / (horizon * length(currpartition.workstations))],
 			total_orders_worked = [length(ordersworked)],
 			total_orders_completed = [length(orderscompleted)],
-			congestion_utilization = [mean(allcongestionvalues)],
-			max_congestion = [maximum(allcongestionvalues)],
+			congestion_utilization = [ sum(allcongestionvalues) / sum(allcongestionmaxes)],
+			max_congestion = [maximum(congestionutilization)],
 			pods_used = [length(podsworked)],
 			unique_pods_used  = [length(unique!(podsworked))],
 			items_picked_per_pod = [objective / length(podsworked)],

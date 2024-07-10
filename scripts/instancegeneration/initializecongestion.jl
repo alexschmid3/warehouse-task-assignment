@@ -123,10 +123,21 @@ function getrelevantintersections()
 
 	relevantintersections = Dict() 
 
+	#From storage to workstation queue
 	for int1 in setdiff(intersections,queueintersections), int2 in intersect(intersections,queueintersections)
 		relevantintersections[int1, int2] = []
 		for i in union(setdiff(intersections, queueintersections), int2)
 			if (intcoords[i][1] >= min(intcoords[int1][1], intcoords[int2][1])) & (intcoords[i][1] <= max(intcoords[int1][1], intcoords[int2][1])) & (intcoords[i][2] >= min(intcoords[int1][2], intcoords[int2][2])) & (intcoords[i][2] <= max(intcoords[int1][2], intcoords[int2][2]))
+				push!(relevantintersections[int1, int2], i)
+			end
+		end
+	end
+
+	#From workstation queue to workstation queue
+	for int1 in intersect(intersections,queueintersections), int2 in setdiff(intersect(intersections,queueintersections), int1)
+		relevantintersections[int1, int2] = [int1, int2]
+		for i in setdiff(intersections, queueintersections) #Find any highway intersections between the queues
+			if (intcoords[i][1] >= min(intcoords[int1][1], intcoords[int2][1])) & (intcoords[i][1] <= max(intcoords[int1][1], intcoords[int2][1])) & (abs(intcoords[i][2] - intcoords[int1][2]) <= 5)
 				push!(relevantintersections[int1, int2], i)
 			end
 		end
@@ -175,6 +186,12 @@ function trafficcontributioncalc()
 		end
 		trafficcontribution[int1,int2,int2] = 1.0
 	end
+	for int1 in intersect(intersections,queueintersections), int2 in setdiff(intersect(intersections,queueintersections), int1)
+		for int3 in setdiff(relevantintersections[int1,int2], int2)
+			trafficcontribution[int1,int2,int3] = 1.0
+		end
+		trafficcontribution[int1,int2,int2] = 1.0
+	end	
 
 	return trafficcontribution, traveltimeraw, relevantintersections
 
@@ -207,6 +224,28 @@ function createcongestionsignatures(maps)
 
 				congestionsignature[a1][int3_index, t1_index] = trafficcontribution[int1, int2, int3]
 				if !(int3 in queueintersections)
+					congestionsignature[a2][int3_index, t2_index] = trafficcontribution[int1, int2, int3]
+				end
+			end
+		end
+	end
+
+	for w1 in workstations, w2 in [w for w in workstations if w<w1]
+		int1, int2 = maploctointersection[w1], maploctointersection[w2]
+		for t in 0:tstep:horizon-arclength[w1,w2]
+			a1 = arcs[nodes[w1, t], nodes[w2, t + arclength[w1,w2]]]
+			a2 = arcs[nodes[w2, t], nodes[w1, t + arclength[w2,w1]]]
+
+			for int3 in intersect(relevantintersections[int1, int2], intersections)
+				tt_in = convert(Int64, floor(traveltimeraw[int1, int3]/congestiontstep) * congestiontstep)
+				tt_out = convert(Int64, floor(traveltimeraw[int3, int2]/congestiontstep) * congestiontstep)
+
+				int3_index = maps.mapintersectiontorow[int3]
+				t1_index = maps.maptimetocolumn[t+tt_in]
+				t2_index = maps.maptimetocolumn[t+tt_out]
+
+				congestionsignature[a1][int3_index, t1_index] = trafficcontribution[int1, int2, int3]
+				if !(int3 == int2)
 					congestionsignature[a2][int3_index, t2_index] = trafficcontribution[int1, int2, int3]
 				end
 			end
