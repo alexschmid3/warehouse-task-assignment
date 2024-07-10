@@ -102,14 +102,14 @@ function maximizesynergyoforderassignments(partitionobjective, beta, features, f
 	#====================================================#
 
 	if (termination_status(model) == MOI.OPTIMAL) || ((termination_status(model) == MOI.TIME_LIMIT) && (has_values(model)))
-		return value.(x)
+		return value.(x), solve_time(model)
 	elseif (termination_status(model) == MOI.INFEASIBLE) #|| (termination_status(model) == MOI.INF_OR_UNBD)
 		println("Infeasible SP selection!")
-		return None
+		return None, 0
 	else
 		println("No solution found!")
 		println(termination_status(model))
-		return None
+		return None, 0
 	end
 
 end
@@ -178,7 +178,7 @@ end
 function decomposeproblem(stationsperpartition, partitionobjective, beta, features, featureinfo, featurenums)
 
 	numpartitions, partitions, stationsin, storagelocsin, intersectionsin, podsin = createproblempartitions(stationsperpartition)
-	orderassignments = maximizesynergyoforderassignments(partitionobjective, beta, features, featureinfo, featurenums, numpartitions, partitions, stationsin, podsin)
+	orderassignments, partitionsolvetime = maximizesynergyoforderassignments(partitionobjective, beta, features, featureinfo, featurenums, numpartitions, partitions, stationsin, podsin)
 	ordersin, unassignedorders, itemsin = distributeordersbysynergy(orderassignments, partitions, numpartitions)
 	podswith_s, allitemsin = additionalsets(podsin, partitions)
 
@@ -194,7 +194,7 @@ function decomposeproblem(stationsperpartition, partitionobjective, beta, featur
 	allitems=allitems, items=items)
 	push!(partitioninfo, part)
 
-	return numpartitions, partitions, partitioninfo, globalpartitionid
+	return numpartitions, partitions, partitioninfo, globalpartitionid, partitionsolvetime
 
 end
 

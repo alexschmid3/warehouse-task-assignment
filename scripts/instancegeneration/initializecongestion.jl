@@ -230,23 +230,25 @@ function createcongestionsignatures(maps)
 		end
 	end
 
-	for w1 in workstations, w2 in [w for w in workstations if w<w1]
-		int1, int2 = maploctointersection[w1], maploctointersection[w2]
-		for t in 0:tstep:horizon-arclength[w1,w2]
-			a1 = arcs[nodes[w1, t], nodes[w2, t + arclength[w1,w2]]]
-			a2 = arcs[nodes[w2, t], nodes[w1, t + arclength[w2,w1]]]
+	if stationtostation_flag == 1
+		for w1 in workstations, w2 in [w for w in workstations if w<w1]
+			int1, int2 = maploctointersection[w1], maploctointersection[w2]
+			for t in 0:tstep:horizon-arclength[w1,w2]
+				a1 = arcs[nodes[w1, t], nodes[w2, t + arclength[w1,w2]]]
+				a2 = arcs[nodes[w2, t], nodes[w1, t + arclength[w2,w1]]]
 
-			for int3 in intersect(relevantintersections[int1, int2], intersections)
-				tt_in = convert(Int64, floor(traveltimeraw[int1, int3]/congestiontstep) * congestiontstep)
-				tt_out = convert(Int64, floor(traveltimeraw[int3, int2]/congestiontstep) * congestiontstep)
+				for int3 in intersect(relevantintersections[int1, int2], intersections)
+					tt_in = convert(Int64, floor(traveltimeraw[int1, int3]/congestiontstep) * congestiontstep)
+					tt_out = convert(Int64, floor(traveltimeraw[int3, int2]/congestiontstep) * congestiontstep)
 
-				int3_index = maps.mapintersectiontorow[int3]
-				t1_index = maps.maptimetocolumn[t+tt_in]
-				t2_index = maps.maptimetocolumn[t+tt_out]
+					int3_index = maps.mapintersectiontorow[int3]
+					t1_index = maps.maptimetocolumn[t+tt_in]
+					t2_index = maps.maptimetocolumn[t+tt_out]
 
-				congestionsignature[a1][int3_index, t1_index] = trafficcontribution[int1, int2, int3]
-				if !(int3 == int2)
-					congestionsignature[a2][int3_index, t2_index] = trafficcontribution[int1, int2, int3]
+					congestionsignature[a1][int3_index, t1_index] = trafficcontribution[int1, int2, int3]
+					if !(int3 == int2)
+						congestionsignature[a2][int3_index, t2_index] = trafficcontribution[int1, int2, int3]
+					end
 				end
 			end
 		end

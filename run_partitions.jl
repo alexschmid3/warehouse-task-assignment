@@ -253,8 +253,12 @@ if visualizationflag == 1
 end
 
 #Decompose problem into partitions
-numpartitions, partitions, partitioninfo, globalpartitionid = decomposeproblem(stationsperpartition, partitionobjective, beta, features, featureinfo, featurenums)
+numpartitions, partitions, partitioninfo, globalpartitionid, partitionsolvetime = decomposeproblem(stationsperpartition, partitionobjective, beta, features, featureinfo, featurenums)
 globalpartition = partitioninfo[globalpartitionid]
+
+#Report 
+writeglobalsolutionoutputs_init(globalsolutionfilename)
+writeglobalsolutionoutputs_partitioning(partitionsolvetime)
 
 #Enumerate windows for the global partition
 windows_global, windowsduring_global, windowidlookup_global, windowscontaining_global = enumeratesubproblemwindows(globalpartition, 1, subproblemtimelength)
@@ -274,8 +278,8 @@ for s in 1:numpartitions
 	partitionsolution[s] = createemptysolution(currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations)
 end
 solvemetrics = (solve_time=zeros(numpartitions+1), solvetime_init=zeros(numpartitions+1), solvetime_spsel=zeros(numpartitions+1), solvetime_sp=zeros(numpartitions+1), lsnsiterations=zeros(numpartitions+1))
-writeglobalsolutionoutputs_init(globalsolutionfilename)
 
+#=
 #Solve each partition
 counter = 1
 for s in 1:numpartitions
@@ -383,7 +387,7 @@ writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 
 # writepickdistrib(string(outputfolder,"/pickdistrib.csv"), globalsolution)
 # writedistancedistrib(string(outputfolder,"/distdistrib.csv"), globalsolution)
-
+=#
 #-----------------------------------------------------------------------------------#
 
 println("Done!")

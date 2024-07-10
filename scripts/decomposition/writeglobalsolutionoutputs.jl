@@ -289,3 +289,57 @@ function writeglobalsolutionoutputs_iter(sp_iter, inittime, iterationtime, spsel
 
 end
 
+
+#-----------------------------------------------------------------------------------#
+
+function writeglobalsolutionoutputs_partitioning(partitionsolvetime)
+
+	df = DataFrame(
+			row_id = [row_id],
+			run_id = [run_id],
+			test_instance_id = [instance_id],
+			warehouse_id = [warehouse_id],
+			random_seed = [random_seed],
+			method = [methodname],
+			partition = ["global"],
+			lsnsiteration = ["partitioningproblem"],
+			objective = [0],
+			solve_time = [partitionsolvetime],
+			solvetime_init = [0],
+			solvetime_spselection = [0],
+			solvetime_spopt = [0],
+			time_utilization = [0],
+			throughput_utilization = [0],
+			bestthroughput_utilization = [0],
+			total_orders_worked = [0],
+			total_orders_completed = [0],
+			congestion_utilization = [0],
+			max_congestion = [0],
+			pods_used = [0],
+			unique_pods_used  = [0],
+			items_picked_per_pod = [0],
+			pod_distance_travelled = [0],
+			order_open_time_per_item = [0],
+			orders_size_1 = [0],
+			orders_size_2 = [0],
+			orders_size_3 = [0],
+			orders_size_4 = [0],
+			orders_size_5 = [0],
+			orders_size_6 = [0],
+			orders_size_7 = [0],
+			orders_size_8 = [0],
+			orders_size_9 = [0],
+			orders_size_10 = [0],
+			orders_size_large = [0],
+			totalpodtrips = [0], 
+			totalpodstops = [0], 
+			multistoptrips = [0], 
+			multistoppods = [0], 
+			multitrippods = [0],
+			usefulitemsperpod = [0]
+		)	
+
+	CSV.write(globalsolutionfilename, df, append=true)
+
+end
+
