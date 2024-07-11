@@ -43,7 +43,7 @@ function writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 		pod_distance_travelled[s] += totalpoddist
 
 		orderopentime = Dict()
-		for m in partitionsolution[s].orders
+		for m in currpartition.orders
 			orderopentime[m] = 1
 		end
 		for w in currpartition.workstations, t in times, m in partitionsolution[s].ordersopen[w,t] 

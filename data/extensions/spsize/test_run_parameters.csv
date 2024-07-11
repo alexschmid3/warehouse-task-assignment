@@ -25,7 +25,7 @@ run_id,test_instance_id,method,initialization,targetnumpods,targetnumorders,targ
 24,41,LTO,none,20,10,32,30,420,30,60,tabu15,mlmodel_wh5,none,0,3
 25,41,LTO,none,25,15,48,30,360,30,60,tabu15,mlmodel_wh5,none,0,1
 26,41,LTO,none,25,15,48,30,360,30,60,tabu15,mlmodel_wh5,none,0,2
-27,41,LTO,none,25,15,48,30,360,30,60,tabu15,mlmodel_wh5,none,0,3
+27,41,LTO,none,25,15,48,2,360,30,60,tabu15,mlmodel_wh5,none,0,3
 28,41,LTO,none,25,15,48,30,240,30,60,tabu15,mlmodel_wh5,none,0,1
 29,41,LTO,none,25,15,48,30,240,30,60,tabu15,mlmodel_wh5,none,0,2
 30,41,LTO,none,25,15,48,30,240,30,60,tabu15,mlmodel_wh5,none,0,3

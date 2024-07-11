@@ -1,5 +1,5 @@
 
-figuredirectory = string("outputs/combine")
+figuredirectory = string("outputs/multistop/newrun")
 
 #Get list of files
 folderlist = readdir(figuredirectory)

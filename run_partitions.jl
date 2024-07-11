@@ -307,7 +307,7 @@ for s in 1:numpartitions
 	end
 	writeglobalsolutionoutputs_iter("init", initializationtime, initializationtime, 0, 0, globalsolutionfilename, s, currpartition, currsol)
 	solvemetrics.solvetime_init[s] += initializationtime
-
+ 
 	#Find subproblem windows
 	windows, windowsduring, windowidlookup, windowscontaining = enumeratesubproblemwindows(currpartition, maxworkstationspersubproblem, subproblemtimelength)
 	if shortmethodname != "learnbench"
