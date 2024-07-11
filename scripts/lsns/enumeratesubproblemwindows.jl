@@ -6,8 +6,15 @@ function enumeratesubproblemwindows(partition, maxworkstationspersubproblem, sub
 	workstationgrouplist, timinglist = [], []
 
 	allsubsets = []
-	for sslength in 1:maxworkstationspersubproblem
-		allsubsets = union(allsubsets, collect(subsets(partition.workstations,sslength)))
+	targetnumworkstations
+	if methodparamsfilename == "data/spsize/multistop/test_run_parameters.csv"
+		allsubsets = union(allsubsets, collect(subsets(partition.workstations,targetnumworkstations)))
+		println("Station subsets = ", allsubsets)
+	else
+		for sslength in 1:maxworkstationspersubproblem
+			allsubsets = union(allsubsets, collect(subsets(partition.workstations,sslength)))
+		end
+		println("Station subsets = ", allsubsets)
 	end
 	for wlist in allsubsets, tstart in -tstep:60:horizon+tstep-ceil((subproblemtimelength/length(wlist))/tstep)*tstep
 		push!(workstationgrouplist, wlist)

@@ -48,8 +48,8 @@ const GRB_ENV = Gurobi.Env()
 # Select the instancecd
 row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
-testingparamsfilename = "data/decomp_instance_parameters.csv"
-methodparamsfilename = "data/extensions/multistop/test_run_parameters.csv"
+testingparamsfilename = "data/test_instance_parameters.csv"
+methodparamsfilename = "data/spsize/multistop/test_run_parameters.csv"
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 testingparms = CSV.read(testingparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
@@ -86,6 +86,7 @@ tabutype = methodparms[row_id, 12]
 mlmodelname = methodparms[row_id, 13]
 partitionobjective = methodparms[row_id, 14]
 stationtostation_flag = methodparms[row_id, 15]
+targetnumworkstations = methodparms[row_id, 16]
 minnumpods = targetnumpods - 10
 minnumorders = targetnumorders - 10
 minnumitems = targetnumitems - 10
@@ -155,7 +156,7 @@ println("Parameters read")
 
 #Files
 mlmodelfilename = string("models/", mlmodelname, ".jld2")
-outputfolder = string("outputs/multistop/run", run_id,"_", today())
+outputfolder = string("outputs/spsize/run", run_id,"_", today())
 globalsolutionfilename = string(outputfolder, "/output.csv")
 if !(isdir(outputfolder))
 	mkdir(outputfolder)
