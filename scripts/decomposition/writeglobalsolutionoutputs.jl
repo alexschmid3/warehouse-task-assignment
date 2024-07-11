@@ -86,8 +86,8 @@ function writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 		totalpodtrips[s] += sum(totaltripsperpod)
 		totalpodstops[s] += sum(totalstopsperpod) 
 		multistoptrips[s] += totalpodstops[s] - totalpodtrips[s]
-		multistoppods[s] += length([p for p in pods if totalstopsperpod_dict[p] >= 2])
-		multitrippods[s] += length([p for p in pods if totaltripsperpod_dict[p] >= 2])
+		multistoppods[s] += length([p for p in currpartition.pods if totalstopsperpod_dict[p] >= 2])
+		multitrippods[s] += length([p for p in currpartition.pods if totaltripsperpod_dict[p] >= 2])
 
 		#Useful items
 		usefulitems = [length(intersect(items, podstartinventory[p])) for p in currpartition.pods]
