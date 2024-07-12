@@ -1,7 +1,7 @@
 
 function writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 
-	objective, solve_time, solvetime_init, solvetime_sp, time_utilization, throughput_utilization, bestthroughput_utilization, total_orders_worked, total_orders_completed, congestion_utilization, max_congestion, pods_used, unique_pods_used, items_picked_per_pod, pod_distance_travelled, order_open_time_per_item, orders_size_1, orders_size_2, orders_size_3, orders_size_4, orders_size_5, orders_size_6, orders_size_7, orders_size_8, orders_size_9, orders_size_10, orders_size_large = zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1)
+	objective, full_solve_time, solvetime_init, solvetime_sp, time_utilization, throughput_utilization, bestthroughput_utilization, total_orders_worked, total_orders_completed, congestion_utilization, max_congestion, pods_used, unique_pods_used, items_picked_per_pod, pod_distance_travelled, order_open_time_per_item, orders_size_1, orders_size_2, orders_size_3, orders_size_4, orders_size_5, orders_size_6, orders_size_7, orders_size_8, orders_size_9, orders_size_10, orders_size_large = zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1)
 	totalpodtrips, totalpodstops, multistoptrips, multistoppods, multitrippods, usefulitemsperpod = zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1), zeros(numpartitions+1)
 
 	usefulnumerator, usefuldenominator = 0, 0
@@ -106,9 +106,9 @@ function writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 			random_seed = [random_seed for s in 1:numpartitions+1],
 			method = [methodname for s in 1:numpartitions+1],
 			partition = union([string(s) for s in 1:numpartitions], ["global"]),
-			lsnsiteration = union(["summary" for p in 1:numpartitions], [string(20)]),
+			lsnsiteration = push!(["summary" for p in 1:numpartitions], string(20)),
 			objective = objective,
-			solve_time = solvemetrics.solve_time,
+			full_solve_time = solvemetrics.solve_time,
 			solvetime_init = solvemetrics.solvetime_init,
 			solvetime_spselection = solvemetrics.solvetime_spsel,
 			solvetime_spopt = solvemetrics.solvetime_sp,
@@ -161,7 +161,7 @@ function writeglobalsolutionoutputs_init(globalsolutionfilename)
 			partition = [],
 			lsnsiteration = [],
 			objective = [],
-			solve_time = [],
+			full_solve_time = [],
 			solvetime_init = [],
 			solvetime_spselection = [],
 			solvetime_spopt = [],
@@ -250,7 +250,7 @@ function writeglobalsolutionoutputs_iter(sp_iter, inittime, iterationtime, spsel
 			partition = [string(s)],
 			lsnsiteration = [sp_iter],
 			objective = [objective],
-			solve_time = [iterationtime],
+			full_solve_time = [iterationtime],
 			solvetime_init = [inittime],
 			solvetime_spselection = [spselectiontime],
 			solvetime_spopt = [sp_solvetime],
@@ -304,7 +304,7 @@ function writeglobalsolutionoutputs_partitioning(partitionsolvetime)
 			partition = ["global"],
 			lsnsiteration = ["partitioningproblem"],
 			objective = [0],
-			solve_time = [partitionsolvetime],
+			full_solve_time = [partitionsolvetime],
 			solvetime_init = [0],
 			solvetime_spselection = [0],
 			solvetime_spopt = [0],
