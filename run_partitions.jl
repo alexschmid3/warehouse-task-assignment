@@ -156,7 +156,7 @@ println("Parameters read")
 
 #Files
 mlmodelfilename = string("models/", mlmodelname, ".jld2")
-outputfolder = string("outputs/spsize/run", run_id,"_", today())
+outputfolder = string("outputs/multistop/run", run_id,"_", today())
 globalsolutionfilename = string(outputfolder, "/output.csv")
 if !(isdir(outputfolder))
 	mkdir(outputfolder)
