@@ -423,7 +423,7 @@ function podarcsets(items, arclength)
 
 	#Stationary arcs
 	if anystoragelocation_flag == 1
-		for p in pods, s in storagelocations, t in 0:tstep:horizon-tstep
+		for p in pods, s in storagelocs, t in 0:tstep:horizon-tstep
 			a = arcs[nodes[s, t], nodes[s, t + tstep]]
 			
 			push!(podarcset[p], a)

@@ -95,7 +95,7 @@ numhyperlocalintersections = 3
 maxworkstationspersubproblem = 2
 windowforcingflag, maxtabu, lastoptpenaltyflag = parsetabucodes(tabutype)
 shortmethodname, subproblembudget = parsemethodname(methodname)
-anystoragelocation_flag = 1
+anystoragelocation_flag = 0
 
 # Parameter Descriptions:
 # ==========================================
