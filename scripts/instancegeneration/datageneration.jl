@@ -127,8 +127,8 @@ function Inventory(N, n, Pods, Seed)
     
     #Assume there is inventory of one of at least everything
     for i = 1:N
-            Items.Item[i] = i
-            Items.Inventory[i] = 1
+        Items.Item[i] = i
+        Items.Inventory[i] = 1
     end
     
     #The rest is based on the normal distribution draws.

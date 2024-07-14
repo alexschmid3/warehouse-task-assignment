@@ -373,19 +373,35 @@ function podarcsets(items, arclength)
 	end
 	
 	#Movement arcs
-	for p in pods, w in workstations, t in 0:tstep:horizon-arclength[podstorageloc[p], w]
-		s = podstorageloc[p]
-		a_leave = arcs[nodes[s, t], nodes[w, t + arclength[s, w]]]
-		a_return = arcs[nodes[w, t], nodes[s, t + arclength[w, s]]]
-		
-		push!(podarcset[p], a_leave)
-		push!(podarcset[p], a_return)
-		push!(arcpodset[a_leave], p)
-		push!(arcpodset[a_return], p)
-		push!(A_plus_p[p, nodes[s, t]], a_leave)
-		push!(A_plus_p[p, nodes[w, t]], a_return)
-		push!(A_minus_p[p, nodes[w, t + arclength[s, w]]], a_leave)
-		push!(A_minus_p[p,nodes[s, t + arclength[w, s]]], a_return)
+	if anystoragelocation_flag == 1
+		for p in pods, w in workstations, s in storagelocs, t in 0:tstep:horizon-arclength[s, w]
+			a_leave = arcs[nodes[s, t], nodes[w, t + arclength[s, w]]]
+			a_return = arcs[nodes[w, t], nodes[s, t + arclength[w, s]]]
+			
+			push!(podarcset[p], a_leave)
+			push!(podarcset[p], a_return)
+			push!(arcpodset[a_leave], p)
+			push!(arcpodset[a_return], p)
+			push!(A_plus_p[p, nodes[s, t]], a_leave)
+			push!(A_plus_p[p, nodes[w, t]], a_return)
+			push!(A_minus_p[p, nodes[w, t + arclength[s, w]]], a_leave)
+			push!(A_minus_p[p,nodes[s, t + arclength[w, s]]], a_return)
+		end
+	else
+		for p in pods, w in workstations, t in 0:tstep:horizon-arclength[podstorageloc[p], w]
+			s = podstorageloc[p]
+			a_leave = arcs[nodes[s, t], nodes[w, t + arclength[s, w]]]
+			a_return = arcs[nodes[w, t], nodes[s, t + arclength[w, s]]]
+			
+			push!(podarcset[p], a_leave)
+			push!(podarcset[p], a_return)
+			push!(arcpodset[a_leave], p)
+			push!(arcpodset[a_return], p)
+			push!(A_plus_p[p, nodes[s, t]], a_leave)
+			push!(A_plus_p[p, nodes[w, t]], a_return)
+			push!(A_minus_p[p, nodes[w, t + arclength[s, w]]], a_leave)
+			push!(A_minus_p[p,nodes[s, t + arclength[w, s]]], a_return)
+		end
 	end
 
 	#Station to station arcs
@@ -406,22 +422,42 @@ function podarcsets(items, arclength)
 	end
 
 	#Stationary arcs
-	for p in pods, t in 0:tstep:horizon-tstep
-		s = podstorageloc[p]
-		a = arcs[nodes[s, t], nodes[s, t + tstep]]
-		
-		push!(podarcset[p], a)
-		push!(arcpodset[a], p)
-		push!(A_plus_p[p, nodes[s, t]], a)
-		push!(A_minus_p[p,nodes[s, t + tstep]], a)
-
-		for w in workstations
-			a = arcs[nodes[w, t], nodes[w, t + tstep]]
+	if anystoragelocation_flag == 1
+		for p in pods, s in storagelocations, t in 0:tstep:horizon-tstep
+			a = arcs[nodes[s, t], nodes[s, t + tstep]]
 			
 			push!(podarcset[p], a)
 			push!(arcpodset[a], p)
-			push!(A_plus_p[p, nodes[w, t]], a)
-			push!(A_minus_p[p,nodes[w, t + tstep]], a)
+			push!(A_plus_p[p, nodes[s, t]], a)
+			push!(A_minus_p[p,nodes[s, t + tstep]], a)
+
+			for w in workstations
+				a = arcs[nodes[w, t], nodes[w, t + tstep]]
+				
+				push!(podarcset[p], a)
+				push!(arcpodset[a], p)
+				push!(A_plus_p[p, nodes[w, t]], a)
+				push!(A_minus_p[p,nodes[w, t + tstep]], a)
+			end
+		end
+	else
+		for p in pods, t in 0:tstep:horizon-tstep
+			s = podstorageloc[p]
+			a = arcs[nodes[s, t], nodes[s, t + tstep]]
+			
+			push!(podarcset[p], a)
+			push!(arcpodset[a], p)
+			push!(A_plus_p[p, nodes[s, t]], a)
+			push!(A_minus_p[p,nodes[s, t + tstep]], a)
+
+			for w in workstations
+				a = arcs[nodes[w, t], nodes[w, t + tstep]]
+				
+				push!(podarcset[p], a)
+				push!(arcpodset[a], p)
+				push!(A_plus_p[p, nodes[w, t]], a)
+				push!(A_minus_p[p,nodes[w, t + tstep]], a)
+			end
 		end
 	end
 
@@ -443,39 +479,75 @@ function podarcsets(items, arclength)
 			push!(A_minus_p[p, extendednodes[s, t2]], a_return)
 		end
 	end
-	for p in pods, w in workstations, t in [dummyendtime]
-		s = podstorageloc[p]
-		podtostationtime = arclength[s, w]
-		for t1 in dummyendtime-podtostationtime:tstep:horizon
-			a_leave = extendedarcs[extendednodes[s, t1], extendednodes[w, t]]
-			a_return = extendedarcs[extendednodes[w, t1], extendednodes[s, t]]
-			
-			push!(podarcset[p], a_leave)
-			push!(podarcset[p], a_return)
-			push!(arcpodset[a_leave], p)
-			push!(arcpodset[a_return], p)
-			push!(A_plus_p[p, extendednodes[s, t1]], a_leave)
-			push!(A_plus_p[p, extendednodes[w, t1]], a_return)
-			push!(A_minus_p[p, extendednodes[w, t]], a_leave)
-			push!(A_minus_p[p, extendednodes[s, t]], a_return)
+	if anystoragelocation_flag == 1
+		for p in pods, w in workstations, t in [dummyendtime], s in storagelocs
+			podtostationtime = arclength[s, w]
+			for t1 in dummyendtime-podtostationtime:tstep:horizon
+				a_leave = extendedarcs[extendednodes[s, t1], extendednodes[w, t]]
+				a_return = extendedarcs[extendednodes[w, t1], extendednodes[s, t]]
+				
+				push!(podarcset[p], a_leave)
+				push!(podarcset[p], a_return)
+				push!(arcpodset[a_leave], p)
+				push!(arcpodset[a_return], p)
+				push!(A_plus_p[p, extendednodes[s, t1]], a_leave)
+				push!(A_plus_p[p, extendednodes[w, t1]], a_return)
+				push!(A_minus_p[p, extendednodes[w, t]], a_leave)
+				push!(A_minus_p[p, extendednodes[s, t]], a_return)
+			end
 		end
-	end
-	for p in pods, t in [dummystarttime, horizon]
-		s = podstorageloc[p]
-		a = extendedarcs[extendednodes[s, t], extendednodes[s, t + tstep]]
-		
-		push!(podarcset[p], a)
-		push!(arcpodset[a], p)
-		push!(A_plus_p[p, extendednodes[s, t]], a)
-		push!(A_minus_p[p,extendednodes[s, t + tstep]], a)
-
-		for w in workstations
-			a = extendedarcs[extendednodes[w, t], extendednodes[w, t + tstep]]
+		for p in pods, t in [dummystarttime, horizon], s in storagelocs
+			a = extendedarcs[extendednodes[s, t], extendednodes[s, t + tstep]]
 			
 			push!(podarcset[p], a)
 			push!(arcpodset[a], p)
-			push!(A_plus_p[p, extendednodes[w, t]], a)
-			push!(A_minus_p[p,extendednodes[w, t + tstep]], a)
+			push!(A_plus_p[p, extendednodes[s, t]], a)
+			push!(A_minus_p[p,extendednodes[s, t + tstep]], a)
+
+			for w in workstations
+				a = extendedarcs[extendednodes[w, t], extendednodes[w, t + tstep]]
+				
+				push!(podarcset[p], a)
+				push!(arcpodset[a], p)
+				push!(A_plus_p[p, extendednodes[w, t]], a)
+				push!(A_minus_p[p,extendednodes[w, t + tstep]], a)
+			end
+		end
+	else
+		for p in pods, w in workstations, t in [dummyendtime]
+			s = podstorageloc[p]
+			podtostationtime = arclength[s, w]
+			for t1 in dummyendtime-podtostationtime:tstep:horizon
+				a_leave = extendedarcs[extendednodes[s, t1], extendednodes[w, t]]
+				a_return = extendedarcs[extendednodes[w, t1], extendednodes[s, t]]
+				
+				push!(podarcset[p], a_leave)
+				push!(podarcset[p], a_return)
+				push!(arcpodset[a_leave], p)
+				push!(arcpodset[a_return], p)
+				push!(A_plus_p[p, extendednodes[s, t1]], a_leave)
+				push!(A_plus_p[p, extendednodes[w, t1]], a_return)
+				push!(A_minus_p[p, extendednodes[w, t]], a_leave)
+				push!(A_minus_p[p, extendednodes[s, t]], a_return)
+			end
+		end
+		for p in pods, t in [dummystarttime, horizon]
+			s = podstorageloc[p]
+			a = extendedarcs[extendednodes[s, t], extendednodes[s, t + tstep]]
+			
+			push!(podarcset[p], a)
+			push!(arcpodset[a], p)
+			push!(A_plus_p[p, extendednodes[s, t]], a)
+			push!(A_minus_p[p,extendednodes[s, t + tstep]], a)
+
+			for w in workstations
+				a = extendedarcs[extendednodes[w, t], extendednodes[w, t + tstep]]
+				
+				push!(podarcset[p], a)
+				push!(arcpodset[a], p)
+				push!(A_plus_p[p, extendednodes[w, t]], a)
+				push!(A_minus_p[p,extendednodes[w, t + tstep]], a)
+			end
 		end
 	end
 	
