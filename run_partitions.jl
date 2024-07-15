@@ -46,10 +46,10 @@ debugmode = 0					# 1 --> will perform solution consistency unit tests at each L
 const GRB_ENV = Gurobi.Env()
 
 # Select the instancecd
-row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
+row_id = 303 # ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
-testingparamsfilename = "data/decomp_instance_parameters.csv"
-methodparamsfilename = "data/extensions/multistop/test_run_parameters.csv"
+testingparamsfilename = "data/test_instance_parameters.csv"
+methodparamsfilename = "data/test_run_parameters.csv"
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 testingparms = CSV.read(testingparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
@@ -93,6 +93,7 @@ minnumitems = targetnumitems - 10
 numlocalintersections = 6
 numhyperlocalintersections = 3 
 maxworkstationspersubproblem = 2
+
 windowforcingflag, maxtabu, lastoptpenaltyflag = parsetabucodes(tabutype)
 shortmethodname, subproblembudget = parsemethodname(methodname)
 anystoragelocation_flag = 0
@@ -157,7 +158,7 @@ println("Parameters read")
 
 #Files
 mlmodelfilename = string("models/", mlmodelname, ".jld2")
-outputfolder = string("outputs/multistop/run", run_id,"_", today())
+outputfolder = string("outputs/generatefigures/congestionhist/run", run_id,"_", today())
 globalsolutionfilename = string(outputfolder, "/output.csv")
 if !(isdir(outputfolder))
 	mkdir(outputfolder)
@@ -280,7 +281,6 @@ for s in 1:numpartitions
 	partitionsolution[s] = createemptysolution(currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations)
 end
 solvemetrics = (solve_time=zeros(numpartitions+1), solvetime_init=zeros(numpartitions+1), solvetime_spsel=zeros(numpartitions+1), solvetime_sp=zeros(numpartitions+1), lsnsiterations=zeros(numpartitions+1))
-
 
 #Solve each partition
 counter = 1
