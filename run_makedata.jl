@@ -32,10 +32,10 @@ include("scripts/lsns/subproblemselection/selectlearnthenoptimizesubproblem.jl")
 include("scripts/lsns/subproblemselection/selectlearningbenchmarksubproblem.jl")
 include("scripts/test/checksolution.jl")
 include("scripts/figures/histograms.jl")
-include("scripts/training/findimpactordersandpods.jl")
-include("scripts/training/getfeatures.jl")
-include("scripts/training/staticfeatures.jl")
-include("scripts/training/savesubproblembuild.jl")
+include("scripts/training/datageneration/findimpactordersandpods.jl")
+include("scripts/training/datageneration/getfeatures.jl")
+include("scripts/training/datageneration/staticfeatures.jl")
+include("scripts/training/datageneration/savesubproblembuild.jl")
 
 println("Scripts imported")
 
@@ -51,9 +51,9 @@ const GRB_ENV = Gurobi.Env()
 
 # Select the instancecd
 row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
-warehouseparamsfilename = "data/warehouse_sizes_and_capacities.csv"
-instanceparamsfilename = "data/training_instance_parameters.csv"
-methodparamsfilename = "data/training_run_parameters.csv"
+warehouseparamsfilename = "data/extensions/orderslots/warehouse_sizes_and_capacities.csv"
+instanceparamsfilename = "data/extensions/orderslots/train_instance_parameters.csv"
+methodparamsfilename = "data/extensions/orderslots/train_run_parameters.csv"
 warehouseparms = CSV.read(warehouseparamsfilename, DataFrame)
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
@@ -86,6 +86,7 @@ numsubproblemsevaluated = methodparms[row_id, 8]
 subproblemtimelength = methodparms[row_id, 9]
 timeforreooptimization = methodparms[row_id, 10]
 stationtostation_flag = methodparms[row_id, 11]
+targetnumworkstations = methodparms[row_id, 12]
 mlmodelfilename = ""
 minnumpods = targetnumpods - 10
 minnumorders = targetnumorders - 10
@@ -94,6 +95,7 @@ numlocalintersections = 6
 numhyperlocalintersections = 3 
 maxworkstationspersubproblem = 2
 shortmethodname, subproblembudget = parsemethodname(methodname)
+anystoragelocation_flag = 0
 
 # Parameter Descriptions:
 # ==========================================
@@ -152,17 +154,24 @@ partitionobjective = "none"
 #Training data
 dynamicmlpass = 0
 staticmlpass = 0
-dynamicinstanceoutputfilename = string("trainingdata/dynamic/features_wh", warehouse_id, "_pass", dynamicmlpass, "_instance", instance_id, "_run", run_id,".jld2")
-staticinstanceoutputfilename = string("trainingdata/static/features_wh", warehouse_id, "_pass", staticmlpass, "_instance", instance_id, "_run", run_id, ".csv")
+traindatafolder = string("trainingdata/orderslots_",warehouse_id)
+dynamicinstanceoutputfilename = string(traindatafolder,"/dynamic/features_wh", warehouse_id, "_pass", dynamicmlpass, "_instance", instance_id, "_run", run_id,".jld2")
+staticinstanceoutputfilename = string(traindatafolder,"/static/features_wh", warehouse_id, "_pass", staticmlpass, "_instance", instance_id, "_run", run_id, ".csv")
 
 println("Parameters read")
 
 #Files
-outputfolder = string("outputs/run", run_id,"_", today())
+outputfolder = string("outputs/orderslotstrainingrun", run_id,"_", today())
 globalsolutionfilename = string(outputfolder, "/output.csv")
 if !(isdir(outputfolder))
 	mkdir(outputfolder)
 end
+if !(isdir(traindatafolder))
+	mkdir(traindatafolder)
+	mkdir(string(traindatafolder,"/dynamic"))
+	mkdir(string(traindatafolder,"/static"))
+end
+
 visualizationfolder = string(outputfolder, "/viz")
 if !(isdir(visualizationfolder))
 	mkdir(visualizationfolder)

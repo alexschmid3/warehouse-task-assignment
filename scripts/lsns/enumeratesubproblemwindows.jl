@@ -6,7 +6,7 @@ function enumeratesubproblemwindows(partition, maxworkstationspersubproblem, sub
 	workstationgrouplist, timinglist = [], []
 
 	allsubsets = []
-	targetnumworkstations
+	#targetnumworkstations
 	if methodparamsfilename == "data/extensions/spsize/test_run_parameters.csv"
 		allsubsets = union(allsubsets, collect(subsets(partition.workstations,targetnumworkstations)))
 		println("Station subsets = ", allsubsets)
