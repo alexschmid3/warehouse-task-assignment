@@ -46,7 +46,7 @@ debugmode = 0					# 1 --> will perform solution consistency unit tests at each L
 const GRB_ENV = Gurobi.Env()
 
 # Select the instancecd
-row_id = 303 # ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
+row_id = 403 # ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
 testingparamsfilename = "data/test_instance_parameters.csv"
 methodparamsfilename = "data/test_run_parameters.csv"
@@ -158,7 +158,7 @@ println("Parameters read")
 
 #Files
 mlmodelfilename = string("models/", mlmodelname, ".jld2")
-outputfolder = string("outputs/generatefigures/congestionhist/run", run_id,"_", today())
+outputfolder = string("outputs/generatefigures/congestionhist/none_run", run_id,"_", today())
 globalsolutionfilename = string(outputfolder, "/output.csv")
 if !(isdir(outputfolder))
 	mkdir(outputfolder)

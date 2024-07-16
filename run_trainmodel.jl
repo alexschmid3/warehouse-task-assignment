@@ -3,15 +3,15 @@ using JuMP, Gurobi, Plots, Random, CSV, DataFrames, Statistics, Dates, HDF5, Lin
 
 include("scripts/training/mlmodel/trainmodel.jl")
 
-#warehouse_id = 1 #parse(Int, ARGS[1])
+warehouse_id = parse(Int, ARGS[1])
 data_pass = 0
 
-savemodelfilename_pw = string("models/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_pw.jld2")
-savemodelfilename_nowt = string("models/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_nowt.jld2")
-savemodelfilename_full = string("models/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_full.jld2")
+savemodelfilename_pw = string("models/newpaper/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_pw.jld2")
+savemodelfilename_nowt = string("models/newpaper/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_nowt.jld2")
+savemodelfilename_full = string("models/newpaper/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_full.jld2")
 
 #Get relevant training data
-trainingfolder = "trainingdata/dynamic/"
+trainingfolder = string("trainingdata/mainmodel_wh", warehouse_id,"/dynamic/")
 unfiltered_filelist = readdir(trainingfolder)
 filelist = []
 for filename in unfiltered_filelist
