@@ -85,6 +85,10 @@ println("-----------------------------------------------------------------------
 
 #Save model
 save(savemodelfilename_nowt, Dict("beta_wt" => mlmodel_nowt.beta_wt, "beta_mp" => mlmodel_nowt.beta_mp, "beta_pw" => mlmodel_nowt.beta_pw, "beta_pwt" => mlmodel_nowt.beta_pwt, "shifts" => mlmodel_nowt.shifts) )
+println("savemodelfilename_nowt = ")
+println(Dict("beta_wt" => mlmodel_nowt.beta_wt, "beta_mp" => mlmodel_nowt.beta_mp, "beta_pw" => mlmodel_nowt.beta_pw, "beta_pwt" => mlmodel_nowt.beta_pwt, "shifts" => mlmodel_nowt.shifts) )
 save(savemodelfilename_full, Dict("beta_wt" => mlmodel_full.beta_wt, "beta_mp" => mlmodel_full.beta_mp, "beta_pw" => mlmodel_full.beta_pw, "beta_pwt" => mlmodel_full.beta_pwt, "shifts" => mlmodel_full.shifts) )
+println("savemodelfilename_full = ")
+println(Dict("beta_wt" => mlmodel_nowt.beta_wt, "beta_mp" => mlmodel_nowt.beta_mp, "beta_pw" => mlmodel_nowt.beta_pw, "beta_pwt" => mlmodel_nowt.beta_pwt, "shifts" => mlmodel_nowt.shifts) )
 
 println("Full ML model saved")
