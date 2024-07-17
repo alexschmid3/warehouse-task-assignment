@@ -46,10 +46,10 @@ debugmode = 0					# 1 --> will perform solution consistency unit tests at each L
 const GRB_ENV = Gurobi.Env()
 
 # Select the instancecd
-row_id = 403 # ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
+row_id = 1 # ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
 testingparamsfilename = "data/test_instance_parameters.csv"
-methodparamsfilename = "data/test_run_parameters.csv"
+methodparamsfilename = "data/extensions/anystorageloc/test_run_parameters.csv"
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 testingparms = CSV.read(testingparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
@@ -96,7 +96,7 @@ maxworkstationspersubproblem = 2
 
 windowforcingflag, maxtabu, lastoptpenaltyflag = parsetabucodes(tabutype)
 shortmethodname, subproblembudget = parsemethodname(methodname)
-anystoragelocation_flag = 0
+anystoragelocation_flag = methodparms[row_id, 17]
 
 # Parameter Descriptions:
 # ==========================================
