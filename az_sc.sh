@@ -12,4 +12,4 @@
 module load julia/1.9.2
 module load gurobi/gurobi-1102
 
-julia make_data.jl $SLURM_ARRAY_TASK_ID $SLURM_ARRAY_TASK_COUNT
+julia run_makedata.jl $SLURM_ARRAY_TASK_ID $SLURM_ARRAY_TASK_COUNT
