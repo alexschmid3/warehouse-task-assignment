@@ -345,7 +345,7 @@ for s in 1:numpartitions
 		sp = constructsubproblem(currpartition, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, currsol)
 
 		#Re-optimize subproblem
-		sp_obj, sp_solvetime, h_sp, y_sp, z_sp, f_sp, g_sp, v_sp, feasibleflag_sp = reoptimizesubproblem(sp, currsol, currpartition, 0)
+		sp_obj, sp_solvetime, h_sp, y_sp, z_sp, f_sp, g_sp, v_sp, feasibleflag_sp = reoptimizesubproblem(sp, currsol, currpartition, 1)
 		println("Re-opt time = ", sp_solvetime, " seconds")
 
 		#Update solution

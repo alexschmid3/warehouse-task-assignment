@@ -7,6 +7,7 @@ function update_hv_greedy(currsol, currsol_greedysets, gp, h)
     
     earliestt, latestt, orderclosed = min(horizon, gp.orderendtime), max(0, gp.orderstarttime), 1
     for i in itemson[gp.m]
+        mysum = 0
         for p in intersect(gp.relevantpods, currsol_greedysets.podswith_greedy[i]), t in max(0,gp.podstarttime[p]):tstep:min(horizon,gp.podendtime[p])
             if value(h[i,p,t]) > 1e-4
                 currsol_greedysets.remaininginventory[i, p] -= 1
@@ -18,14 +19,14 @@ function update_hv_greedy(currsol, currsol_greedysets, gp, h)
                 for t_prime in t:tstep:horizon
                     currsol.h[gp.m, i, p, gp.w, t_prime] = 1
                 end
+                mysum += value(h[i,p,t])
                 break
             end
         end
-        #if sum(sum(value(h[i,p,t]) for t in gp.podstarttime[p]:tstep:gp.podendtime[p]; init=0) for p in intersect(gp.relevantpods, currsol_greedysets.podswith_greedy[i]); init=0) < 1e-4
-        mysum = 0
-        for p in intersect(gp.relevantpods, currsol_greedysets.podswith_greedy[i]), t in gp.podstarttime[p]:tstep:gp.podendtime[p]
-            mysum += value(h[i,p,t])
-        end
+        #if sum(sum(value(h[i,p,t]) for t in gp.podstarttime[p]:tstep:gp.podendtime[p]; init=0) for p in intersect(gp.relevantpods, currsol_greedysets.podswith_greedy[i]); init=0) < 1e-4  
+        #for p in intersect(gp.relevantpods, currsol_greedysets.podswith_greedy[i]), t in gp.podstarttime[p]:tstep:gp.podendtime[p]
+        #    mysum += value(h[i,p,t])
+        #end
         if mysum < 1e-4
             orderclosed = 0
             latestt = horizon
@@ -52,7 +53,7 @@ function update_y_greedy(currsol, gp, y, z)
         awaystart, awayend, podarrives = 0, 0, 0
         for t in gp.podstarttime[p]:tstep:gp.podendtime[p]
             if value(y[p,t]) > 0.01
-                awaystart += max(0, t - podtostationtime)
+                awaystart += max(-30, t - podtostationtime)
                 podarrives += t
             end
             if value(z[p,t]) > 0.01
@@ -62,7 +63,7 @@ function update_y_greedy(currsol, gp, y, z)
                 end
 
                 #Pod trip to the station
-                if t - podtostationtime < 0
+                if awaystart < 0
                     a = extendedarcs[extendednodes[podstorageloc[p], dummystarttime], extendednodes[gp.w, podarrives]]
                     currsol.y[p, a] = 1
                     push!(currsol.ypath[p], a)
@@ -92,7 +93,7 @@ function update_y_greedy(currsol, gp, y, z)
 
                 #Pod no longer stationed at home
                 for t_p in awaystart:tstep:min(dummyendtime-tstep, awayend - tstep)
-                    a = arcs[nodes[podstorageloc[p], t_p], nodes[podstorageloc[p], t_p + tstep]]
+                    a = extendedarcs[extendednodes[podstorageloc[p], t_p], extendednodes[podstorageloc[p], t_p + tstep]]
                     currsol.y[p, a] = 0
                     remove!(currsol.ypath[p], a)
                 end
@@ -147,6 +148,8 @@ function updatecongestion_greedy(currsol, gp)
 end
 
 #-----------------------------------------------------------------------------#
+
+#currsol, currsol_greedysets, gp, currpartition, h, y, z = currsol, currsol_greedysets, gp, currpartition, h_assign, y_assign, z_assign 
 
 function updategreedysolution(currsol, currsol_greedysets, gp, currpartition, h, y, z)
 

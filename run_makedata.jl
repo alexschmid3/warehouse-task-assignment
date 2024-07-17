@@ -375,22 +375,22 @@ for s in 1:numpartitions
 		sp_obj, sp_solvetime, h_sp, y_sp, z_sp, f_sp, g_sp, v_sp, feasibleflag_sp = reoptimizesubproblem(sp, currsol, currpartition, 0)
 		println("Re-opt time = ", sp_solvetime, " seconds")
 
-        #------------------ Add subproblem data ------------------#
+		#------------------ Add subproblem data ------------------#
 
-        #Check objective improvement
-        old_obj = sum(sum(length(currsol.itempodpicklist[w,t]) for w in sp.workstations) for t in max(0,sp.tstart):tstep:min(horizon,sp.tend))
-        if (old_obj > 0) & (sp_obj > 0)
-            println("Improved from ", old_obj, " to ", sp_obj, " = ", round(100*(sp_obj - old_obj) / old_obj, digits=2), "%")
-        else
-            println("Improved from ", old_obj, " to ", sp_obj, " = 0.00 %")
-        end
+		#Check objective improvement
+		old_obj = sum(sum(length(currsol.itempodpicklist[w,t]) for w in sp.workstations) for t in max(0,sp.tstart):tstep:min(horizon,sp.tend))
+		if (old_obj > 0) & (sp_obj > 0)
+			println("Improved from ", old_obj, " to ", sp_obj, " = ", round(100*(sp_obj - old_obj) / old_obj, digits=2), "%")
+		else
+			println("Improved from ", old_obj, " to ", sp_obj, " = 0.00 %")
+		end
 
-        #Get the impacted orders and podsp
-        if sp_obj > 0
-            impact_orders, impact_pods = findimpactordersandpods(sp.workstations, sp.orders, sp.pods, sp.itemson, sp.times, sp.podswith, currsol.h, h_sp)
-        else
-            impact_orders, impact_pods = [], []
-        end
+		#Get the impacted orders and podsp
+		if sp_obj > 0
+			impact_orders, impact_pods = findimpactordersandpods(sp.workstations, sp.orders, sp.pods, sp.itemson, sp.times, sp.podswith, currsol.h, h_sp)
+		else
+			impact_orders, impact_pods = [], []
+		end
 
         #Solve problem without congestion to detect congestion impacts
         nocong_obj, nocong_solvetime, h_nocong, y_nocong, z_nocong, f_nocong, g_nocong, v_nocong, feasibleflag_nocong = reoptimizesubproblem(sp, currsol, currpartition, 1)

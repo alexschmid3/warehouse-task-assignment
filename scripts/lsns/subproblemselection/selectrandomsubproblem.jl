@@ -1,5 +1,5 @@
 
-function findassignedorders1(partition, sp_window, currsol, targetnumorders)
+function findassignedorders1(currpartition, sp_window, currsol, targetnumorders)
 
 	assignedorders = []
 	for w in sp_window.workstations, t in sp_window.times
@@ -14,7 +14,7 @@ function findassignedorders1(partition, sp_window, currsol, targetnumorders)
 	end
 
 	#Calculate how many more orders are needed to reach the target
-	unassignedorders = [m for m in partition.orders if sum(sum(sum(currsol.h[m,i,p,w,horizon] for w in partition.workstations) for p in partition.podswith[i]) for i in itemson[m]) < 1e-4]
+	unassignedorders = [m for m in currpartition.orders if sum(sum(sum(currsol.h[m,i,p,w,horizon] for w in currpartition.workstations) for p in currpartition.podswith[i]) for i in itemson[m]) < 1e-4]
 	unassignedorders = setdiff(unassignedorders, assignedorders)
 	numadditionalorders = min(length(unassignedorders), max(0, targetnumorders - length(assignedorders)))
 	
@@ -79,14 +79,14 @@ end
 
 #-----------------------------------------------------------------------------------------------------#
 
-function findrandompods1(partition, targetnumpods, currsol, sp_orders, sp_window, sp_items)
+function findrandompods1(currpartition, targetnumpods, currsol, sp_orders, sp_window, sp_items)
 	
 	sp_pods = []
 	for w in sp_window.workstations, t in sp_window.times
 		sp_pods = union(sp_pods, currsol.podsworkedat[w,t])
 	end
 
-	potentialpods = setdiff(partition.pods, sp_pods) 
+	potentialpods = setdiff(currpartition.pods, sp_pods) 
 	numadditionalpods = max(targetnumpods - length(sp_pods), 0)
 	extrapods = potentialpods[randperm(length(potentialpods))][1:numadditionalpods]
 	sp_pods = union(sp_pods, extrapods)
@@ -97,7 +97,7 @@ end
 
 #-----------------------------------------------------------------------------------------------------#
 
-function findnecessarypods1(partition, targetnumpods, currsol, sp_orders, sp_window, sp_items)
+function findnecessarypods1(currpartition, targetnumpods, currsol, sp_orders, sp_window, sp_items)
 	
 	sp_pods = []
 	for w in sp_window.workstations, t in sp_window.times
@@ -106,7 +106,7 @@ function findnecessarypods1(partition, targetnumpods, currsol, sp_orders, sp_win
 
 	usefulpods = []
 	for m in sp_orders, i in itemson[m]
-		usefulpods = union(usefulpods, partition.podswith[i])
+		usefulpods = union(usefulpods, currpartition.podswith[i])
 	end
 
 	potentialpods = setdiff(usefulpods, sp_pods) 
@@ -120,18 +120,18 @@ end
 
 #-----------------------------------------------------------------------------------------------------#
 
-function selectrandomsubproblem(partition, windows, windowidlookup, currsol, targetnumorders, targetnumpods)
+function selectrandomsubproblem(currpartition, windows, windowidlookup, currsol, targetnumorders, targetnumpods)
 
 	#Select the subproblem with the synergy model
 	sp_window = rand(windows)
 	sp_winid = windowidlookup[sp_window]
 
 	#Get the orders
-	assignedorders, unassignedorders, numadditionalorders = findassignedorders1(partition, sp_window, currsol, targetnumorders)
-	sp_orders, sp_itemson, sp_items = filloutrandomorders1(partition, sp_window, currsol, assignedorders, unassignedorders, numadditionalorders)
+	assignedorders, unassignedorders, numadditionalorders = findassignedorders1(currpartition, sp_window, currsol, targetnumorders)
+	sp_orders, sp_itemson, sp_items = filloutrandomorders1(currpartition, sp_window, currsol, assignedorders, unassignedorders, numadditionalorders)
 	
 	#Get the pods
-	sp_pods = findnecessarypods1(partition, targetnumpods, currsol, sp_orders, sp_window, sp_items)
+	sp_pods = findnecessarypods1(currpartition, targetnumpods, currsol, sp_orders, sp_window, sp_items)
 
 	return sp_winid, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, assignedorders
 

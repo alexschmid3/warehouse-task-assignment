@@ -18,7 +18,7 @@ function reoptimizesubproblem(sp, currsol, currpartition, turnoffcongestion_flag
 
 	model = Model(() -> Gurobi.Optimizer(GRB_ENV)) #Model(Gurobi.Optimizer)
 	set_optimizer_attribute(model, "TimeLimit", timeforreooptimization) # iptimelimit)
-	set_optimizer_attribute(model, "OutputFlag", 0) #ipoutputflag)
+	set_optimizer_attribute(model, "OutputFlag", 0)  #ipoutputflag)
 		
 	#Variables
 	if (debugmode == 1) & (debugprintstatements == 1)

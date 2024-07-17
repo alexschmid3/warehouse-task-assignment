@@ -177,18 +177,19 @@ function findfeasibleorderassignment(gp, currpartition, currsol, currsol_greedys
 	@constraint(model, podarrives[i = itemson[gp.m], p = intersect(gp.relevantpods, currsol_greedysets.podswith_greedy[i]), t = gp.podstarttime[p]:tstep:gp.podendtime[p]], sum(y_m[p,t2] for t2 in gp.podstarttime[p]:tstep:t) >= h_m[i,p,t])
 	@constraint(model, poddeparts[i = itemson[gp.m], p = intersect(gp.relevantpods, currsol_greedysets.podswith_greedy[i]), t = gp.podstarttime[p]:tstep:gp.podendtime[p]], z_m[p,t] >= h_m[i,p,t])
 	@constraint(model, podwaits[p = gp.relevantpods, t = gp.podstarttime[p]:tstep:gp.podendtime[p]], w_m[p,t] >= sum(y_m[p,t2] for t2 in gp.podstarttime[p]:tstep:t) - sum(z_m[p,t2] for t2 in gp.podstarttime[p]:tstep:t))
-
+	@constraint(model, onevisit[p = gp.relevantpods], sum(z_m[p,t] for t in gp.podstarttime[p]:tstep:gp.podendtime[p]) <= 1)
 	#Workstation throughput constraints
 	@constraint(model, stationthroughput[t = sp_times_reg], itemprocesstime * sum(sum(h_m[i,p,t] for p in intersect(gp.relevantpods, currsol_greedysets.podswith_greedy[i]) if gp.podstarttime[p] <= t <= gp.podendtime[p]) for i in itemson[gp.m]) + podprocesstime * sum(z_m[p,t] for p in gp.relevantpods_t[t]) <= tstep - itemprocesstime * length(currsol.itempodpicklist[gp.w,t]) - podprocesstime * length(currsol.podsworkedat[gp.w,t]))
 
 	#Congestion
-    remainingcongestionspace = intersectiontimemaxpods - sum(currcong[p] for p in pods)
-    intersectionindices = [maps.mapintersectiontorow[i] for i in currpartition.intersections] 
-    timeindices = [maps.maptimetocolumn[t] for t in max(0,gp.orderstarttime):congestiontstep:min(horizon,gp.orderendtime)]
-    @constraint(model, maxcongestion[i in intersectionindices, t_con in timeindices],
-        sum(sum(congestionsignature[arcs[nodes[podstorageloc[p], t-arclength[gp.w,podstorageloc[p]]], nodes[gp.w,t]]][i,t_con] * y_m[p,t] for t in max(0+arclength[podstorageloc[p],gp.w],gp.podstarttime[p]):tstep:min(horizon, gp.podendtime[p])) for p in gp.relevantpods)
-        + sum(sum(congestionsignature[arcs[nodes[gp.w,t], nodes[podstorageloc[p], t+arclength[gp.w,podstorageloc[p]]]]][i,t_con] * z_m[p,t] for t in max(0,gp.podstarttime[p]):tstep:min(horizon-arclength[gp.w,podstorageloc[p]], gp.podendtime[p])) for p in gp.relevantpods)
-        <= max(1e-4, remainingcongestionspace[i,t_con]))
+	remainingcongestionspace = intersectiontimemaxpods - sum(currcong[p] for p in pods)
+	intersectionindices = [maps.mapintersectiontorow[i] for i in currpartition.intersections] 
+	buffertimefortravel = maximum(values(arclength))
+	timeindices = [maps.maptimetocolumn[t] for t in max(0,gp.orderstarttime-buffertimefortravel):congestiontstep:min(horizon,gp.orderendtime+buffertimefortravel)]
+	@constraint(model, maxcongestion[i in intersectionindices, t_con in timeindices],
+		sum(sum(congestionsignature[arcs[nodes[podstorageloc[p], t-arclength[gp.w,podstorageloc[p]]], nodes[gp.w,t]]][i,t_con] * y_m[p,t] for t in max(0+arclength[podstorageloc[p],gp.w],gp.podstarttime[p]):tstep:min(horizon, gp.podendtime[p])) for p in gp.relevantpods)
+		+ sum(sum(congestionsignature[arcs[nodes[gp.w,t], nodes[podstorageloc[p], t+arclength[gp.w,podstorageloc[p]]]]][i,t_con] * z_m[p,t] for t in max(0,gp.podstarttime[p]):tstep:min(horizon-arclength[gp.w,podstorageloc[p]], gp.podendtime[p])) for p in gp.relevantpods)
+		<= max(1e-4, remainingcongestionspace[i,t_con]))
 
 	#====================================================#
 
@@ -273,11 +274,7 @@ end
 
 #-----------------------------------------------------------------------------------#
 
-#=greedyorders=[m for m in currpartition.orders if length(itemson[m]) >= 4]
-greedyorders = currpartition.orders
-greedypods=currpartition.pods
-greedypodswith=currpartition.podswith
-greedyworkstations=currpartition.workstations=#
+#currpartition, currsol, greedyorders, greedypods, greedypodswith, greedyworkstations = currpartition, currsol, currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations
 
 function findgreedysolution(currpartition, currsol, greedyorders, greedypods, greedypodswith, greedyworkstations)
 
@@ -312,14 +309,14 @@ function findgreedysolution(currpartition, currsol, greedyorders, greedypods, gr
             if feasible_flag == 1
 
                 #Format times and find pods with relevant items that aren't busy during the timeblock
-                sp_relevantpods, sp_relevantpods_t, podstarttime, podendtime = getpodstarttimes(relevantpods, orderstarttime, orderendtime, currsol, w2)
-	
-                #Group together greedy problem elements into greedy problem (gp) object
-                gp = (m=m, w=w2, orderstarttime=orderstarttime, orderendtime=orderendtime, relevantpods=sp_relevantpods, relevantpods_t=sp_relevantpods_t, podstarttime=podstarttime, podendtime=podendtime)
-                
-                #Find feasible order assignment for order m in gp
-                assign_obj, assign_solvetime, h_assign, y_assign, z_assign, assignmentsuccessful = findfeasibleorderassignment(gp, currpartition, currsol, currsol_greedysets)
-                
+				sp_relevantpods, sp_relevantpods_t, podstarttime, podendtime = getpodstarttimes(relevantpods, orderstarttime, orderendtime, currsol, w2)
+
+				#Group together greedy problem elements into greedy problem (gp) object
+				gp = (m=m, w=w2, orderstarttime=orderstarttime, orderendtime=orderendtime, relevantpods=sp_relevantpods, relevantpods_t=sp_relevantpods_t, podstarttime=podstarttime, podendtime=podendtime)
+
+				#Find feasible order assignment for order m in gp
+				assign_obj, assign_solvetime, h_assign, y_assign, z_assign, assignmentsuccessful = findfeasibleorderassignment(gp, currpartition, currsol, currsol_greedysets)
+								
                 #If good assignment, update currsol and add picks to objective
                 if assignmentsuccessful == 1
 					currsol, currsol_greedysets = updategreedysolution(currsol, currsol_greedysets, gp, currpartition, h_assign, y_assign, z_assign)
@@ -328,6 +325,20 @@ function findgreedysolution(currpartition, currsol, greedyorders, greedypods, gr
 					if visualizationflag == 1
 						workstationviz(string(visualizationfolder, "/station_partition1_initial", assignedorders,"_order", m,".png"), currpartition, currsol)
 					end
+
+					#Check congestion not violated
+					if debugmode == 1
+						for l in intersections, t in 0:congestiontstep:horizon
+							quantity1 = sum(currcong[p][maps.mapintersectiontorow[l],maps.maptimetocolumn[t]] for p in currpartition.pods) 
+							if quantity1 > intersectionmaxpods[l]
+								#println(gp.orderstarttime, " - ", gp.orderendtime)
+								#println(minimum(values(gp.podstarttime)), " - ", maximum(values(gp.podendtime)))
+								println("$m, $l, $t --> ", round(quantity1,digits=2), " vs. ",  intersectionmaxpods[l])
+							end
+							@assert quantity1 <= intersectionmaxpods[l]
+						end
+					end
+
 					break
 				end
 			end
