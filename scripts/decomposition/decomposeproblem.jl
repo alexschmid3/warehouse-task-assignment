@@ -81,6 +81,7 @@ function maximizesynergyoforderassignments(partitionobjective, beta, features, f
 	if partitionobjective == "random"
 		@objective(model, Max, sum(sum(rand()*x[m,s] for m in orders) for s in allpartitions))
 	elseif partitionobjective == "synergy"
+		println("Doing God's work")
 		@objective(model, Max, sum(sum(sum(sum(beta.mp[f] * features.mp[chop(featureinfo.names[f],head=3,tail=0)][m,p] * x[m,s] for f in featurenums.mp) for m in orders) for p in podsin[s]) for s in partitions)) 
 	elseif partitionobjective == "heuristic"
 		@objective(model, Min, 2*itembuff + sum(x[m,numpartitions+1] for m in orders)) #sum(sum(sum(sum(beta_mp[f] * mp_features[chop(featurenames[f],head=3,tail=0)][m,p] * x[m,s] for f in mp_featnums) for m in orders) for p in podsin[s]) for s in partitions) )
