@@ -9,6 +9,7 @@ data_pass = 0
 savemodelfilename_pw = string("models/newpaper/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_pw.jld2")
 savemodelfilename_nowt = string("models/newpaper/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_nowt.jld2")
 savemodelfilename_full = string("models/newpaper/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_full.jld2")
+savemodelfilename_intercept = string("models/newpaper/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_intercept.jld2")
 
 #Get relevant training data
 trainingfolder = string("trainingdata/mainmodel_wh", warehouse_id,"/dynamic/")
@@ -71,7 +72,7 @@ println("-----------------------------------------------------------------------
 #Train model on all data
 traincongestion_flag = 0
 trainassignment_flag = 0
-mlmodel_nowt, mlmodel_full = traindynamicsubproblemmodel(filelist, traincongestion_flag, trainassignment_flag, (0,0,0,0))
+mlmodel_nowt, mlmodel_full, mlmodel_intercept = traindynamicsubproblemmodel(filelist, traincongestion_flag, trainassignment_flag, (0,0,0,0))
 
 println("-------------------------------------------------------------------------------------")
 
@@ -83,12 +84,22 @@ println("TEST")
 
 println("-------------------------------------------------------------------------------------")
 
+function convertdenseaxistodict(denseaxisarray)
+	newdict = Dict()
+	for ky in keys(denseaxisarray)
+		newdict[ky[1]] = denseaxisarray[ky[1]]
+	end
+	return newdict
+end
+
 #Save model
-save(savemodelfilename_nowt, Dict("beta_wt" => mlmodel_nowt.beta_wt, "beta_mp" => mlmodel_nowt.beta_mp, "beta_pw" => mlmodel_nowt.beta_pw, "beta_pwt" => mlmodel_nowt.beta_pwt, "shifts" => mlmodel_nowt.shifts) )
-println("savemodelfilename_nowt = ")
-println(Dict("beta_wt" => mlmodel_nowt.beta_wt, "beta_mp" => mlmodel_nowt.beta_mp, "beta_pw" => mlmodel_nowt.beta_pw, "beta_pwt" => mlmodel_nowt.beta_pwt, "shifts" => mlmodel_nowt.shifts) )
-save(savemodelfilename_full, Dict("beta_wt" => mlmodel_full.beta_wt, "beta_mp" => mlmodel_full.beta_mp, "beta_pw" => mlmodel_full.beta_pw, "beta_pwt" => mlmodel_full.beta_pwt, "shifts" => mlmodel_full.shifts) )
-println("savemodelfilename_full = ")
-println(Dict("beta_wt" => mlmodel_nowt.beta_wt, "beta_mp" => mlmodel_nowt.beta_mp, "beta_pw" => mlmodel_nowt.beta_pw, "beta_pwt" => mlmodel_nowt.beta_pwt, "shifts" => mlmodel_nowt.shifts) )
+save(savemodelfilename_nowt, Dict("beta_wt" => convertdenseaxistodict(mlmodel_nowt.beta_wt), "beta_mp" => convertdenseaxistodict(mlmodel_nowt.beta_mp), "beta_pw" => convertdenseaxistodict(mlmodel_nowt.beta_pw), "beta_pwt" => convertdenseaxistodict(mlmodel_nowt.beta_pwt), "shifts" => mlmodel_nowt.shifts) )
+#println("savemodelfilename_nowt = ")
+#println(Dict("beta_wt" => mlmodel_nowt.beta_wt, "beta_mp" => mlmodel_nowt.beta_mp, "beta_pw" => mlmodel_nowt.beta_pw, "beta_pwt" => mlmodel_nowt.beta_pwt, "shifts" => mlmodel_nowt.shifts) )
+save(savemodelfilename_full, Dict("beta_wt" => convertdenseaxistodict(mlmodel_full.beta_wt), "beta_mp" => convertdenseaxistodict(mlmodel_full.beta_mp), "beta_pw" => convertdenseaxistodict(mlmodel_full.beta_pw), "beta_pwt" => convertdenseaxistodict(mlmodel_full.beta_pwt), "shifts" => mlmodel_full.shifts) )
+#println("savemodelfilename_full = ")
+#println(Dict("beta_wt" => convertdenseaxistodict(mlmodel_nowt.beta_wt), "beta_mp" => convertdenseaxistodict(mlmodel_nowt.beta_mp), "beta_pw" => convertdenseaxistodict(mlmodel_nowt.beta_pw), "beta_pwt" => convertdenseaxistodict(mlmodel_nowt.beta_pwt), "shifts" => mlmodel_nowt.shifts) )
+save(savemodelfilename_intercept, Dict("beta_wt" => convertdenseaxistodict(mlmodel_intercept.beta_wt), "beta_mp" => convertdenseaxistodict(mlmodel_intercept.beta_mp), "beta_pw" => convertdenseaxistodict(mlmodel_intercept.beta_pw), "beta_pwt" => convertdenseaxistodict(mlmodel_intercept.beta_pwt), "shifts" => mlmodel_intercept.shifts) )
 
 println("Full ML model saved")
+

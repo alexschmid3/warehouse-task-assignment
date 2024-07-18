@@ -1,5 +1,7 @@
 
-figuredirectory = string("outputs/multistop/newrun")
+using CSV, DataFrames 
+
+figuredirectory = string("outputs/multistop/partitionrun")
 
 #Get list of files
 folderlist = readdir(figuredirectory)

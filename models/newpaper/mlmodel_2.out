@@ -2,7 +2,7 @@ Set parameter GURO_PAR_SPECIAL
 Set parameter TokenServer to value "engaging-license-001"
 
 --------------------------------------------
-Warning: your license will expire in 11 days
+Warning: your license will expire in 9 days
 --------------------------------------------
 
 Set parameter TimeLimit to value 3600
@@ -10,115 +10,117 @@ Set parameter IntegralityFocus to value 1
 Set parameter IntegralityFocus to value 1
 Set parameter TimeLimit to value 3600
 Gurobi Optimizer version 9.5.1 build v9.5.1rc2 (linux64)
-Thread count: 48 physical cores, 48 logical processors, using up to 32 threads
-Optimize a model with 119389 rows, 80061 columns and 1158069 nonzeros
-Model fingerprint: 0x0c3de6c5
+Thread count: 28 physical cores, 28 logical processors, using up to 28 threads
+Optimize a model with 117288 rows, 80061 columns and 1151766 nonzeros
+Model fingerprint: 0xb3d69cd5
 Variable types: 80032 continuous, 29 integer (29 binary)
 Coefficient statistics:
   Matrix range     [5e-01, 1e+04]
   Objective range  [1e+00, 1e+00]
   Bounds range     [0e+00, 0e+00]
   RHS range        [1e+00, 5e+01]
-Found heuristic solution: objective 704907.00000
-Presolve removed 80108 rows and 40782 columns
-Presolve time: 1.74s
-Presolved: 39281 rows, 39279 columns, 628188 nonzeros
-Variable types: 39274 continuous, 5 integer (5 binary)
+Found heuristic solution: objective 973876.00000
+Found heuristic solution: objective 973876.00000
+Presolve removed 80196 rows and 42955 columns
+Presolve time: 2.74s
+Presolved: 37092 rows, 37106 columns, 593180 nonzeros
+Variable types: 37101 continuous, 5 integer (5 binary)
 
 Deterministic concurrent LP optimizer: primal and dual simplex (primal and dual model)
 Showing first log only...
 
-Root relaxation presolved: 39281 rows, 39279 columns, 628188 nonzeros
+Root relaxation presolved: 37092 rows, 37106 columns, 593180 nonzeros
+
+Concurrent spin time: 0.48s
+
+Solved with dual simplex (dual model)
+
+Root relaxation: objective 1.556705e+05, 3177 iterations, 2.02 seconds (1.01 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 155670.488    0    3 973876.000 155670.488  84.0%     -    5s
+     0     0 155670.488    0    3 973876.000 155670.488  84.0%     -    5s
+     0     2 155670.488    0    3 973876.000 155670.488  84.0%     -    7s
+     1     4 155670.488    1    2 973876.000 155670.488  84.0%   1.0   10s
+     7    16 156874.855    3    2 973876.000 155670.488  84.0%   471   50s
+    15    32 157053.074    4    1 973876.000 156874.855  83.9%  2823  180s
+*   31     4               5    157582.20200 157053.074  0.34%  5676  248s
+
+Explored 59 nodes (270750 simplex iterations) in 253.39 seconds (247.21 work units)
+Thread count was 28 (of 28 available processors)
+
+Solution count 1: 157582 
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.575822020169e+05, best bound 1.575822019960e+05, gap 0.0000%
+
+User-callback calls 168029, time in user-callback 0.14 sec
+Set parameter GURO_PAR_SPECIAL
+Set parameter TokenServer to value "engaging-license-001"
+
+--------------------------------------------
+Warning: your license will expire in 9 days
+--------------------------------------------
+
+Set parameter TimeLimit to value 3600
+Set parameter IntegralityFocus to value 1
+Set parameter IntegralityFocus to value 1
+Set parameter TimeLimit to value 3600
+Gurobi Optimizer version 9.5.1 build v9.5.1rc2 (linux64)
+Thread count: 28 physical cores, 28 logical processors, using up to 28 threads
+Optimize a model with 117283 rows, 80061 columns and 1151761 nonzeros
+Model fingerprint: 0x078bc3dc
+Variable types: 80032 continuous, 29 integer (29 binary)
+Coefficient statistics:
+  Matrix range     [5e-01, 1e+04]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [0e+00, 0e+00]
+  RHS range        [1e+00, 5e+01]
+Found heuristic solution: objective 973876.00000
+Found heuristic solution: objective 973876.00000
+Presolve removed 80191 rows and 42955 columns
+Presolve time: 3.02s
+Presolved: 37092 rows, 37106 columns, 593180 nonzeros
+Variable types: 37101 continuous, 5 integer (5 binary)
+
+Deterministic concurrent LP optimizer: primal and dual simplex (primal and dual model)
+Showing first log only...
+
+Root relaxation presolved: 37092 rows, 37106 columns, 593180 nonzeros
 
 
 Root simplex log...
 
 Iteration    Objective       Primal Inf.    Dual Inf.      Time
-    1067    4.9195928e+05   0.000000e+00   4.255868e+07      5s
-Concurrent spin time: 0.00s
+     268    2.2840649e+07   0.000000e+00   8.135860e+08      5s
+Concurrent spin time: 0.04s
 
-Solved with primal simplex (dual model)
+Solved with dual simplex (dual model)
 
-Root relaxation: objective 1.592237e+05, 149372 iterations, 3.22 seconds (2.00 work units)
-
-    Nodes    |    Current Node    |     Objective Bounds      |     Work
- Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
-
-     0     0 159223.669    0    4 704907.000 159223.669  77.4%     -    5s
-     0     0 159223.669    0    4 704907.000 159223.669  77.4%     -    5s
-     0     2 159223.669    0    4 704907.000 159223.669  77.4%     -    7s
-     1     4 159223.669    1    3 704907.000 159223.669  77.4%   1.0   16s
-     7    16 159426.938    3    1 704907.000 159223.669  77.4%   209   39s
-    15    32 159661.225    4    1 704907.000 159426.938  77.4%  1202  109s
-*   31     0               5    159712.94752 159661.225  0.03%  3022  151s
-
-Explored 63 nodes (298117 simplex iterations) in 160.36 seconds (142.77 work units)
-Thread count was 32 (of 48 available processors)
-
-Solution count 1: 159713 
-
-Optimal solution found (tolerance 1.00e-04)
-Best objective 1.597129475158e+05, best bound 1.597129475158e+05, gap 0.0000%
-
-User-callback calls 70442, time in user-callback 0.10 sec
-Set parameter GURO_PAR_SPECIAL
-Set parameter TokenServer to value "engaging-license-001"
-
---------------------------------------------
-Warning: your license will expire in 11 days
---------------------------------------------
-
-Set parameter TimeLimit to value 3600
-Set parameter IntegralityFocus to value 1
-Set parameter IntegralityFocus to value 1
-Set parameter TimeLimit to value 3600
-Gurobi Optimizer version 9.5.1 build v9.5.1rc2 (linux64)
-Thread count: 48 physical cores, 48 logical processors, using up to 32 threads
-Optimize a model with 119384 rows, 80061 columns and 1158064 nonzeros
-Model fingerprint: 0x6ca46190
-Variable types: 80032 continuous, 29 integer (29 binary)
-Coefficient statistics:
-  Matrix range     [5e-01, 1e+04]
-  Objective range  [1e+00, 1e+00]
-  Bounds range     [0e+00, 0e+00]
-  RHS range        [1e+00, 5e+01]
-Found heuristic solution: objective 704907.00000
-Presolve removed 80103 rows and 40782 columns
-Presolve time: 1.76s
-Presolved: 39281 rows, 39279 columns, 628188 nonzeros
-Variable types: 39274 continuous, 5 integer (5 binary)
-
-Deterministic concurrent LP optimizer: primal and dual simplex (primal and dual model)
-Showing first log only...
-
-Root relaxation presolved: 39281 rows, 39279 columns, 628188 nonzeros
-
-Concurrent spin time: 0.00s
-
-Solved with primal simplex (dual model)
-
-Root relaxation: objective 1.592237e+05, 149372 iterations, 3.08 seconds (2.00 work units)
+Root relaxation: objective 1.556705e+05, 3177 iterations, 2.48 seconds (1.01 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-     0     0 159223.669    0    4 704907.000 159223.669  77.4%     -    5s
-     0     0 159223.669    0    4 704907.000 159223.669  77.4%     -    5s
-     0     2 159223.669    0    4 704907.000 159223.669  77.4%     -    6s
-     1     4 159223.669    1    3 704907.000 159223.669  77.4%   1.0   16s
-     7    16 159426.938    3    1 704907.000 159223.669  77.4%   209   38s
-    15    32 159661.225    4    1 704907.000 159426.938  77.4%  1202  106s
-*   31     0               5    159712.94752 159661.225  0.03%  3022  148s
+     0     0 155670.488    0    3 973876.000 155670.488  84.0%     -    6s
+     0     0 155670.488    0    3 973876.000 155670.488  84.0%     -    6s
+     0     2 155670.488    0    3 973876.000 155670.488  84.0%     -    8s
+     1     4 155670.488    1    2 973876.000 155670.488  84.0%   1.0   13s
+     7    16 156874.855    3    2 973876.000 155670.488  84.0%   471   53s
+    15    32 157053.074    4    1 973876.000 156874.855  83.9%  2823  194s
+*   31     4               5    157582.20200 157053.074  0.34%  5676  263s
 
-Explored 63 nodes (298117 simplex iterations) in 157.72 seconds (142.78 work units)
-Thread count was 32 (of 48 available processors)
+Explored 59 nodes (270750 simplex iterations) in 267.51 seconds (247.22 work units)
+Thread count was 28 (of 28 available processors)
 
-Solution count 1: 159713 
+Solution count 1: 157582 
 
 Optimal solution found (tolerance 1.00e-04)
-Best objective 1.597129475158e+05, best bound 1.597129475158e+05, gap 0.0000%
+Best objective 1.575822020169e+05, best bound 1.575822019960e+05, gap 0.0000%
 
-User-callback calls 67101, time in user-callback 0.12 sec
+User-callback calls 171602, time in user-callback 0.14 sec
 -------------------------------------------------------------------------------------
 features_wh2_pass0_instance101_run201.jld2
 Instance 1201 has no congestion
@@ -526,83 +528,159 @@ wt_avglocalcong = 0.0
 wt_maxlocalcong = 0.0
 wt_avghyperlocalcong = 0.0
 wt_maxhyperlocalcong = 0.0
-w_centrality = -0.8616958006844603
+w_centrality = 0.6606844361175394
 t_horizonrelativetime = 0.0
 t_timeofday = 0.0
 ------------------------------------------
-mp_itemoverlap = 0.5901824335027006
+mp_itemoverlap = 1.2277369974403969
 mp_itemoverlappct = 0.0
-mp_overlapitemavginv = -0.02242130592203081
+mp_overlapitemavginv = -0.05750694666968438
 mp_overlapitemavgaltpods = 0.0
-m_ordersize = -0.23796291792737817
+m_ordersize = -0.4336515692825616
 m_oneitemflag = 0.0
-p_avgdisttostations = -0.0544205370855
+p_avgdisttostations = 0.02061945018992862
 p_pctusefulitems = 0.0
 ------------------------------------------
 pw_distance = 0.0
-pw_xsteps = 0.0357101098707114
-pw_ysteps = 0.04815061021650058
+pw_xsteps = -0.022386868871548254
+pw_ysteps = -0.006100098082558433
 p_avgdisttostations = 0.0
 p_pctusefulitems = 0.0
 w_centrality = 0.0
 ------------------------------------------
 pwt_existingcong = 0.0
 p_avgdisttostations = 0.0
-p_pctusefulitems = 0.8513268918756426
+p_pctusefulitems = 1.631863397703225
 w_centrality = 0.0
 t_horizonrelativetime = 0.0
 t_timeofday = 0.0
 ------------------------------------------
 beta_m = 0.0
 beta_p = 0.0
-beta_w = 5.704876489396046
-beta_t = 0.4417274914469739
+beta_w = -21.142580896233106
+beta_t = -2.187739453446822
 ------------------------------------------
-Training mean absolute error = 4.0631155875589595
-Training mean squared error = 25.336375675318493
-Training R_squared = 0.5240408985131838
+Training mean absolute error = 4.235283737386721
+Training mean squared error = 29.295555392767366
+Training R_squared = 0.8275808907135039
 ------------------------------------------
 wt_queuecong = -10000.0
 wt_avglocalcong = -10000.0
 wt_maxlocalcong = 0.0
 wt_avghyperlocalcong = -10000.0
 wt_maxhyperlocalcong = 0.0
-w_centrality = -0.8616958006844603
+w_centrality = 0.660684436117539
 t_horizonrelativetime = 0.0
 t_timeofday = 0.0
 ------------------------------------------
-mp_itemoverlap = 0.5901824335027006
+mp_itemoverlap = 1.2277369974403969
 mp_itemoverlappct = 0.0
-mp_overlapitemavginv = -0.02242130592203081
+mp_overlapitemavginv = -0.05750694666968439
 mp_overlapitemavgaltpods = 0.0
-m_ordersize = -0.23796291792737817
+m_ordersize = -0.4336515692825614
 m_oneitemflag = 0.0
-p_avgdisttostations = -0.0544205370855
+p_avgdisttostations = 0.02061945018992863
 p_pctusefulitems = 0.0
 ------------------------------------------
 pw_distance = 0.0
-pw_xsteps = 0.0357101098707114
-pw_ysteps = 0.04815061021650057
+pw_xsteps = -0.022386868871548254
+pw_ysteps = -0.006100098082558443
 p_avgdisttostations = 0.0
 p_pctusefulitems = 0.0
 w_centrality = 0.0
 ------------------------------------------
 pwt_existingcong = 0.0
 p_avgdisttostations = 0.0
-p_pctusefulitems = 0.8513268918756426
+p_pctusefulitems = 1.6318633977032235
 w_centrality = 0.0
 t_horizonrelativetime = 0.0
 t_timeofday = 0.0
 ------------------------------------------
 beta_m = 0.0
 beta_p = 0.0
-beta_w = 5.704876489396046
-beta_t = 0.4417274914469739
+beta_w = -21.14258089623308
+beta_t = -2.1877394534468206
 ------------------------------------------
-Training mean absolute error = 4.0631155875589595
-Training mean squared error = 25.336375675318493
-Training R_squared = 0.5240408985131838
+Training mean absolute error = 4.235283737386721
+Training mean squared error = 29.295555392767366
+Training R_squared = 0.8275808907135039
 -------------------------------------------------------------------------------------
 TEST
 -------------------------------------------------------------------------------------
+savemodelfilename_nowt = 
+Dict{String,AbstractArray{Float64,1}}("beta_pwt" => 1-dimensional DenseAxisArray{Float64,1,...} with index sets:
+    Dimension 1, [22, 4, 5, 1, 2, 3]
+And data, a 6-element Array{Float64,1}:
+ 0.0
+ 0.0
+ 1.631863397703225
+ 0.0
+ 0.0
+ 0.0,"shifts" => [0.0, 0.0, -21.142580896233106, -2.187739453446822],"beta_mp" => 1-dimensional DenseAxisArray{Float64,1,...} with index sets:
+    Dimension 1, [15, 16, 17, 18, 6, 7, 4, 5]
+And data, a 8-element Array{Float64,1}:
+  1.2277369974403969
+  0.0
+ -0.05750694666968438
+  0.0
+ -0.4336515692825616
+  0.0
+  0.02061945018992862
+  0.0,"beta_wt" => 1-dimensional DenseAxisArray{Float64,1,...} with index sets:
+    Dimension 1, [10, 11, 12, 13, 14, 1, 2, 3]
+And data, a 8-element Array{Float64,1}:
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+ 0.6606844361175394
+ 0.0
+ 0.0,"beta_pw" => 1-dimensional DenseAxisArray{Float64,1,...} with index sets:
+    Dimension 1, [19, 20, 21, 4, 5, 1]
+And data, a 6-element Array{Float64,1}:
+  0.0
+ -0.022386868871548254
+ -0.006100098082558433
+  0.0
+  0.0
+  0.0)
+savemodelfilename_full = 
+Dict{String,AbstractArray{Float64,1}}("beta_pwt" => 1-dimensional DenseAxisArray{Float64,1,...} with index sets:
+    Dimension 1, [22, 4, 5, 1, 2, 3]
+And data, a 6-element Array{Float64,1}:
+ 0.0
+ 0.0
+ 1.631863397703225
+ 0.0
+ 0.0
+ 0.0,"shifts" => [0.0, 0.0, -21.142580896233106, -2.187739453446822],"beta_mp" => 1-dimensional DenseAxisArray{Float64,1,...} with index sets:
+    Dimension 1, [15, 16, 17, 18, 6, 7, 4, 5]
+And data, a 8-element Array{Float64,1}:
+  1.2277369974403969
+  0.0
+ -0.05750694666968438
+  0.0
+ -0.4336515692825616
+  0.0
+  0.02061945018992862
+  0.0,"beta_wt" => 1-dimensional DenseAxisArray{Float64,1,...} with index sets:
+    Dimension 1, [10, 11, 12, 13, 14, 1, 2, 3]
+And data, a 8-element Array{Float64,1}:
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+ 0.6606844361175394
+ 0.0
+ 0.0,"beta_pw" => 1-dimensional DenseAxisArray{Float64,1,...} with index sets:
+    Dimension 1, [19, 20, 21, 4, 5, 1]
+And data, a 6-element Array{Float64,1}:
+  0.0
+ -0.022386868871548254
+ -0.006100098082558433
+  0.0
+  0.0
+  0.0)
 Full ML model saved

@@ -847,8 +847,14 @@ function traindynamicsubproblemmodel(trainfilelist, traincongestion_flag, traina
 
 	end
 
+	#---------------------------------------------------------------------------------------------------------#
+
 	include("scripts/training/mlmodel/models.jl")
-	beta_wt, beta_mp, beta_pw, beta_pwt, pred, shifts = linearregressionmodel_shift(sp_workstations, sp_pods, sp_orders, sp_times, actualobj, probleminstances, numsubproblems, featurelookup, featuresforprediction_wt, featuresforprediction_mp, featuresforprediction_pw, featuresforprediction_pwt, w_features, t_features, m_features, p_features, wt_features, mp_features, pw_features, pwt_features, w_featnums, t_featnums, p_featnums, m_featnums, wt_featnums, mp_featnums, pw_featnums, pwt_featnums, setbetas, traincongestion_flag, trainassignment_flag, weight)
+
+	#---------------------------------------------------------------------------------------------------------#
+
+	#Train model without any congestion parameters
+	beta_wt, beta_mp, beta_pw, beta_pwt, pred, shifts = linearregressionmodel_nocongestion(sp_workstations, sp_pods, sp_orders, sp_times, actualobj, probleminstances, numsubproblems, featurelookup, featuresforprediction_wt, featuresforprediction_mp, featuresforprediction_pw, featuresforprediction_pwt, w_features, t_features, m_features, p_features, wt_features, mp_features, pw_features, pwt_features, w_featnums, t_featnums, p_featnums, m_featnums, wt_featnums, mp_featnums, pw_featnums, pwt_featnums, setbetas, traincongestion_flag, trainassignment_flag, weight)
 	#printmodelsummary(beta_wt, beta_mp, beta_pw, beta_pwt, pred)
 
 	println("------------------------------------------")
@@ -891,6 +897,9 @@ function traindynamicsubproblemmodel(trainfilelist, traincongestion_flag, traina
 
 	mlmodel = (features = allfeatures, featurenames = featurenames, beta_wt = beta_wt, beta_mp = beta_mp, beta_pw = beta_pw, beta_pwt = beta_pwt, shifts = shifts, trainingpredictions = pred) 
 
+	#---------------------------------------------------------------------------------------------------------#
+
+	#Train model with congestion parameters
 	beta_wt2, beta_mp2, beta_pw2, beta_pwt2, pred2, shifts2 = linearregressionmodel_wt(sp_workstations, sp_pods, sp_orders, sp_times, actualobj, probleminstances, numsubproblems, featurelookup, featuresforprediction_wt, featuresforprediction_mp, featuresforprediction_pw, featuresforprediction_pwt, w_features, t_features, m_features, p_features, wt_features, mp_features, pw_features, pwt_features, w_featnums, t_featnums, p_featnums, m_featnums, wt_featnums, mp_featnums, pw_featnums, pwt_featnums, setbetas, traincongestion_flag, trainassignment_flag, weight)
 	#printmodelsummary(beta_wt, beta_mp, beta_pw, beta_pwt, pred)
 
@@ -921,8 +930,8 @@ function traindynamicsubproblemmodel(trainfilelist, traincongestion_flag, traina
 	meanobj = mean(values(actualobj))
 	for i in probleminstances, k in 1:numsubproblems[i]
 		if actualobj[i,k] > 1e-4
-			totalAE += abs(pred[i,k] - actualobj[i,k])
-			totalSE += (pred[i,k] - actualobj[i,k])^2
+			totalAE += abs(pred2[i,k] - actualobj[i,k])
+			totalSE += (pred2[i,k] - actualobj[i,k])^2
 			tss += (meanobj - actualobj[i,k])^2
 			validsps += 1
 		end
@@ -934,7 +943,56 @@ function traindynamicsubproblemmodel(trainfilelist, traincongestion_flag, traina
 
 	mlmodel2 = (features = allfeatures, featurenames = featurenames, beta_wt = beta_wt2, beta_mp = beta_mp2, beta_pw = beta_pw2, beta_pwt = beta_pwt2, shifts = shifts2, trainingpredictions = pred2) 
 
-	return mlmodel, mlmodel2
+	#---------------------------------------------------------------------------------------------------------#
+
+	#Train model with intercept term (and congestion parameters)
+	beta_wt3, beta_mp3, beta_pw3, beta_pwt3, pred3, shifts3 = linearregressionmodel_intercept(sp_workstations, sp_pods, sp_orders, sp_times, actualobj, probleminstances, numsubproblems, featurelookup, featuresforprediction_wt, featuresforprediction_mp, featuresforprediction_pw, featuresforprediction_pwt, w_features, t_features, m_features, p_features, wt_features, mp_features, pw_features, pwt_features, w_featnums, t_featnums, p_featnums, m_featnums, wt_featnums, mp_featnums, pw_featnums, pwt_featnums, setbetas, traincongestion_flag, trainassignment_flag, weight)
+	#printmodelsummary(beta_wt, beta_mp, beta_pw, beta_pwt, pred)
+
+	println("------------------------------------------")
+	for f in featuresforprediction_wt
+		println(featurenames[f], " = ", value(beta_wt3[f]))
+	end
+	println("------------------------------------------")
+	for f in featuresforprediction_mp
+		println(featurenames[f], " = ", value(beta_mp3[f]))
+	end
+	println("------------------------------------------")
+	for f in featuresforprediction_pw
+		println(featurenames[f], " = ", value(beta_pw3[f]))
+	end
+	println("------------------------------------------")
+	for f in featuresforprediction_pwt
+		println(featurenames[f], " = ", value(beta_pwt3[f]))
+	end
+	println("------------------------------------------")
+	println("beta_m = ", shifts3[1])
+	println("beta_p = ", shifts3[2])
+	println("beta_w = ", shifts3[3])
+	println("beta_t = ", shifts3[4])
+	println("beta_0 = ", shifts3[5])
+	println("------------------------------------------")
+
+	totalAE, totalSE, tss, validsps = 0, 0, 0, 0
+	meanobj = mean(values(actualobj))
+	for i in probleminstances, k in 1:numsubproblems[i]
+		if actualobj[i,k] > 1e-4
+			totalAE += abs(pred3[i,k] - actualobj[i,k])
+			totalSE += (pred3[i,k] - actualobj[i,k])^2
+			tss += (meanobj - actualobj[i,k])^2
+			validsps += 1
+		end
+	end
+
+	println("Training mean absolute error = ", totalAE / validsps)
+	println("Training mean squared error = ", totalSE / validsps)
+	println("Training R_squared = ", 1 - totalSE/tss)
+
+	mlmodel3 = (features = allfeatures, featurenames = featurenames, beta_wt = beta_wt3, beta_mp = beta_mp3, beta_pw = beta_pw3, beta_pwt = beta_pwt3, shifts = shifts3, trainingpredictions = pred3) 
+
+	#---------------------------------------------------------------------------------------------------------#
+
+	return mlmodel, mlmodel2, mlmodel3
 
 end
 
@@ -1090,7 +1148,7 @@ function traindynamicsubproblemmodel_mlpass(trainfilelist, traincongestion_flag,
 	end
 
 	include("scripts/dynamicsubproblem/mlmodels.jl")
-	beta_wt, beta_mp, beta_pw, beta_pwt, pred, shifts = linearregressionmodel_shift(sp_workstations, sp_pods, sp_orders, sp_times, actualobj, probleminstances, numsubproblems, featurelookup, featuresforprediction_wt, featuresforprediction_mp, featuresforprediction_pw, featuresforprediction_pwt, w_features, t_features, m_features, p_features, wt_features, mp_features, pw_features, pwt_features, w_featnums, t_featnums, p_featnums, m_featnums, wt_featnums, mp_featnums, pw_featnums, pwt_featnums, setbetas, traincongestion_flag, trainassignment_flag, weight)
+	beta_wt, beta_mp, beta_pw, beta_pwt, pred, shifts = linearregressionmodel_nocongestion(sp_workstations, sp_pods, sp_orders, sp_times, actualobj, probleminstances, numsubproblems, featurelookup, featuresforprediction_wt, featuresforprediction_mp, featuresforprediction_pw, featuresforprediction_pwt, w_features, t_features, m_features, p_features, wt_features, mp_features, pw_features, pwt_features, w_featnums, t_featnums, p_featnums, m_featnums, wt_featnums, mp_featnums, pw_featnums, pwt_featnums, setbetas, traincongestion_flag, trainassignment_flag, weight)
 	#printmodelsummary(beta_wt, beta_mp, beta_pw, beta_pwt, pred)
 
 	println("------------------------------------------")

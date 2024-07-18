@@ -268,6 +268,53 @@ globalpartition = partitioninfo[globalpartitionid]
 
 #-----------------------------------------------------------------------------------#
 
+println("----------------------Solve instance----------------------")
+
+#Initialize global solution
+globalsolution = createemptysolution(orders, pods, podswith, workstations)
+partitionsolution = Dict()
+for s in 1:numpartitions
+	currpartition = partitioninfo[s]
+	partitionsolution[s] = createemptysolution(currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations)
+end
+solvemetrics = (solve_time=zeros(numpartitions+1), solvetime_init=zeros(numpartitions+1), solvetime_spsel=zeros(numpartitions+1), solvetime_sp=zeros(numpartitions+1), lsnsiterations=zeros(numpartitions+1))
+writeglobalsolutionoutputs_init(globalsolutionfilename)
+currsolforpartition = Dict()
+
+#Initialize each partition (greedy heuristic or empty)
+counter = 1
+for s in 1:numpartitions
+
+	println("===== PARTITION $s =====")
+
+	#Get partition info
+	currpartition = partitioninfo[s]
+
+	#Find an initial solution
+	currsol = createemptysolution(currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations)
+	initstarttime = time()
+	if solutioninitialization == "greedy"
+		currsol = findgreedysolution(currpartition, currsol, currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations)
+	elseif solutioninitialization == "biggreedy"
+		currsol = findgreedysolution(currpartition, currsol, [m for m in currpartition.orders if length(itemson[m]) >= 4], currpartition.pods, currpartition.podswith, currpartition.workstations)
+	end
+	initializationtime = time() - initstarttime
+
+	#Report on initial solution
+	getcurrentobjective(currpartition, currsol)
+	if visualizationflag == 1
+		workstationviz(string(visualizationfolder,"/station_partition", s,"_initial.png"), currpartition, currsol)
+	end
+	writeglobalsolutionoutputs_iter("init", initializationtime, initializationtime, 0, 0, globalsolutionfilename, s, currpartition, currsol)
+	solvemetrics.solvetime_init[s] += initializationtime
+
+	#Save initialized solution
+	currsolforpartition[s] = currsol
+
+end
+
+#-----------------------------------------------------------------------------------#
+
 #Static
 subproblemfeatures_df = createemptydataframe()
 
@@ -297,44 +344,15 @@ mp_features, pw_features, pwt_features, wt_features = getsynergyfeatures()
 
 #-----------------------------------------------------------------------------------#
 
-println("----------------------Solve instance----------------------")
-
-#Initialize global solution
-globalsolution = createemptysolution(orders, pods, podswith, workstations)
-partitionsolution = Dict()
-for s in 1:numpartitions
-	currpartition = partitioninfo[s]
-	partitionsolution[s] = createemptysolution(currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations)
-end
-solvemetrics = (solve_time=zeros(numpartitions+1), solvetime_init=zeros(numpartitions+1), solvetime_spsel=zeros(numpartitions+1), solvetime_sp=zeros(numpartitions+1), lsnsiterations=zeros(numpartitions+1))
-writeglobalsolutionoutputs_init(globalsolutionfilename)
-
 #Solve each partition
 counter = 1
 for s in 1:numpartitions
 
 	println("===== PARTITION $s =====")
 
-	#Get partition info
+	#Get partition and solution info
 	currpartition = partitioninfo[s]
-
-	#Find an initial solution
-	currsol = createemptysolution(currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations)
-	initstarttime = time()
-	if solutioninitialization == "greedy"
-		currsol = findgreedysolution(currpartition, currsol, currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations)
-	elseif solutioninitialization == "biggreedy"
-		currsol = findgreedysolution(currpartition, currsol, [m for m in currpartition.orders if length(itemson[m]) >= 4], currpartition.pods, currpartition.podswith, currpartition.workstations)
-	end
-	initializationtime = time() - initstarttime
-
-	#Report on initial solution
-	getcurrentobjective(currpartition, currsol)
-	if visualizationflag == 1
-		workstationviz(string(visualizationfolder,"/station_partition", s,"_initial.png"), currpartition, currsol)
-	end
-	writeglobalsolutionoutputs_iter("init", initializationtime, initializationtime, 0, 0, globalsolutionfilename, s, currpartition, currsol)
-	solvemetrics.solvetime_init[s] += initializationtime
+	currsol = currsolforpartition[s]
 
 	#Find subproblem windows
 	windows, windowsduring, windowidlookup, windowscontaining = enumeratesubproblemwindows(currpartition, maxworkstationspersubproblem, subproblemtimelength)
