@@ -51,9 +51,9 @@ const GRB_ENV = Gurobi.Env()
 
 # Select the instancecd
 row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
-warehouseparamsfilename = "data/warehouse_sizes_and_capacities.csv"
-instanceparamsfilename = "data/train_instance_parameters.csv"
-methodparamsfilename = "data/train_run_parameters.csv"
+warehouseparamsfilename = "data/extensions/orderslots/warehouse_sizes_and_capacities.csv"
+instanceparamsfilename = "data/extensions/orderslots/train_instance_parameters.csv"
+methodparamsfilename = "data/extensions/orderslots/train_run_parameters.csv"
 warehouseparms = CSV.read(warehouseparamsfilename, DataFrame)
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
