@@ -25,6 +25,7 @@ include("scripts/lsns/updatesolution.jl")
 include("scripts/lsns/modelfeatures/getlearningbenchmarkfeatures.jl")
 include("scripts/lsns/modelfeatures/preprocesslearningbenchmarkfeatures.jl")
 include("scripts/lsns/modelfeatures/getmlfeatures.jl")
+include("scripts/lsns/modelfeatures/updatecongestionfeatures.jl")
 include("scripts/lsns/subproblemselection/selectrandomsubproblem.jl")
 include("scripts/lsns/subproblemselection/selectsynergisticsubproblem.jl")
 include("scripts/lsns/subproblemselection/selectlearnthenoptimizesubproblem.jl")
@@ -40,6 +41,7 @@ println("Scripts imported")
 visualizationflag = 0			# 1 --> Produce visualizations of warehouse and workstation solutions
 debugprintstatements = 0 		# When a bug is found, set this to 1 for next run to get more detailed error info (warning: it's a lot of print statements, one for each unit test)
 debugmode = 0					# 1 --> will perform solution consistency unit tests at each LSNS iteration, use for debugging when changing the code, 0 --> no solution checks, use for computational experiments
+subproblemstatsreporting_flag = 1
 
 #Initialize Gurobi
 const GRB_ENV = Gurobi.Env()
@@ -48,7 +50,7 @@ const GRB_ENV = Gurobi.Env()
 row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
 testingparamsfilename = "data/test_instance_parameters.csv"
-methodparamsfilename = "data/test_run_parameters.csv" #extensions/anystorageloc/
+methodparamsfilename = "data/extensions/spsize/test_run_parameters.csv" #extensions/anystorageloc/
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 testingparms = CSV.read(testingparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
@@ -157,7 +159,7 @@ println("Parameters read")
 
 #Files
 mlmodelfilename = string("models/", mlmodelname, ".jld2")
-projectfolder = "outputs/mainruns/"
+projectfolder = "outputs/spsize/"
 outputfolder = string(projectfolder,"run", run_id,"_", today())
 if !(isdir(projectfolder))
 	mkdir(projectfolder)
@@ -170,6 +172,7 @@ visualizationfolder = string(outputfolder, "/viz")
 if !(isdir(visualizationfolder))
 	mkdir(visualizationfolder)
 end
+subproblemstatsreportingfilename = string(outputfolder, "/subproblems.csv")
 
 #Initialize timer
 time()
@@ -350,18 +353,34 @@ for s in 1:numpartitions
 		sp = constructsubproblem(currpartition, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, currsol)
 
 		#Re-optimize subproblem
-		sp_obj, sp_solvetime, h_sp, y_sp, z_sp, f_sp, g_sp, v_sp, feasibleflag_sp = reoptimizesubproblem(sp, currsol, currpartition, 0)
+		sp_obj, sp_solvetime, h_sp, y_sp, z_sp, f_sp, g_sp, v_sp, feasibleflag_sp, sp_buildtime = reoptimizesubproblem(sp, currsol, currpartition, 0)
 		println("Re-opt time = ", sp_solvetime, " seconds")
 
 		#Update solution
 		spupdatestarttime = time()
 		currsol = updatesolution(sp, currsol, currpartition, sp_obj, h_sp, y_sp, v_sp)
+		println("Congestion feature update time = ")
+		@time updatecongestionfeatures()
 		lastoptimizeddifference = updatelastoptimizeddifference(lastoptimizeddifference, tabulist, sp_winid, windows, predicted_obj, sp_obj)
 		iterationtime = time() - iterationstarttime
 		updatesolvemetrics(s, iterationtime, sp_solvetime, spselectiontime)
 
 		#Write solution metrics
 		writeglobalsolutionoutputs_iter(sp_iter, 0, iterationtime, spselectiontime, sp_solvetime, globalsolutionfilename, s, currpartition, currsol)
+
+		#Subproblem statistics
+		if subproblemstatsreporting_flag == 1
+			itemspicked = sum(sum(length(currsol.itempodpicklist[w,t]) for t in sp.times) for w in sp.workstations)
+			podspicked = sum(sum(length(currsol.podsworkedat[w,t]) for t in sp.times) for w in sp.workstations)
+			sp_util = (itemprocesstime*itemspicked + podprocesstime*podspicked) / sum(sum(tstep for t in sp.times) for w in sp.workstations) 
+			sp_pileon = itemspicked/podspicked
+			df = DataFrame(solvetime = sp_solvetime, buildtime = sp_buildtime, sp_obj = sp_obj, new_util = sp_util, new_pileon = sp_pileon, itemspicked=itemspicked, podspicked=podspicked)
+			if sp_iter == 1
+				CSV.write(subproblemstatsreportingfilename, df)
+			else
+				CSV.write(subproblemstatsreportingfilename, df, append=true)
+			end
+		end
 
 		#Visualize new solution
 		if visualizationflag == 1
