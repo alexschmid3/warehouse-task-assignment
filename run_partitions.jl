@@ -20,7 +20,6 @@ include("scripts/lsns/enumeratesubproblemwindows.jl")
 include("scripts/lsns/createemptysolution.jl")
 include("scripts/lsns/updatesolvemetrics.jl")
 include("scripts/lsns/constructsubproblem.jl")
-include("scripts/lsns/createemptysolution.jl")
 include("scripts/lsns/reoptimizesubproblem.jl")
 include("scripts/lsns/updatesolution.jl")
 include("scripts/lsns/modelfeatures/getlearningbenchmarkfeatures.jl")
@@ -46,10 +45,10 @@ debugmode = 0					# 1 --> will perform solution consistency unit tests at each L
 const GRB_ENV = Gurobi.Env()
 
 # Select the instancecd
-row_id = 3 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
+row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
 testingparamsfilename = "data/test_instance_parameters.csv"
-methodparamsfilename = "data/extensions/anystorageloc/test_run_parameters.csv"
+methodparamsfilename = "data/test_run_parameters.csv" #extensions/anystorageloc/
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 testingparms = CSV.read(testingparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
@@ -298,7 +297,7 @@ for s in 1:numpartitions
 	currpartition = partitioninfo[s]
 
 	#Find an initial solution
-	currsol = createemptysolution(currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations)
+	currsol = partitionsolution[s] #createemptysolution(currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations)
 	initstarttime = time()
 	if solutioninitialization == "greedy"
 		currsol = findgreedysolution(currpartition, currsol, currpartition.orders, currpartition.pods, currpartition.podswith, currpartition.workstations)
