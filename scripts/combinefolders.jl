@@ -1,7 +1,7 @@
 
 using CSV, DataFrames 
 
-figuredirectory = string("outputs/multistop/partitionrun")
+figuredirectory = string("outputs/anystorageloc")
 
 #Get list of files
 folderlist = readdir(figuredirectory)

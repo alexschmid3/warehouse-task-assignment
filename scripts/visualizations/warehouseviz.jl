@@ -47,7 +47,7 @@ function warehouseviz(wsdrawingname, vizx)
 	intersectionmarks, intersectionlabels = [], []
 	thickness = 3
 	intersectioncolor = (150,0,0)
-	maxviol = maximum(values(intersectionviolations))
+	maxviol = maximum(values(maxtraffic))
 	for l in intersections
 		newx = intcoords[l][1] * (vizx - 100) / warehouse_x_length_meters - (vizx - 100) / 2
 		newy = intcoords[l][2] * (vizy - 100) / warehouse_y_length_meters - (vizy - 100) / 2
@@ -62,9 +62,9 @@ function warehouseviz(wsdrawingname, vizx)
 
 		#Congestion viz
 		if intersectionviolations[l] > 1e-4 
-			trafficcolor = ((intersectionviolations[l]+2)/(maxviol+2)*255,0,0)
+			trafficcolor = ((maxtraffic[l])/(maxviol)*255,0,0)
 		else
-			trafficcolor = (maxtraffic[l]*255,maxtraffic[l]*255,maxtraffic[l]*255)
+			trafficcolor = ((1-maxtraffic[l])*255,(1-maxtraffic[l])*255,(1-maxtraffic[l])*255)
 		end
 		push!(intersectionmarks, (Point((newx, newy)), 15*vizx/1000, thickness, trafficcolor))
 		
@@ -148,7 +148,7 @@ function warehouseviz(wsdrawingname, vizx)
 	end
 	#fontsize(20*vizx/2000)
 	#for lbl in intersectionlabels
-	#	label(lbl[2], :N , lbl[1] + Point(0,-5*vizx/600))
+	#	Luxor.text(lbl[2], lbl[1])
 	#end
 
 	finish()

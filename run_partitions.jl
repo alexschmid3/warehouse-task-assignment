@@ -48,10 +48,10 @@ const GRB_ENV = Gurobi.Env()
 
 # Select the run files
 row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
-instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
-testingparamsfilename = "data/test_instance_parameters.csv"
-methodparamsfilename = "data/extensions/anystorageloc/test_run_parameters.csv" #extensions/anystorageloc/
-projectfolder = "outputs/anystorageloc/"
+instanceparamsfilename = "data/extensions/orderslots/warehouse_sizes_and_capacities.csv"
+testingparamsfilename = "data/extensions/orderslots/test_instance_parameters.csv"
+methodparamsfilename = "data/extensions/orderslots/test_run_parameters.csv" #extensions/anystorageloc/
+projectfolder = "outputs/orderslots/"
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 testingparms = CSV.read(testingparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
@@ -353,7 +353,7 @@ for s in 1:numpartitions
 		sp = constructsubproblem(currpartition, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, currsol)
 
 		#Re-optimize subproblem
-		sp_obj, sp_solvetime, h_sp, y_sp, z_sp, f_sp, g_sp, v_sp, feasibleflag_sp, sp_buildtime = reoptimizesubproblem(sp, currsol, currpartition, 0)
+		sp_obj, sp_solvetime, h_sp, y_sp, z_sp, f_sp, g_sp, v_sp, feasibleflag_sp, sp_buildtime = reoptimizesubproblem(sp, currsol, currpartition, 1)
 		println("Re-opt time = ", sp_solvetime, " seconds")
 
 		#Update solution

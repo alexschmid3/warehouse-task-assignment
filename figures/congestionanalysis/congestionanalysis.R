@@ -1,4 +1,4 @@
-install.packages(c("tidyverse", "shiny", "leaflet", "DT", "hash"))
+#install.packages(c("tidyverse", "shiny", "leaflet", "DT", "hash"))
 library(shiny)
 library(DT)
 library(tidyverse)
@@ -8,8 +8,8 @@ library(dplyr)
 #---------------------------------------------------------------#
 
 #Read in detour and delay distribution data
-congdata <- read_csv('congestionsolution.csv')
-nocongdata <- read_csv('nocongestionsolution.csv')
+congdata <- read_csv('congestionsolution2.csv')
+nocongdata <- read_csv('nocongestionsolution2.csv')
 
 #---------------------------------------------------------------#
 #---------------------------------------------------------------#
@@ -31,13 +31,13 @@ update_geom_defaults("text", list(size = 48))
 
 dev.new(width=8, height=4)
 
-png(file="congestionhistogram.png", width=900, height=1200)
+png(file="congestiondensity.png", width=900, height=1200)
 # width=450, height=600)
 
 alldata %>%
   ggplot(aes(x=congutil, color=datalabel, fill=datalabel)) +
   geom_density(alpha=0.3,size=1.5)+ 
-  geom_vline(data = mean_detour, aes(xintercept = 1), size=1.5)+
+  geom_vline(aes(xintercept = 1), size=1.5)+
   #xlim(0, 0.00000001)+
   #ylim(0, 100)+
   scale_colour_manual("", 
@@ -68,7 +68,7 @@ png(file="congestionhistogram.png", width=900, height=1200)
 alldata %>%
   ggplot(aes(x=congutil, color=datalabel, fill=datalabel)) +
   geom_histogram(alpha=0.3,size=1.5)+ 
-  geom_vline(data = mean_detour, aes(xintercept = 1.05), size=1.5)+
+  geom_vline(aes(xintercept = 1.05), size=1.5)+
   #xlim(0, 0.00000001)+
   #ylim(0, 100)+
   scale_colour_manual("", 
