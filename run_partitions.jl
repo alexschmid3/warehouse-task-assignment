@@ -374,7 +374,7 @@ for s in 1:numpartitions
 			podspicked = sum(sum(length(currsol.podsworkedat[w,t]) for t in sp.times) for w in sp.workstations)
 			sp_util = (itemprocesstime*itemspicked + podprocesstime*podspicked) / sum(sum(tstep for t in sp.times) for w in sp.workstations) 
 			sp_pileon = itemspicked/podspicked
-			df = DataFrame(solvetime = sp_solvetime, buildtime = sp_buildtime, sp_obj = sp_obj, new_util = sp_util, new_pileon = sp_pileon, itemspicked=itemspicked, podspicked=podspicked)
+			df = DataFrame(row_id=row_id, instance_id=instance_id, warehouse_id=warehouse_id, targetnumworkstations=targetnumworkstations, subproblemtimelength=subproblemtimelength, targetnumorders=targetnumorders, targetnumpods=targetnumpods, targetnumitems=targetnumitems, solvetime = sp_solvetime, buildtime = sp_buildtime, sp_obj = sp_obj, new_util = sp_util, new_pileon = sp_pileon, itemspicked=itemspicked, podspicked=podspicked)
 			if sp_iter == 1
 				CSV.write(subproblemstatsreportingfilename, df)
 			else
