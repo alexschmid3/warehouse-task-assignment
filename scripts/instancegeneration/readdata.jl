@@ -352,7 +352,7 @@ function podarcsets(items, arclength)
 	podnodeset = Dict()
 	for p in pods
 		podnodeset[p] = []
-		if anystorageloc_flag == 1
+		if anystoragelocation_flag == 1
 			for l in union(workstations, storagelocs), t in extendedtimes
 				push!(podnodeset[p] , extendednodes[l,t])
 			end
