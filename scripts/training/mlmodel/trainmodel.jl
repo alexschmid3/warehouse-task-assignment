@@ -809,6 +809,8 @@ end
 
 #-----------------------------------------------------------------------------------#
 
+#trainfilelist, traincongestion_flag, trainassignment_flag, setbetas = filelist, traincongestion_flag, trainassignment_flag, (0,0,0,0)
+
 function traindynamicsubproblemmodel(trainfilelist, traincongestion_flag, trainassignment_flag, setbetas)
 
 	w_features, t_features, m_features, p_features, wt_features, mp_features, pw_features, pwt_features, actualobj, oldobj, actualimp, sp_workstations, sp_times, sp_pods, sp_orders = initializedatastructures()

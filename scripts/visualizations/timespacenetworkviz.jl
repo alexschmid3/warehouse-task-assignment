@@ -17,7 +17,7 @@ function timespacenetwork(drawingname, arclistlist, colorlist, thicknesslist, da
 
 	#Find coordinates for each time-space node
 	nodelist = []
-	x_size_trimmed, y_size_trimmed = x_size*0.9, y_size*0.9
+	x_size_trimmed, y_size_trimmed = x_size*0.83, y_size*0.83
 	k1 = x_size_trimmed/(horizon/tstep + 2) 
 	k2 = y_size_trimmed/(numlocs + 2)
 	for i in 1:numnodes
@@ -94,9 +94,13 @@ function timespacenetwork(drawingname, arclistlist, colorlist, thicknesslist, da
 	fontsize(40)
 
 	#Add location labels
-	for l in 1:numlocs
+	for l in 1:12
 		coord = nodePoints[nodes[(l,0.0)]]
-		label("Loc $l       ", :W , coord)
+		label("Storage location $l       ", :W , coord)
+	end
+	for l in 13:14
+		coord = nodePoints[nodes[(l,0.0)]]
+		label("Workstation $l       ", :W , coord)
 	end
 
 	#Add time labels

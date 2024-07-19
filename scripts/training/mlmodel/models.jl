@@ -5,7 +5,7 @@ function linearregressionmodel(sp_workstations, sp_pods, sp_orders, sp_times, ac
 	#consistency_flag, x, y, z, v, q, actualobj = 1, length(workstationgrouplist), x_k, y_k, z_k, v_k, q_k, obj_k
 
 	model = Model(Gurobi.Optimizer)
-	set_optimizer_attribute(model, "TimeLimit", 60*60) # iptimelimit)
+	set_optimizer_attribute(model, "TimeLimit", 60*60*2) # iptimelimit)
 	set_optimizer_attribute(model, "OutputFlag", 0)
 	set_optimizer_attribute(model, "IntegralityFocus", 1)
 
@@ -131,7 +131,7 @@ function linearregressionmodel_nocongestion(sp_workstations, sp_pods, sp_orders,
 	#consistency_flag, x, y, z, v, q, actualobj = 1, length(workstationgrouplist), x_k, y_k, z_k, v_k, q_k, obj_k
 
 	model = Model(Gurobi.Optimizer)
-	set_optimizer_attribute(model, "TimeLimit", 60*60) # iptimelimit)
+	set_optimizer_attribute(model, "TimeLimit", 60*60*2) # iptimelimit)
 	set_optimizer_attribute(model, "OutputFlag", 1)
 	set_optimizer_attribute(model, "IntegralityFocus", 1)
 
@@ -300,7 +300,7 @@ function linearregressionmodel_shift_transform(sp_workstations, sp_pods, sp_orde
 	transformations = 1:3 #1-none, 2-log, 3-squared
 		
 	model = Model(Gurobi.Optimizer)
-	set_optimizer_attribute(model, "TimeLimit", 60*60) # iptimelimit)
+	set_optimizer_attribute(model, "TimeLimit", 60*60*2) # iptimelimit)
 	set_optimizer_attribute(model, "OutputFlag", 1)
 	set_optimizer_attribute(model, "IntegralityFocus", 1)
 
@@ -485,7 +485,7 @@ function linearregressionmodel_wt(sp_workstations, sp_pods, sp_orders, sp_times,
 	#consistency_flag, x, y, z, v, q, actualobj = 1, length(workstationgrouplist), x_k, y_k, z_k, v_k, q_k, obj_k
 
 	model = Model(Gurobi.Optimizer)
-	set_optimizer_attribute(model, "TimeLimit", 60*60) # iptimelimit)
+	set_optimizer_attribute(model, "TimeLimit", 60*60*2) # iptimelimit)
 	set_optimizer_attribute(model, "OutputFlag", 1)
 	set_optimizer_attribute(model, "IntegralityFocus", 1)
 
@@ -636,7 +636,7 @@ function linearregressionmodel_intercept(sp_workstations, sp_pods, sp_orders, sp
 	#consistency_flag, x, y, z, v, q, actualobj = 1, length(workstationgrouplist), x_k, y_k, z_k, v_k, q_k, obj_k
 
 	model = Model(Gurobi.Optimizer)
-	set_optimizer_attribute(model, "TimeLimit", 60*60) # iptimelimit)
+	set_optimizer_attribute(model, "TimeLimit", 60*60*2) # iptimelimit)
 	set_optimizer_attribute(model, "OutputFlag", 1)
 	set_optimizer_attribute(model, "IntegralityFocus", 1)
 
@@ -789,7 +789,7 @@ function linearregressionmodel_compare(sp_workstations, sp_pods, sp_orders, sp_t
 	#consistency_flag, x, y, z, v, q, actualobj = 1, length(workstationgrouplist), x_k, y_k, z_k, v_k, q_k, obj_k
 
 	model = Model(Gurobi.Optimizer)
-	set_optimizer_attribute(model, "TimeLimit", 60*60) # iptimelimit)
+	set_optimizer_attribute(model, "TimeLimit", 60*60*2) # iptimelimit)
 	set_optimizer_attribute(model, "OutputFlag", 1)
 	set_optimizer_attribute(model, "IntegralityFocus", 1)
 

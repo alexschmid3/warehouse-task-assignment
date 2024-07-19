@@ -46,10 +46,10 @@ debugmode = 0					# 1 --> will perform solution consistency unit tests at each L
 const GRB_ENV = Gurobi.Env()
 
 # Select the instancecd
-row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
+row_id = 3 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
 testingparamsfilename = "data/test_instance_parameters.csv"
-methodparamsfilename = "data/test_run_parameters.csv"
+methodparamsfilename = "data/extensions/anystorageloc/test_run_parameters.csv"
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 testingparms = CSV.read(testingparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
@@ -157,7 +157,7 @@ println(random_seed)
 println("Parameters read")
 
 #Files
-mlmodelfilename = string("models/newpaper/", mlmodelname, ".jld2")
+mlmodelfilename = string("models/", mlmodelname, ".jld2")
 projectfolder = "outputs/mainruns/"
 outputfolder = string(projectfolder,"run", run_id,"_", today())
 if !(isdir(projectfolder))
@@ -287,6 +287,7 @@ for s in 1:numpartitions
 end
 solvemetrics = (solve_time=zeros(numpartitions+1), solvetime_init=zeros(numpartitions+1), solvetime_spsel=zeros(numpartitions+1), solvetime_sp=zeros(numpartitions+1), lsnsiterations=zeros(numpartitions+1))
 
+
 #Solve each partition
 counter = 1
 for s in 1:numpartitions
@@ -402,15 +403,39 @@ println("Done!")
 #-----------------------------------------------------------------------------------#
 
 #=
+function findpath(n1)
+
+	nodecosts = [999999 for n in 1:numnodes]
+	nodecosts[n1] = 0
+	for a in sort(1:numarcs, by=x->nodelookup[arclookup[x][1]][2])
+		nstart, nend = arclookup[a]
+		if nodecosts[nend] > nodecosts[nstart] - 1e-10
+			nodecosts[nend] = nodecosts[nstart]
+		end
+	end
+
+	return nodecosts
+
+end
+
 include("scripts/visualizations/timespacenetworkviz.jl")
 numlocs = maximum(workstations)
-for p in partitioninfo[1].pods
-	wtowarcs = [a for a in 1:numarcs if (nodelookup[arclookup[a][1]][1] in workstations) & (nodelookup[arclookup[a][2]][1] in workstations) & (nodelookup[arclookup[a][1]][1] != nodelookup[arclookup[a][2]][1])]
-	tsnarcs = setdiff(podarcset[p], wtowarcs)
+for p in partitioninfo[1].pods[1:10]
+	#wtowarcs = [a for a in 1:numarcs if (nodelookup[arclookup[a][1]][1] in workstations) & (nodelookup[arclookup[a][2]][1] in workstations) & (nodelookup[arclookup[a][1]][1] != nodelookup[arclookup[a][2]][1])]
+	tsnarcs = [a for a in podarcset[p] if nodelookup[arclookup[a][2]][2] <= 360]
+	pathexists = findpath(nodes[podstorageloc[p],0])
+	for a in podarcset[p]
+		if (arclookup[a][1] > numnodes) || (pathexists[arclookup[a][1]] == 999999)
+			remove!(tsnarcs, a)
+		end
+	end
+	usedarcs = union([arcs[nodes[1,t],nodes[1,t+tstep]] for t in 0:tstep:90]
+	,[arcs[nodes[1,120],nodes[14,120+arclength[1,14]]], arcs[nodes[14,120+arclength[1,14]],nodes[11,120+arclength[1,14]+arclength[14,11]]]]
+	,[arcs[nodes[11,t],nodes[11,t+tstep]] for t in 210:tstep:360-tstep])
 
-	arclistlist = [tsnarcs, wtowarcs]
-	colorlist = [(150,150,150), (255,0,0)]
-	thicknesslist = [5,8]
+	arclistlist = [tsnarcs, usedarcs]
+	colorlist = [(150,150,150), (132,14,14)]
+	thicknesslist = [5,10]
 	dashlist = ["solid", "solid"]
 	fractlist = [0,0]
 	timespacenetwork(string(visualizationfolder, "/tsn_pod", p,".png"), arclistlist, colorlist, thicknesslist, dashlist, fractlist, 4000, 2000)
@@ -429,5 +454,49 @@ for p in partitioninfo[1].pods
 	fractlist = [0,0,0]
 	timespacenetwork(string(visualizationfolder, "/tsn_pod", p,"_path.png"), arclistlist, colorlist, thicknesslist, dashlist, fractlist, 4000, 2000)
 end
-=#
 
+include("scripts/visualizations/timespacenetworkviz.jl")
+p=1
+#Part 2
+tsnarcs = [a for a in podarcset[p] if nodelookup[arclookup[a][2]][2] <= 360]
+pathexists = findpath(nodes[podstorageloc[p],0])
+for a in podarcset[p]
+	if (arclookup[a][1] > numnodes) || (pathexists[arclookup[a][1]] == 999999)
+		remove!(tsnarcs, a)
+	end
+end
+usedarcs = union([arcs[nodes[1,t],nodes[1,t+tstep]] for t in 0:tstep:90]
+,[arcs[nodes[1,120],nodes[14,120+arclength[1,14]]], arcs[nodes[14,120+arclength[1,14]],nodes[11,120+arclength[1,14]+arclength[14,11]]]]
+,[arcs[nodes[11,t],nodes[11,t+tstep]] for t in 210:tstep:360-tstep])
+
+arclistlist = [tsnarcs, usedarcs]
+colorlist = [(180,180,180), (132,14,14)]
+thicknesslist = [5,10]
+dashlist = ["solid", "solid"]
+fractlist = [0,0]
+timespacenetwork(string(visualizationfolder, "/tsn_anystorage_pod", p,".png"), arclistlist, colorlist, thicknesslist, dashlist, fractlist, 4000, 2000)
+
+#Part 1
+tsnarcs = [a for a in podarcset[p] if (nodelookup[arclookup[a][2]][2] <= 360) & (nodelookup[arclookup[a][1]][1] in [1,14]) & (nodelookup[arclookup[a][2]][1] in [1,14])]
+pathexists = findpath(nodes[podstorageloc[p],0])
+for a in podarcset[p]
+	if (arclookup[a][1] > numnodes) || (pathexists[arclookup[a][1]] == 999999)
+		remove!(tsnarcs, a)
+	end
+end
+usedarcs = union([arcs[nodes[1,t],nodes[1,t+tstep]] for t in 0:tstep:90]
+,[arcs[nodes[1,120],nodes[14,120+arclength[1,14]]], arcs[nodes[14,120+arclength[1,14]],nodes[1,120+arclength[1,14]+arclength[14,1]]]]
+,[arcs[nodes[1,t],nodes[1,t+tstep]] for t in 120+arclength[1,14]+arclength[14,1]:tstep:360-tstep])
+
+arclistlist = [tsnarcs, usedarcs]
+colorlist = [(180,180,180), (132,14,14)]
+thicknesslist = [5,10]
+dashlist = ["solid", "solid"]
+fractlist = [0,0]
+timespacenetwork(string(visualizationfolder, "/tsn_onlystorage_pod", p,".png"), arclistlist, colorlist, thicknesslist, dashlist, fractlist, 4000, 2000)
+
+
+
+
+
+=#

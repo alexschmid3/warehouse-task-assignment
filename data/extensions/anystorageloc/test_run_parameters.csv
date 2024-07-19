@@ -1,8 +1,8 @@
 run_id,test_instance_id,method,initialization,targetnumpods,targetnumorders,targetnumitems,subproblemsevaluated,subproblemtimeinterval,timeforreooptimization,timeforsubproblemselection,tabutype,mlmodel,partitionobjective,stationtostation_flag,spworkstations,anystorageloc_flag
-1,41,LTO,none,28,20,64,30,360,5,25,tabu15,mlmodel_wh5,none,1,,0
-2,41,LTO,greedy,28,20,64,30,360,5,25,tabu15,mlmodel_wh5,none,1,,0
-3,41,LTO,none,28,20,64,30,360,5,25,tabu15,mlmodel_wh5,none,1,,1
-4,41,LTO,greedy,28,20,64,30,360,5,25,tabu15,mlmodel_wh5,none,1,,1
+1,1,LTO,none,28,20,64,30,360,5,10,tabu15,mlmodel_wh1,none,1,,0
+2,1,LTO,greedy,28,20,64,30,360,5,10,tabu15,mlmodel_wh1,none,1,,0
+3,1,LTO,none,28,20,64,30,360,5,10,tabu15,mlmodel_wh1,none,1,,1
+4,1,LTO,greedy,28,20,64,30,360,5,10,tabu15,mlmodel_wh1,none,1,,1
 5,42,LTO,none,28,20,64,30,360,5,25,tabu15,mlmodel_wh5,none,1,,0
 6,42,LTO,greedy,28,20,64,30,360,5,25,tabu15,mlmodel_wh5,none,1,,0
 7,42,LTO,none,28,20,64,30,360,5,25,tabu15,mlmodel_wh5,none,1,,1
