@@ -4,3 +4,4 @@ data/greedysolutions
 tests
 run_partitions_int.jl
 run_tables.jl
+models/newpaper
