@@ -119,7 +119,7 @@ function reoptimizesubproblem(sp, currsol, currpartition, turnoffcongestion_flag
 	#Storage location capacity
 	if anystoragelocation_flag == 1
 		println("Adding storage loc capacity constraint...")
-		@time @constraint(model, storageloccapacity[s in storagelocs, t in 0:tstep:horizon-tstep], sum(y[p,arcs[nodes[s,t],nodes[s,t+tstep]]] for p in sp.pods) + sum(currsol.y[p,arcs[nodes[s,t],nodes[s,t+tstep]]] for p in setdiff(currpartition.pods,sp.pods)) <= numpods / numstoragelocs)
+		@time @constraint(model, storageloccapacity[s in storagelocs, t in max(0,sp.tstart):tstep:min(sp.tend-tstep, horizon-tstep)], sum(y[p,arcs[nodes[s,t],nodes[s,t+tstep]]] for p in sp.pods) + sum(currsol.y[p,arcs[nodes[s,t],nodes[s,t+tstep]]] for p in setdiff(currpartition.pods,sp.pods)) <= numpods / numstoragelocs)
 	end
 
 	sp_buildtime = time()-buildtimestart

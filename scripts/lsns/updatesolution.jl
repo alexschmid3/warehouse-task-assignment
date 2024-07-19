@@ -70,7 +70,8 @@ function update_y(sp, currsol, y)
 		for a in currsol.ypath[p]
 			startloc, endloc = nodelookup[arclookup[a][1]][1], nodelookup[arclookup[a][2]][1]
 			starttime, endtime = nodelookup[arclookup[a][1]][2], nodelookup[arclookup[a][2]][2]
-			for w in unique!(setdiff([startloc, endloc], podstorageloc[p])), t in starttime:tstep:endtime
+			#for w in unique!(setdiff([startloc, endloc], podstorageloc[p])), t in starttime:tstep:endtime
+			for w in unique!(intersect([startloc, endloc], workstations)), t in starttime:tstep:endtime
 				push!(podbusy[p], (w,t))
 			end
 		end

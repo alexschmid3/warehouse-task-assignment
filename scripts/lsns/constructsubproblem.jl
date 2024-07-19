@@ -37,8 +37,14 @@ function findsubproblempodsupply(partition, sp_times, sp_workstations, currsol, 
 	sp_podsupply = Dict()
 
 	for p in partition.pods
-		for l in union(sp_workstations, podstorageloc[p]), t in sp_times
-			sp_podsupply[p, extendednodes[l,t]] = 0
+		if anystoragelocation_flag == 1
+			for l in union(sp_workstations, storagelocs), t in sp_times
+				sp_podsupply[p, extendednodes[l,t]] = 0
+			end
+		else
+			for l in union(sp_workstations, podstorageloc[p]), t in sp_times
+				sp_podsupply[p, extendednodes[l,t]] = 0
+			end
 		end
 	end
 

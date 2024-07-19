@@ -46,11 +46,12 @@ subproblemstatsreporting_flag = 1
 #Initialize Gurobi
 const GRB_ENV = Gurobi.Env()
 
-# Select the instancecd
+# Select the run files
 row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
 testingparamsfilename = "data/test_instance_parameters.csv"
-methodparamsfilename = "data/extensions/spsize/test_run_parameters.csv" #extensions/anystorageloc/
+methodparamsfilename = "data/extensions/anystorageloc/test_run_parameters.csv" #extensions/anystorageloc/
+projectfolder = "outputs/anystorageloc/"
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 testingparms = CSV.read(testingparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
@@ -158,8 +159,7 @@ println(random_seed)
 println("Parameters read")
 
 #Files
-mlmodelfilename = string("models/", mlmodelname, ".jld2")
-projectfolder = "outputs/spsize/"
+mlmodelfilename = string("models/newpaper/", mlmodelname, ".jld2")
 outputfolder = string(projectfolder,"run", run_id,"_", today())
 if !(isdir(projectfolder))
 	mkdir(projectfolder)
