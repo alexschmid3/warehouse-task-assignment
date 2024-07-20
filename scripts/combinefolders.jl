@@ -1,7 +1,7 @@
 
 using CSV, DataFrames 
 
-figuredirectory = string("outputs/anystorageloc")
+figuredirectory = string("outputs/anystorageloc/new")
 
 #Get list of files
 folderlist = readdir(figuredirectory)
