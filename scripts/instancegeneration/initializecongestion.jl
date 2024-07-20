@@ -215,6 +215,7 @@ function createcongestionsignatures(maps)
 			a2 = arcs[nodes[ws, t], nodes[s, t + arclength[s,ws]]]
 
 			for int3 in intersect(relevantintersections[int1, int2], intersections)
+				#println("$s, $ws, $t --> $int1, $int2, $int3")
 				tt_in = convert(Int64, floor(traveltimeraw[int1, int3]/congestiontstep) * congestiontstep)
 				tt_out = convert(Int64, floor(traveltimeraw[int3, int2]/congestiontstep) * congestiontstep)
 

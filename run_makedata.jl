@@ -51,9 +51,10 @@ const GRB_ENV = Gurobi.Env()
 
 # Select the instancecd
 row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
-warehouseparamsfilename = "data/extensions/orderslots/warehouse_sizes_and_capacities.csv"
-instanceparamsfilename = "data/extensions/orderslots/train_instance_parameters.csv"
-methodparamsfilename = "data/extensions/orderslots/train_run_parameters.csv"
+warehouseparamsfilename = "data/extensions/timedisc/warehouse_sizes_and_capacities.csv"
+instanceparamsfilename = "data/extensions/timedisc/train_instance_parameters.csv"
+methodparamsfilename = "data/extensions/timedisc/train_run_parameters.csv"
+
 warehouseparms = CSV.read(warehouseparamsfilename, DataFrame)
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
@@ -154,7 +155,7 @@ partitionobjective = "none"
 #Training data
 dynamicmlpass = 0
 staticmlpass = 0
-traindatafolder = string("trainingdata/mainmodel_wh",warehouse_id)
+traindatafolder = string("trainingdata/timedisc_wh",warehouse_id)
 dynamicinstanceoutputfilename = string(traindatafolder,"/dynamic/features_wh", warehouse_id, "_pass", dynamicmlpass, "_instance", instance_id, "_run", run_id,".jld2")
 staticinstanceoutputfilename = string(traindatafolder,"/static/features_wh", warehouse_id, "_pass", staticmlpass, "_instance", instance_id, "_run", run_id, ".csv")
 

@@ -1,0 +1,8 @@
+warehouse,warehouse_x_length_meters,warehouse_y_length_meters,workstations,unique_items,items_per_pod,orders_per_hour,prob_one_item_orders,geo_dist_param_orders,time_step,congestion_time_step,pod_process_time,item_process_time,workstation_order_capacity,intersection_capacity_per_congtstep
+1,50,38,3,7500,50,250,0.5,0.45,10,10,5,5,3,3
+2,50,38,3,7500,50,250,0.5,0.45,20,10,5,5,3,3
+3,50,38,3,7500,50,250,0.5,0.45,30,10,5,5,3,3
+4,50,38,3,7500,50,250,0.5,0.45,40,10,5,5,3,3
+5,50,38,3,7500,50,250,0.5,0.45,50,10,5,5,3,3
+6,50,38,3,7500,50,250,0.5,0.45,60,10,5,5,3,3
+7,50,38,3,7500,50,250,0.5,0.45,120,10,5,5,3,3

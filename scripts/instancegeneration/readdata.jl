@@ -178,25 +178,53 @@ function getphysicalarcs(podspeed, loccoords)
 	prearcs = []
 	arclength = Dict()
 
-	for s in storagelocs, w in workstations
-		manhattandist = abs(loccoords[s,1] - loccoords[w,1]) +  abs(loccoords[s,2] - loccoords[w,2])
-		arclengthraw = manhattandist / podspeed
-		leng = tstep * ceil(arclengthraw / tstep)
-		push!(prearcs, (s, w, manhattandist, arclengthraw, leng))
-		push!(prearcs, (w, s, manhattandist, arclengthraw, leng))
-		arclength[s, w] = leng
-		arclength[w, s] = leng
-	end
-
-	if stationtostation_flag == 1
-		for w1 in workstations, w2 in [w for w in workstations if w < w1]
-			manhattandist = abs(loccoords[w1,1] - loccoords[w2,1]) +  abs(loccoords[w1,2] - loccoords[w2,2])
+	#Added some arc timing adjustments for consistency across various time discretizations
+	if warehouseparamsfilename == "data/extensions/timedisc/warehouse_sizes_and_capacities.csv"
+		for s in storagelocs, w in workstations
+			wint = maploctointersection[w]
+			manhattandist = abs(loccoords[s,1] - intcoords[wint][1]) +  abs(loccoords[s,2] - intcoords[wint][2])
 			arclengthraw = manhattandist / podspeed
 			leng = tstep * ceil(arclengthraw / tstep)
-			push!(prearcs, (w1, w2, manhattandist, arclengthraw, leng))
-			push!(prearcs, (w2, w1, manhattandist, arclengthraw, leng))
-			arclength[w1, w2] = leng
-			arclength[w2, w1] = leng
+			push!(prearcs, (s, w, manhattandist, arclengthraw, leng))
+			push!(prearcs, (w, s, manhattandist, arclengthraw, leng))
+			arclength[s, w] = leng
+			arclength[w, s] = leng
+		end
+
+		if stationtostation_flag == 1
+			for w1 in workstations, w2 in [w for w in workstations if w < w1]
+				manhattandist = 6 + abs(loccoords[w1,1] - loccoords[w2,1]) +  abs(loccoords[w1,2] - loccoords[w2,2])
+				arclengthraw = manhattandist / podspeed
+				leng = tstep * ceil(arclengthraw / tstep)
+				push!(prearcs, (w1, w2, manhattandist, arclengthraw, leng))
+				push!(prearcs, (w2, w1, manhattandist, arclengthraw, leng))
+				arclength[w1, w2] = leng
+				arclength[w2, w1] = leng
+			end
+		end
+
+	#Original version of timing used for all other experiments
+	else
+		for s in storagelocs, w in workstations
+			manhattandist = abs(loccoords[s,1] - loccoords[w,1]) +  abs(loccoords[s,2] - loccoords[w,2])
+			arclengthraw = manhattandist / podspeed
+			leng = tstep * ceil(arclengthraw / tstep)
+			push!(prearcs, (s, w, manhattandist, arclengthraw, leng))
+			push!(prearcs, (w, s, manhattandist, arclengthraw, leng))
+			arclength[s, w] = leng
+			arclength[w, s] = leng
+		end
+
+		if stationtostation_flag == 1
+			for w1 in workstations, w2 in [w for w in workstations if w < w1]
+				manhattandist = abs(loccoords[w1,1] - loccoords[w2,1]) +  abs(loccoords[w1,2] - loccoords[w2,2])
+				arclengthraw = manhattandist / podspeed
+				leng = tstep * ceil(arclengthraw / tstep)
+				push!(prearcs, (w1, w2, manhattandist, arclengthraw, leng))
+				push!(prearcs, (w2, w1, manhattandist, arclengthraw, leng))
+				arclength[w1, w2] = leng
+				arclength[w2, w1] = leng
+			end
 		end
 	end
 
