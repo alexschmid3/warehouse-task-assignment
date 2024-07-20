@@ -7,13 +7,14 @@ function writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 	usefulnumerator, usefuldenominator = 0, 0
 	for s in 1:numpartitions
 		currpartition = partitioninfo[s]
-		objective[s] += sum(sum(length(partitionsolution[s].itempodpicklist[w,t]) for t in times) for w in currpartition.workstations)
-		time_utilization[s] += (podprocesstime * sum(sum(length(partitionsolution[s].podsworkedat[w,t]) for t in times) for w in currpartition.workstations) + itemprocesstime * sum(sum(length(partitionsolution[s].itempodpicklist[w,t]) for t in times) for w in currpartition.workstations)) / ((tstep+horizon) * length(currpartition.workstations))
-		throughput_utilization[s] += ((podprocesstime + itemprocesstime) * sum(sum(length(partitionsolution[s].itempodpicklist[w,t]) for t in times) for w in currpartition.workstations)) / (horizon * length(currpartition.workstations))
-		bestthroughput_utilization[s] += (podprocesstime * sum(sum(min(1,length(partitionsolution[s].podsworkedat[w,t])) for t in times) for w in currpartition.workstations) + itemprocesstime * sum(sum(length(partitionsolution[s].itempodpicklist[w,t]) for t in times) for w in currpartition.workstations)) / (horizon * length(currpartition.workstations))
+		currsol = partitionsolution[s]
+		objective[s] += sum(sum(length(currsol.itempodpicklist[w,t]) for t in times) for w in currpartition.workstations)
+		time_utilization[s] += (podprocesstime * sum(sum(length(currsol.podsworkedat[w,t]) for t in times) for w in currpartition.workstations) + itemprocesstime * sum(sum(length(currsol.itempodpicklist[w,t]) for t in times) for w in currpartition.workstations)) / ((tstep+horizon) * length(currpartition.workstations))
+		throughput_utilization[s] += ((podprocesstime + itemprocesstime) * sum(sum(length(currsol.itempodpicklist[w,t]) for t in times) for w in currpartition.workstations)) / (horizon * length(currpartition.workstations))
+		bestthroughput_utilization[s] += (podprocesstime * sum(sum(min(1,length(currsol.podsworkedat[w,t])) for t in times) for w in currpartition.workstations) + itemprocesstime * sum(sum(length(currsol.itempodpicklist[w,t]) for t in times) for w in currpartition.workstations)) / (horizon * length(currpartition.workstations))
 
 		ordersworked, podsworked, itemsdone = [], [], Dict()
-		for w in currpartition.workstations, t in times, (m,i,p) in partitionsolution[s].itempodpicklist[w,t]
+		for w in currpartition.workstations, t in times, (m,i,p) in currsol.itempodpicklist[w,t]
 			ordersworked = union(ordersworked, m)
 			try
 				itemsdone[m] += 1
@@ -21,10 +22,18 @@ function writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 				itemsdone[m] = 1
 			end
 		end
-		totalpoddist = 0
-		for w in currpartition.workstations, t in times, p in partitionsolution[s].podsworkedat[w,t]
+		
+		for w in currpartition.workstations, t in times, p in currsol.podsworkedat[w,t]
 			push!(podsworked, p)
-			totalpoddist += 2*warehousedistance[podstorageloc[p],w]
+			#totalpoddist += 2*warehousedistance[podstorageloc[p],w]
+		end
+	
+		totalpoddist = 0
+		for p in currpartition.pods
+			for a in currsol.ypath[p]
+				l1,l2 = nodelookup[arclookup[a][1]][1], nodelookup[arclookup[a][2]][1]
+				totalpoddist += warehousedistance[l1,l2]
+			end
 		end
 		orderscompleted = [m for m in ordersworked if itemsdone[m] >= length(itemson[m])]
 		total_orders_worked[s] += length(ordersworked)
@@ -46,7 +55,7 @@ function writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 		for m in currpartition.orders
 			orderopentime[m] = 1
 		end
-		for w in currpartition.workstations, t in times, m in partitionsolution[s].ordersopen[w,t] 
+		for w in currpartition.workstations, t in times, m in currsol.ordersopen[w,t] 
 			orderopentime[m] += 1
 		end
 		if length(ordersworked) > 0
