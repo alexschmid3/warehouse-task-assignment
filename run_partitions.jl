@@ -48,10 +48,10 @@ const GRB_ENV = Gurobi.Env()
 
 # Select the run files
 row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
-instanceparamsfilename = "data/extensions/orderslots/warehouse_sizes_and_capacities.csv"
-testingparamsfilename = "data/extensions/orderslots/test_instance_parameters.csv"
-methodparamsfilename = "data/extensions/orderslots/test_run_parameters.csv" #extensions/orderslots/
-projectfolder = "outputs/orderslots/"
+instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
+testingparamsfilename = "data/test_instance_parameters.csv"
+methodparamsfilename = "data/test_run_parameters.csv" #extensions/orderslots/
+projectfolder = "outputs/mainruns/"
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 testingparms = CSV.read(testingparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
