@@ -38,7 +38,7 @@ testfilelist = setdiff(filelist, trainfilelist)
 #Targets
 targetnumpods = 24
 targetnumorders = 20
-tstep = 30
+tstep = [10,20,30,40,50,60,120][warehouse_id]
 
 allfeatures, featurenames, featurelookup, featuresforprediction_wt, featuresforprediction_mp, featuresforprediction_pw, featuresforprediction_pwt, w_featnums, t_featnums, p_featnums, m_featnums, wt_featnums, mp_featnums, pw_featnums, pwt_featnums = featurebank()
 
