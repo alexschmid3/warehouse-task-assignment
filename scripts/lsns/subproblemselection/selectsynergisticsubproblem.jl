@@ -251,7 +251,7 @@ function selectingordersandpods(sp_window, currpartition, currsol, targetnumpods
 			if checkiteminpicklist(m, i, max(0,sp_window.tstart), min(horizon,sp_window.tend), sp_window.workstations, currsol)
 				push!(sp_itemson[m], i)
 			#	println("FOUND AN ISSUE = $m, $i")
-			elseif (sp_window.tstart == -30) && (sum(sum(currsol.h[m,i,p,w,sp_window.tend] for p in currpartition.podswith[i]) for w in sp_window.workstations) > 0.01)
+			elseif (sp_window.tstart == -1*tstep) && (sum(sum(currsol.h[m,i,p,w,sp_window.tend] for p in currpartition.podswith[i]) for w in sp_window.workstations) > 0.01)
 				push!(sp_itemson[m], i)
 			end
 		end

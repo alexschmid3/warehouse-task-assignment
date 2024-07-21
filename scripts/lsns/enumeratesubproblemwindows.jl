@@ -1,31 +1,38 @@
 
 using IterTools
 
-function enumeratesubproblemwindows(partition, maxworkstationspersubproblem, subproblemtimelength)
+function enumeratesubproblemwindows(currpartition, maxworkstationspersubproblem, subproblemtimelength)
 
 	workstationgrouplist, timinglist = [], []
 
 	allsubsets = []
 	#targetnumworkstations
 	if methodparamsfilename == "data/extensions/spsize/test_run_parameters.csv"
-		allsubsets = union(allsubsets, collect(subsets(partition.workstations,targetnumworkstations)))
+		allsubsets = union(allsubsets, collect(subsets(currpartition.workstations,targetnumworkstations)))
 		println("Station subsets = ", allsubsets)
 	else
 		for sslength in 1:maxworkstationspersubproblem
-			allsubsets = union(allsubsets, collect(subsets(partition.workstations,sslength)))
+			allsubsets = union(allsubsets, collect(subsets(currpartition.workstations,sslength)))
 		end
 		println("Station subsets = ", allsubsets)
 	end
-	for wlist in allsubsets, tstart in -tstep:60:horizon+tstep-ceil((subproblemtimelength/length(wlist))/tstep)*tstep
-		push!(workstationgrouplist, wlist)
-		push!(timinglist, (tstart, tstart + ceil((subproblemtimelength/length(wlist))/tstep)*tstep))
+	if warehouseparamsfilename == "data/extensions/timedisc/warehouse_sizes_and_capacities.csv"
+		for wlist in allsubsets, tstart in -tstep:tstep:horizon+tstep-ceil((subproblemtimelength/length(wlist))/tstep)*tstep
+			push!(workstationgrouplist, wlist)
+			push!(timinglist, (tstart, tstart + ceil((subproblemtimelength/length(wlist))/tstep)*tstep))
+		end
+	else
+		for wlist in allsubsets, tstart in -tstep:60:horizon+tstep-ceil((subproblemtimelength/length(wlist))/tstep)*tstep
+			push!(workstationgrouplist, wlist)
+			push!(timinglist, (tstart, tstart + ceil((subproblemtimelength/length(wlist))/tstep)*tstep))
+		end
 	end
 
 	#Initialize sets
 	windows = []
 	windowids = 1:length(workstationgrouplist)
 	windowscontaining, windowsduring, windowidlookup = Dict(), Dict(), Dict()
-	for w in partition.workstations, t in extendedtimes
+	for w in currpartition.workstations, t in extendedtimes
 		windowscontaining[w,t] = []
 	end
 	for t in extendedtimes

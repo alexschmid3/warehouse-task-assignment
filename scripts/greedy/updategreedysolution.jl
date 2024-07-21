@@ -53,7 +53,7 @@ function update_y_greedy(currsol, gp, y, z)
         awaystart, awayend, podarrives = 0, 0, 0
         for t in gp.podstarttime[p]:tstep:gp.podendtime[p]
             if value(y[p,t]) > 0.01
-                awaystart += max(-30, t - podtostationtime)
+                awaystart += max(-1*tstep, t - podtostationtime)
                 podarrives += t
             end
             if value(z[p,t]) > 0.01
