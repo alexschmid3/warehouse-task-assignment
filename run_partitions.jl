@@ -41,14 +41,14 @@ println("Scripts imported")
 visualizationflag = 0		       # 1 --> Produce visualizations of warehouse and workstation solutions
 debugmode = 0					   # 1 --> will perform solution consistency unit tests at each LSNS iteration, use for debugging when changing the code; 0 --> no solution checks, use for computational experiments
 debugprintstatements = 0 		   # When a bug is found, set this to 1 for next run to get more detailed error info (warning: it's a lot of print statements, one for each unit test)
-subproblemstatsreporting_flag = 1
-ordergraphreporting_flag = 1
+subproblemstatsreporting_flag = 0
+ordergraphreporting_flag = 0
 
 #Initialize Gurobi
 const GRB_ENV = Gurobi.Env()
 
 # Select the run files
-row_id = 208 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
+row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 warehouseparamsfilename = "data/warehouse_sizes_and_capacities.csv"
 instanceparamsfilename = "data/test_instance_parameters.csv"
 methodparamsfilename = "data/test_run_parameters.csv" #extensions/orderslots/
