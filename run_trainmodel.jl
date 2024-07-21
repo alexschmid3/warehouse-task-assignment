@@ -6,13 +6,21 @@ include("scripts/training/mlmodel/trainmodel.jl")
 warehouse_id = parse(Int, ARGS[1])
 data_pass = 0
 
-savemodelfilename_pw = string("models/newpaper/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_pw.jld2")
-savemodelfilename_nowt = string("models/newpaper/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_nowt.jld2")
-savemodelfilename_full = string("models/newpaper/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_full.jld2")
-savemodelfilename_intercept = string("models/newpaper/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_intercept.jld2")
+savemodelfilename_pw = string("models/timedisc/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_pw.jld2")
+savemodelfilename_nowt = string("models/timedisc/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_nowt.jld2")
+savemodelfilename_full = string("models/timedisc/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_full.jld2")
+savemodelfilename_intercept = string("models/timedisc/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_intercept.jld2")
+#savemodelfilename_pw = string("models/newpaper/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_pw.jld2")
+#savemodelfilename_nowt = string("models/newpaper/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_nowt.jld2")
+#savemodelfilename_full = string("models/newpaper/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_full.jld2")
+#savemodelfilename_intercept = string("models/newpaper/mlmodel_wh", warehouse_id, "_pass", data_pass+1,"_intercept.jld2")
+
+if !(isdir("models/timedisc/"))
+	mkdir("models/timedisc/")
+end
 
 #Get relevant training data
-trainingfolder = string("trainingdata/mainmodel_wh", warehouse_id,"/dynamic/")
+trainingfolder = string("trainingdata/timedisc_wh", warehouse_id,"/dynamic/")
 unfiltered_filelist = readdir(trainingfolder)
 filelist = []
 for filename in unfiltered_filelist
