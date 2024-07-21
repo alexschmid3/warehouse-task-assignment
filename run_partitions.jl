@@ -37,23 +37,24 @@ println("Scripts imported")
 
 #-----------------------------------------------------------------------------------#
 
-#Debugging mode
-visualizationflag = 0			# 1 --> Produce visualizations of warehouse and workstation solutions
-debugprintstatements = 0 		# When a bug is found, set this to 1 for next run to get more detailed error info (warning: it's a lot of print statements, one for each unit test)
-debugmode = 0					# 1 --> will perform solution consistency unit tests at each LSNS iteration, use for debugging when changing the code, 0 --> no solution checks, use for computational experiments
+#Toggle switches
+visualizationflag = 0		       # 1 --> Produce visualizations of warehouse and workstation solutions
+debugmode = 0					   # 1 --> will perform solution consistency unit tests at each LSNS iteration, use for debugging when changing the code; 0 --> no solution checks, use for computational experiments
+debugprintstatements = 0 		   # When a bug is found, set this to 1 for next run to get more detailed error info (warning: it's a lot of print statements, one for each unit test)
 subproblemstatsreporting_flag = 1
+ordergraphreporting_flag = 1
 
 #Initialize Gurobi
 const GRB_ENV = Gurobi.Env()
 
 # Select the run files
-row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
-instanceparamsfilename = "data/warehouse_sizes_and_capacities.csv"
-testingparamsfilename = "data/test_instance_parameters.csv"
+row_id = 207 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
+warehouseparamsfilename = "data/warehouse_sizes_and_capacities.csv"
+instanceparamsfilename = "data/test_instance_parameters.csv"
 methodparamsfilename = "data/test_run_parameters.csv" #extensions/orderslots/
-projectfolder = "outputs/mainruns/"
+projectfolder = "outputs/ordergraph/"
+warehouseparms = CSV.read(warehouseparamsfilename, DataFrame)
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
-testingparms = CSV.read(testingparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
 
 # Parameter Descriptions:
@@ -109,12 +110,12 @@ shortmethodname, subproblembudget = parsemethodname(methodname)
 # Row 5 = end of time horizon
 
 #Get ML training parameters from file
-warehouse_id = testingparms[instance_id, 2]
-random_seed = testingparms[instance_id, 3]
-horizonstart = testingparms[instance_id, 4]
-horizonend = testingparms[instance_id, 5]
+warehouse_id = instanceparms[instance_id, 2]
+random_seed = instanceparms[instance_id, 3]
+horizonstart = instanceparms[instance_id, 4]
+horizonend = instanceparms[instance_id, 5]
 horizon = horizonend - horizonstart
-stationsperpartition = testingparms[instance_id, 6]
+stationsperpartition = instanceparms[instance_id, 6]
 
 # Parameter Descriptions:
 # ==========================================
@@ -135,26 +136,23 @@ stationsperpartition = testingparms[instance_id, 6]
 # Row 15 = intersection_capacity
 
 #Get warehouse parameters from file
-warehouse_x_length_meters = instanceparms[warehouse_id, 2]
-warehouse_y_length_meters = instanceparms[warehouse_id, 3]
-num_workstations = instanceparms[warehouse_id, 4]
-num_unique_items = instanceparms[warehouse_id, 5]
-num_items_per_pod = instanceparms[warehouse_id, 6]
-num_orders_per_hour = instanceparms[warehouse_id, 7]
-prob_one_item_orders = instanceparms[warehouse_id, 8]
-geo_dist_param_orders = instanceparms[warehouse_id, 9]
-tstep = instanceparms[warehouse_id, 10]
-congestiontstep = instanceparms[warehouse_id, 11]
-podprocesstime = instanceparms[warehouse_id, 12]
-itemprocesstime = instanceparms[warehouse_id, 13]
-workstationordercapacity = instanceparms[warehouse_id, 14]
-intersectioncapacity = instanceparms[warehouse_id, 15]
+warehouse_x_length_meters = warehouseparms[warehouse_id, 2]
+warehouse_y_length_meters = warehouseparms[warehouse_id, 3]
+num_workstations = warehouseparms[warehouse_id, 4]
+num_unique_items = warehouseparms[warehouse_id, 5]
+num_items_per_pod = warehouseparms[warehouse_id, 6]
+num_orders_per_hour = warehouseparms[warehouse_id, 7]
+prob_one_item_orders = warehouseparms[warehouse_id, 8]
+geo_dist_param_orders = warehouseparms[warehouse_id, 9]
+tstep = warehouseparms[warehouse_id, 10]
+congestiontstep = warehouseparms[warehouse_id, 11]
+podprocesstime = warehouseparms[warehouse_id, 12]
+itemprocesstime = warehouseparms[warehouse_id, 13]
+workstationordercapacity = warehouseparms[warehouse_id, 14]
+intersectioncapacity = warehouseparms[warehouse_id, 15]
 capacitybuffer = 10
 podspeed = 1 #Current assumption: 1 meter per second, ~2.2 miles per hour
 generation_warmstart_flag = 0
-
-println(instance_id)
-println(random_seed)
 
 println("Parameters read")
 
@@ -173,6 +171,7 @@ if !(isdir(visualizationfolder))
 	mkdir(visualizationfolder)
 end
 subproblemstatsreportingfilename = string(outputfolder, "/subproblems.csv")
+ordergraphreportingfilename = string(outputfolder, "/ordergraph.csv")
 
 #Initialize timer
 time()
@@ -413,6 +412,13 @@ writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
 
 # writepickdistrib(string(outputfolder,"/pickdistrib.csv"), globalsolution)
 # writedistancedistrib(string(outputfolder,"/distdistrib.csv"), globalsolution)
+
+#-----------------------------------------------------------------------------------#
+
+if ordergraphreporting_flag == 1
+	include("scripts/figures/ordergraph.jl")
+	writeordergraph(ordergraphreportingfilename)
+end
 
 #-----------------------------------------------------------------------------------#
 
