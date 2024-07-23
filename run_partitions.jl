@@ -48,7 +48,7 @@ ordergraphreporting_flag = 0
 const GRB_ENV = Gurobi.Env()
 
 # Select the run files
-row_id = 854 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
+row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 warehouseparamsfilename = "data/warehouse_sizes_and_capacities.csv"
 instanceparamsfilename = "data/test_instance_parameters.csv"
 methodparamsfilename = "data/test_run_parameters.csv" #extensions/orderslots/
@@ -349,7 +349,6 @@ for s in 1:numpartitions
 			sp_winid, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, tabulist, predicted_obj = selectlearningbenchmarksubproblem(currpartition, currsol, windows, windowidlookup, tabulist, sp_iter)
 		end
 		spselectiontime = time() - spselectionstarttime
-		println("Selection time = ", spselectiontime, " seconds")
 
 		#Build subproblem structure
 		sp = constructsubproblem(currpartition, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, currsol)
