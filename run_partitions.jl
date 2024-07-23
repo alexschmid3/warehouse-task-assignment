@@ -48,7 +48,7 @@ ordergraphreporting_flag = 0
 const GRB_ENV = Gurobi.Env()
 
 # Select the run files
-row_id += 10 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
+row_id = 854 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 warehouseparamsfilename = "data/warehouse_sizes_and_capacities.csv"
 instanceparamsfilename = "data/test_instance_parameters.csv"
 methodparamsfilename = "data/test_run_parameters.csv" #extensions/orderslots/
@@ -157,7 +157,7 @@ generation_warmstart_flag = 0
 println("Parameters read")
 
 #Files
-mlmodelfilename = string("models/newpaper/", mlmodelname, ".jld2")
+mlmodelfilename = string("models/", mlmodelname, ".jld2")
 outputfolder = string(projectfolder,"run", run_id,"_", today())
 if !(isdir(projectfolder))
 	mkdir(projectfolder)
@@ -291,6 +291,7 @@ solvemetrics = (solve_time=zeros(numpartitions+1), solvetime_init=zeros(numparti
 
 #Solve each partition
 counter = 1
+globalstarttime = time()
 for s in 1:numpartitions
 
 	println("===== PARTITION $s =====")
@@ -358,16 +359,16 @@ for s in 1:numpartitions
 		println("Re-opt time = ", sp_solvetime, " seconds")
 
 		#Update solution
-		spupdatestarttime = time()
 		currsol = updatesolution(sp, currsol, currpartition, sp_obj, h_sp, y_sp, v_sp)
-		println("Congestion feature update time = ")
-		@time updatecongestionfeatures()
+		updatecongestionfeatures()
 		lastoptimizeddifference = updatelastoptimizeddifference(lastoptimizeddifference, tabulist, sp_winid, windows, predicted_obj, sp_obj)
 		iterationtime = time() - iterationstarttime
 		updatesolvemetrics(s, iterationtime, sp_solvetime, spselectiontime)
 
 		#Write solution metrics
 		writeglobalsolutionoutputs_iter(sp_iter, 0, iterationtime, spselectiontime, sp_solvetime, globalsolutionfilename, s, currpartition, currsol)
+
+		#----------- REPORTING -----------#
 
 		#Subproblem statistics
 		if subproblemstatsreporting_flag == 1
@@ -395,6 +396,11 @@ for s in 1:numpartitions
 
 		println("Partition throughput = ", sum(length(currsol.itempodpicklist[w,t]) for w in currpartition.workstations, t in times))
 
+		#Time limit termination (2 hours)
+		if time() - globalstarttime >= 60*60*2
+			break
+		end
+
 		global counter += 1
 
 	end
@@ -404,14 +410,10 @@ for s in 1:numpartitions
 	partitionsolution[s] = currsol
 
 end
-
-#workstationviz(string(visualizationfolder,"/station_partition", 1,"_initial.png"), partitioninfo[1], partitionsolution[1])
-
 #-----------------------------------------------------------------------------------#
 
 include("scripts/decomposition/writeglobalsolutionoutputs.jl")
 writeglobalsolutionoutputs(globalsolutionfilename, solvemetrics)
-
 # writepickdistrib(string(outputfolder,"/pickdistrib.csv"), globalsolution)
 # writedistancedistrib(string(outputfolder,"/distdistrib.csv"), globalsolution)
 

@@ -13,22 +13,26 @@ function updatecongestionfeatures()
 
 	#Workstation-time congestion features
 	kdtree = KDTree(transpose(intcoords_nn))
-	for w in workstations, t in 0:tstep:horizon
-		#Queue congestion
-		q = maps.mapintersectiontorow[maploctointersection[w]]
-		features.wt["queuecong"][w-last(storagelocs),convert(Int,t/tstep+1)] = mean([normalizedcong[q,maps.maptimetocolumn[t2]] for t2 in max(0,t-tstep):congestiontstep:t])
-	
-		#Local congestion
-		closeints, dists = knn(kdtree, [intcoords[q][1], intcoords[q][2]], numlocalintersections, true)
-		congestionnearworkstation = [sum(normalizedcong[maps.mapintersectiontorow[i+minimum(intersections)-1],maps.maptimetocolumn[t2]] for t2 in max(0,t-tstep):congestiontstep:t) for i in closeints]
-		features.wt["avglocalcong"][w-last(storagelocs),convert(Int,t/tstep+1)] = mean(congestionnearworkstation)
-		features.wt["maxlocalcong"][w-last(storagelocs),convert(Int,t/tstep+1)] = maximum(congestionnearworkstation)
+	if shortmethodname == "learnbench" #Filter out learning-enchanced benchmark which has different feature structure
+		1+1
+	else
+		for w in workstations, t in 0:tstep:horizon
+			#Queue congestion
+			q = maps.mapintersectiontorow[maploctointersection[w]]
+			features.wt["queuecong"][w-last(storagelocs),convert(Int,t/tstep+1)] = mean([normalizedcong[q,maps.maptimetocolumn[t2]] for t2 in max(0,t-tstep):congestiontstep:t])
+		
+			#Local congestion
+			closeints, dists = knn(kdtree, [intcoords[q][1], intcoords[q][2]], numlocalintersections, true)
+			congestionnearworkstation = [sum(normalizedcong[maps.mapintersectiontorow[i+minimum(intersections)-1],maps.maptimetocolumn[t2]] for t2 in max(0,t-tstep):congestiontstep:t) for i in closeints]
+			features.wt["avglocalcong"][w-last(storagelocs),convert(Int,t/tstep+1)] = mean(congestionnearworkstation)
+			features.wt["maxlocalcong"][w-last(storagelocs),convert(Int,t/tstep+1)] = maximum(congestionnearworkstation)
 
-		#Hyper local congestion
-		closestints, dists = knn(kdtree, [intcoords[q][1], intcoords[q][2]], numhyperlocalintersections, true)
-		congestionnearestworkstation = [sum(normalizedcong[maps.mapintersectiontorow[i+minimum(intersections)-1],maps.maptimetocolumn[t2]] for t2 in max(0,t-tstep):congestiontstep:t) for i in closestints]
-		features.wt["avghyperlocalcong"][w-last(storagelocs),convert(Int,t/tstep+1)] = mean(congestionnearestworkstation)
-		features.wt["maxhyperlocalcong"][w-last(storagelocs),convert(Int,t/tstep+1)] = maximum(congestionnearestworkstation)
+			#Hyper local congestion
+			closestints, dists = knn(kdtree, [intcoords[q][1], intcoords[q][2]], numhyperlocalintersections, true)
+			congestionnearestworkstation = [sum(normalizedcong[maps.mapintersectiontorow[i+minimum(intersections)-1],maps.maptimetocolumn[t2]] for t2 in max(0,t-tstep):congestiontstep:t) for i in closestints]
+			features.wt["avghyperlocalcong"][w-last(storagelocs),convert(Int,t/tstep+1)] = mean(congestionnearestworkstation)
+			features.wt["maxhyperlocalcong"][w-last(storagelocs),convert(Int,t/tstep+1)] = maximum(congestionnearestworkstation)
+		end
 	end
 
 end

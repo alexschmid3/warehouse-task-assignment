@@ -59,7 +59,7 @@ function linearregressionmodel_imp(featurevalues, numsubproblems, actualimp, max
 
 	if termination_status(model) == MOI.OPTIMAL
 		solvetime = solve_time(model)
-		obj = getobjectivevalue(model)
+		obj = objective_value(model)
 		feasibleflag = 1
 		#println("Total items picked = ", obj)
 	else
@@ -178,7 +178,7 @@ function linearregressionmodel_obj(featurevalues, numsubproblems, actualreoptobj
 
 	if termination_status(model) == MOI.OPTIMAL
 		solvetime = solve_time(model)
-		obj = getobjectivevalue(model)
+		obj = objective_value(model)
 		feasibleflag = 1
 		#println("Total items picked = ", obj)
 	else
@@ -293,7 +293,7 @@ function linearregressionmodel_compare(featurevalues, numsubproblems, actualreop
 
 	if termination_status(model) == MOI.OPTIMAL
 		solvetime = solve_time(model)
-		obj = getobjectivevalue(model)
+		obj = objective_value(model)
 		feasibleflag = 1
 		#println("Total items picked = ", obj)
 	else

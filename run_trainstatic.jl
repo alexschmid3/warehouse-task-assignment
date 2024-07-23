@@ -4,7 +4,7 @@ using JuMP, Gurobi, Plots, Random, CSV, DataFrames, Statistics, Dates, HDF5, Lin
 include("scripts/training/staticmlmodel/trainstaticmodel.jl")
 include("scripts/training/staticmlmodel/staticmodels.jl")
 
-warehouse_id = parse(Int, ARGS[1])
+warehouse_id = 1 #parse(Int, ARGS[1])
 data_pass = 0
 subproblemsperinstance = 1000
 seed = 456
@@ -32,7 +32,7 @@ testfilelist = setdiff(filelist, trainfilelist)
 featurenames, featurenumlookup, numfeatures, trash = featurebank(trainfilelist[1])
 
 #Find linear regression model(s)
-maxselected = 10
+maxselected = 12
 mlmodel_obj = trainstaticsubproblemmodel_obj(filelist, maxselected)
 
 println("------------------------------------------")
