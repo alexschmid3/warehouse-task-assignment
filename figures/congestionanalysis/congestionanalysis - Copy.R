@@ -12,8 +12,9 @@ congdata <- read_csv('congestionsolution2.csv')
 nocongdata <- read_csv('nocongestionsolution3.csv')
 
 #---------------------------------------------------------------#
+#---------------------------------------------------------------#
 
-vec_cong <- rep("Congestion-zaware", nrow(congdata))
+vec_cong <- rep("Congestion-aware", nrow(congdata))
 vec_nocong <- rep("Congestion-blind", nrow(nocongdata))
 
 congdata <- congdata %>%
@@ -21,7 +22,7 @@ congdata <- congdata %>%
 nocongdata <- nocongdata %>%
   mutate(datalabel = vec_nocong)
 
-alldata = rbind(nocongdata, congdata)
+alldata = rbind(congdata, nocongdata)
 
 #---------------------------------------------------------------#
 
@@ -30,7 +31,7 @@ update_geom_defaults("text", list(size = 48))
 
 dev.new(width=8, height=4)
 
-png(file="congestiondensity_raw.png", width=900, height=1200)
+png(file="congestiondensity.png", width=900, height=1200)
 # width=450, height=600)
 
 alldata %>%
@@ -40,9 +41,9 @@ alldata %>%
   #xlim(0, 0.00000001)+
   #ylim(0, 100)+
   scale_colour_manual("", 
-                      breaks = c("Congestion-zaware", "Congestion-blind"),
+                      breaks = c("Congestion-aware", "Congestion-blind"),
                       values = c("#DA853E", "#649BCB"))+
-  scale_fill_manual("", breaks = c("Congestion-zaware", "Congestion-blind"),
+  scale_fill_manual("", breaks = c("Congestion-aware", "Congestion-blind"),
                     values = c("#DA853E", "#649BCB")) +
   labs(x="Congestion utilization (as fraction of capacity)", y="Density")+
   #scale_x_continuous(limits=c(0,0.15), labels = scales::percent_format(accuracy = 1)) +

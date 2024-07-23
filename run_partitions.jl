@@ -48,11 +48,11 @@ ordergraphreporting_flag = 0
 const GRB_ENV = Gurobi.Env()
 
 # Select the run files
-row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
-warehouseparamsfilename = "data/extensions/timedisc/warehouse_sizes_and_capacities.csv"
-instanceparamsfilename = "data/extensions/timedisc/test_instance_parameters.csv"
-methodparamsfilename = "data/extensions/timedisc/test_run_parameters.csv" #extensions/orderslots/
-projectfolder = "outputs/timedisc/"
+row_id += 10 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
+warehouseparamsfilename = "data/warehouse_sizes_and_capacities.csv"
+instanceparamsfilename = "data/test_instance_parameters.csv"
+methodparamsfilename = "data/test_run_parameters.csv" #extensions/orderslots/
+projectfolder = "outputs/mainruns/"
 warehouseparms = CSV.read(warehouseparamsfilename, DataFrame)
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
@@ -157,7 +157,7 @@ generation_warmstart_flag = 0
 println("Parameters read")
 
 #Files
-mlmodelfilename = string("models/timedisc/", mlmodelname, ".jld2")
+mlmodelfilename = string("models/newpaper/", mlmodelname, ".jld2")
 outputfolder = string(projectfolder,"run", run_id,"_", today())
 if !(isdir(projectfolder))
 	mkdir(projectfolder)
@@ -336,6 +336,8 @@ for s in 1:numpartitions
 		spselectionstarttime = time()
 		if methodname == "LTO"
 			sp_winid, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, tabulist, predicted_obj = selectlearnthenoptimizesubproblem(currpartition, currsol, windows, windowscontaining, windowidlookup, windowsduring, windowsynergy, targetnumorders, targetnumpods, tabulist, lastoptimizeddifference, sp_iter)
+		elseif methodname == "LTOsimple"
+			sp_winid, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, tabulist, predicted_obj = selectlearnthenoptimizesubproblem_simple(currpartition, currsol, windows, windowscontaining, windowidlookup, windowsduring, windowsynergy, targetnumorders, targetnumpods, tabulist, lastoptimizeddifference, sp_iter)
 		elseif methodname == "random"
 			sp_winid, sp_orders, sp_window, sp_pods, sp_itemson, sp_items = selectrandomsubproblem(currpartition, windows, windowidlookup, currsol, targetnumorders, targetnumpods)
 			predicted_obj = 0

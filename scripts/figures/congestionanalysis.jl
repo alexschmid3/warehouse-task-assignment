@@ -2,7 +2,7 @@
 function congestionanalysis(nocongestion_flag)
 
     l = maps.mapintersectiontorow[65]
-    totalcong = sum(currcong[p] for p in  partitioninfo[1].pods)
+    totalcong = sum(currcong[p] for p in partitioninfo[1].pods)
 
     allcongestionutils = []
     intersectionviolations, maxtraffic = Dict(), Dict()
@@ -26,9 +26,9 @@ function congestionanalysis(nocongestion_flag)
     df = DataFrame(congutil = allcongestionutils)
 
     if nocongestion_flag == 0
-        CSV.write("figures/congestionanalysis/congestionsolution2.csv", df)
+        CSV.write("figures/congestionanalysis/congestionsolution4.csv", df)
     else nocongestion_flag == 1
-        CSV.write("figures/congestionanalysis/nocongestionsolution2.csv", df)
+        CSV.write("figures/congestionanalysis/nocongestionsolution4.csv", df)
     end
 
     include("scripts/visualizations/warehouseviz.jl")

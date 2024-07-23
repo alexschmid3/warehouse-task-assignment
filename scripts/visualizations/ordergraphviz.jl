@@ -1,8 +1,11 @@
 
+using CSV, DataFrames, Plots, GraphRecipes, Cairo, Fontconfig
 
-using CSV, DataFrames, Graphs, GraphPlot, Compose
+#Data
+filename = "outputs/ordergraph/run208_2024-07-21/ordergraph.csv"
 
-filename = "outputs/ordergraph/run207_2024-07-20/ordergraph.csv"
+#Graph design
+colorlist = [colorant"#648FFF",colorant"#FE6100",colorant"#DC267F"]
 
 #Read data
 data = CSV.read(filename, DataFrame)
@@ -11,6 +14,11 @@ times = unique(data[:,2])
 orders = unique(data[:,3])
 pods = unique(data[:,4])
 items = unique(data[:,5])
+
+workstationcolor = Dict()
+for w in workstations
+    workstationcolor[w] = colorlist[w - minimum(workstations) + 1]
+end
 
 #Map orders to indices
 mapordertoindex, mapindextoorder = Dict(), Dict()
@@ -26,11 +34,15 @@ numorders = length(orders)
 g=SimpleGraph(numorders,0)
 
 #Add edges between orders that share a pod
-podpicks, orderspulledfrom = Dict(), Dict()
+podpicks, orderspulledfrom = [], Dict()
+ordercolors = Array{Any}(undef, numorders, 1)
+ordersize = zeros(numorders)
 for row in 1:size(data)[1]
     w,t,m,p,i = data[row,1], data[row,2], data[row,3], data[row,4], data[row,5]
-    orderspulledfrom[p,w,t] = []
+    orderspulledfrom[(p,w,t)] = []
     push!(podpicks, (p,w,t))
+    ordercolors[mapordertoindex[m]] = workstationcolor[w]
+    ordersize[mapordertoindex[m]] += 1
 end
 for row in 1:size(data)[1]
     w,t,m,p,i = data[row,1], data[row,2], data[row,3], data[row,4], data[row,5]
@@ -41,8 +53,17 @@ for (p,w,t) in podpicks
         add_edge!(g, mapordertoindex[m1], mapordertoindex[m2])
     end
 end
+ordersize = ordersize./10
 
-add_edge!(g, 1, 6);
+println("Clustering coefficient = ", global_clustering_coefficient(g))
 
 
-draw(PNG("tempgraph.png", 16cm, 16cm), gplot(g))
+#Create graph
+graphplot(g,
+          nodeshape=:circle, 
+          nodesize=0.15,
+          axis_buffer=0.1,
+          curves=false,
+          color=:black,
+          nodecolor=ordercolors,
+          linewidth=1)
