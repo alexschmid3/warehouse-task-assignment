@@ -47,7 +47,7 @@ function warehouseviz(wsdrawingname, vizx)
 	intersectionmarks, intersectionlabels = [], []
 	thickness = 3
 	intersectioncolor = (150,0,0)
-	maxviol = maximum(values(maxtraffic))
+	#maxviol = maximum(values(maxtraffic))
 	for l in intersections
 		newx = intcoords[l][1] * (vizx - 100) / warehouse_x_length_meters - (vizx - 100) / 2
 		newy = intcoords[l][2] * (vizy - 100) / warehouse_y_length_meters - (vizy - 100) / 2
@@ -61,11 +61,12 @@ function warehouseviz(wsdrawingname, vizx)
 		#push!(intersectionmarks, (line2_s, line2_e, thickness, intersectioncolor))
 
 		#Congestion viz
-		if intersectionviolations[l] > 1e-4 
-			trafficcolor = ((maxtraffic[l])/(maxviol)*255,0,0)
-		else
-			trafficcolor = ((1-maxtraffic[l])*255,(1-maxtraffic[l])*255,(1-maxtraffic[l])*255)
-		end
+		trafficcolor = (0,0,0)
+		#if intersectionviolations[l] > 1e-4 
+		#	trafficcolor = ((maxtraffic[l])/(maxviol)*255,0,0)
+		#else
+		#	trafficcolor = ((1-maxtraffic[l])*255,(1-maxtraffic[l])*255,(1-maxtraffic[l])*255)
+		#end
 		push!(intersectionmarks, (Point((newx, newy)), 15*vizx/1000, thickness, trafficcolor))
 		
 		#Label
@@ -81,7 +82,7 @@ function warehouseviz(wsdrawingname, vizx)
 
 	#Warehouse outline
 	setdash("solid")
-	setcolor(convert(Colors.HSV, Colors.RGB(0.9, 0.9, 0.9)))
+	setcolor(convert(Colors.HSV, Colors.RGB(1,1,1)))
 	Luxor.rect( Point(- (vizx - 100) / 2, - (vizy - 100) / 2), vizx - 100, vizy - 100, :fill)	
 	setcolor("black")
 	setline(5)
@@ -104,7 +105,7 @@ function warehouseviz(wsdrawingname, vizx)
 	#	Luxor.line(segment[1], segment[2], :stroke)
 	#end
 
-	setcolor("black")
+	setcolor(convert(Colors.HSV, Colors.RGB(150 / 255, 150 / 255, 150 / 255)))
 	setline(30)
 	toppoint, bottompoint = (horstreets[1,1]+horstreets[1,2])/2, (horstreets[size(horstreets)[1],1]+horstreets[size(horstreets)[1],2])/2
 	queuepoint1, queuepoint2 = maximum(loccoords[1:workstations[1]-1,2])+4, maximum(loccoords[:,2])
@@ -129,7 +130,6 @@ function warehouseviz(wsdrawingname, vizx)
 		Luxor.line(Point(newx,y1),Point(newx,y2), :stroke)
 	end
 	
-	
 	for segment in intersectionmarks
 		setline(10)
 		r_val, g_val, b_val = segment[4]
@@ -142,9 +142,12 @@ function warehouseviz(wsdrawingname, vizx)
 	end
 
 	setcolor("black")
-	fontsize(50*vizx/2000)
-	for w in union(storagelocs,workstations)
-		Luxor.text(string(w), locPoints[w] + Point(3 * (vizx - 100) / warehouse_x_length_meters, 2 * (vizy - 100) / warehouse_y_length_meters), halign=:center,   valign = :middle)
+	fontsize(100*vizx/2000)
+	#for w in union(storagelocs,workstations)
+	#	Luxor.text(string(w), locPoints[w] + Point(3 * (vizx - 100) / warehouse_x_length_meters, 2 * (vizy - 100) / warehouse_y_length_meters), halign=:center,   valign = :middle)
+	#end
+	for w in workstations[2]
+		Luxor.text("w", locPoints[w] + Point(3 * (vizx - 100) / warehouse_x_length_meters, 2 * (vizy - 100) / warehouse_y_length_meters), halign=:center,   valign = :middle)
 	end
 	#fontsize(20*vizx/2000)
 	#for lbl in intersectionlabels

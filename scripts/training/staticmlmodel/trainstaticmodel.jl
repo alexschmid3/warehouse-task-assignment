@@ -28,7 +28,7 @@ function readtrainingfiles(trainfilelist)
 		
 		run_id, instance_id = convert(Int, data[1,1]), convert(Int, data[1,2])
 
-		dynamicfile = string("trainingdata/mainmodel_wh",warehouse_id,"/dynamic/features_wh", warehouse_id,"_pass", data_pass,"_instance", instance_id,"_run", run_id,".jld2")
+		dynamicfile = string("trainingdata/cluster/mainmodel_wh",warehouse_id,"/dynamic/features_wh", warehouse_id,"_pass", data_pass,"_instance", instance_id,"_run", run_id,".jld2")
         println(dynamicfile)
         dynamicdata = load(dynamicfile)
 		

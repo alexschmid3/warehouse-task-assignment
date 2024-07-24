@@ -36,6 +36,13 @@ function pickbestsubproblem(spselectionchoices)
 
 	predicted_imp = [predicted_objs[sp] - old_objs[sp] for sp in 1:length(spselectionchoices)]
 
+    #spindex = 1
+    #for sp in spselectionchoices
+    #    println(sp.window)
+    #    println("pred = ", predicted_imp[spindex])
+    #    spindex += 1
+    #end
+
 	sp_index = argmax(predicted_imp)
 	chosensp = spselectionchoices[sp_index].sp
 

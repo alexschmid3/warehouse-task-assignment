@@ -70,7 +70,7 @@ function constructbestsubproblem(currpartition, currsol, features, featurenums, 
 		#Current objective
 		- sum(sum(sum((1-rand()/5) * length(currsol.itempodpicklist[w,t]) * x[windowidlookup[win]] for t in win.times) for w in win.workstations) for win in windows)
 		#Tabu penalty 
-		- 40*sum(tabupenalty[sp] for sp in 1:length(tabulist))
+		- 1000*sum(tabupenalty[sp] for sp in 1:length(tabulist))
 		- 10*podpenalty - 5*itempenalty
 		- sum(lastoptimizeddifference[win] * x[win] for win in tabulist))
 
@@ -135,6 +135,12 @@ function constructbestsubproblem(currpartition, currsol, features, featurenums, 
 	for sp in 1:length(tabulist)
 		sp_window = tabulist[sp]
 		@constraint(model, x[sp_window] <= tabupenalty[sp]) 
+	end
+	if tabulist != []
+		for sp in max(1,length(tabulist)-3):length(tabulist)
+			sp_window = tabulist[sp]	
+			@constraint(model, x[sp_window] == 0)
+		end
 	end
 
 	#====================================================#

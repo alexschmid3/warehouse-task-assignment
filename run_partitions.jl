@@ -288,7 +288,6 @@ for s in 1:numpartitions
 end
 solvemetrics = (solve_time=zeros(numpartitions+1), solvetime_init=zeros(numpartitions+1), solvetime_spsel=zeros(numpartitions+1), solvetime_sp=zeros(numpartitions+1), lsnsiterations=zeros(numpartitions+1))
 
-
 #Solve each partition
 counter = 1
 globalstarttime = time()
@@ -337,8 +336,6 @@ for s in 1:numpartitions
 		spselectionstarttime = time()
 		if methodname == "LTO"
 			sp_winid, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, tabulist, predicted_obj = selectlearnthenoptimizesubproblem(currpartition, currsol, windows, windowscontaining, windowidlookup, windowsduring, windowsynergy, targetnumorders, targetnumpods, tabulist, lastoptimizeddifference, sp_iter)
-		elseif methodname == "LTOsimple"
-			sp_winid, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, tabulist, predicted_obj = selectlearnthenoptimizesubproblem_simple(currpartition, currsol, windows, windowscontaining, windowidlookup, windowsduring, windowsynergy, targetnumorders, targetnumpods, tabulist, lastoptimizeddifference, sp_iter)
 		elseif methodname == "random"
 			sp_winid, sp_orders, sp_window, sp_pods, sp_itemson, sp_items = selectrandomsubproblem(currpartition, windows, windowidlookup, currsol, targetnumorders, targetnumpods)
 			predicted_obj = 0
@@ -429,6 +426,9 @@ println("Done!")
 
 #-----------------------------------------------------------------------------------#
 
+#include("scripts/visualizations/workstationviz.jl")
+#workstationviz(string(visualizationfolder,"/station.png"), partitioninfo[1], partitionsolution[1])
+
 #=
 function findpath(n1)
 
@@ -482,9 +482,10 @@ for p in partitioninfo[1].pods
 	timespacenetwork(string(visualizationfolder, "/tsn_pod", p,"_path.png"), arclistlist, colorlist, thicknesslist, dashlist, fractlist, 4000, 2000)
 end
 
+#Part 2
 include("scripts/visualizations/timespacenetworkviz.jl")
 p=1
-#Part 2
+numlocs = maximum(workstations)
 tsnarcs = [a for a in podarcset[p] if nodelookup[arclookup[a][2]][2] <= 360]
 pathexists = findpath(nodes[podstorageloc[p],0])
 for a in podarcset[p]
@@ -504,7 +505,10 @@ fractlist = [0,0]
 timespacenetwork(string(visualizationfolder, "/tsn_anystorage_pod", p,".png"), arclistlist, colorlist, thicknesslist, dashlist, fractlist, 4000, 2000)
 
 #Part 1
-tsnarcs = [a for a in podarcset[p] if (nodelookup[arclookup[a][2]][2] <= 360) & (nodelookup[arclookup[a][1]][1] in [1,14]) & (nodelookup[arclookup[a][2]][1] in [1,14])]
+include("scripts/visualizations/timespacenetworkviz.jl")
+p=1
+numlocs = maximum(workstations)
+tsnarcs = [a for a in podarcset[p] if (nodelookup[arclookup[a][2]][2] <= 360) & (nodelookup[arclookup[a][1]][1] in [1,13,14]) & (nodelookup[arclookup[a][2]][1] in [1,13,14])]
 pathexists = findpath(nodes[podstorageloc[p],0])
 for a in podarcset[p]
 	if (arclookup[a][1] > numnodes) || (pathexists[arclookup[a][1]] == 999999)
