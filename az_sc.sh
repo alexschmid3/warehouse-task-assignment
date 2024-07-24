@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH -a 521-540
+#SBATCH -a 26
 #SBATCH --partition=xeon-p8
-#SBATCH --cpus-per-task=2
-#SBATCH --mem=32G
-#SBATCH --time=0-06:00
-#SBATCH -o /home/gridsan/aschmid/warehouse-task-assignment/outerr/mainrun_%a.out
-#SBATCH -e /home/gridsan/aschmid/warehouse-task-assignment/outerr/mainrun_%a.err
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=64G
+#SBATCH --time=0-12:00
+#SBATCH -o /home/gridsan/aschmid/warehouse-task-assignment/outerr/partition_%a.out
+#SBATCH -e /home/gridsan/aschmid/warehouse-task-assignment/outerr/partition_%a.err
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=aschmid@mit.edu
 

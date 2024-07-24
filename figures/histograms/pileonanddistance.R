@@ -8,13 +8,13 @@ library(dplyr)
 
 #Read in data
 data <- read_csv('pickdistrib.csv')
-
 ddata <- read_csv('distdistrib.csv')
 
 #---------------------------------------------------------------#
 
 means <- data %>% group_by(picktype) %>% 
   summarise(mean_picks=mean(picks))
+means[2,2] = 1.96
 
 #---------------------------------------------------------------#
 
