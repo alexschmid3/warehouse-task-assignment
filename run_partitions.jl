@@ -52,14 +52,14 @@ const GRB_ENV = Gurobi.Env()
 # Select the run files
 row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 warehouseparamsfilename = "data/warehouse_sizes_and_capacities.csv"
-instanceparamsfilename = "data/decomp_instance_parameters.csv"
-methodparamsfilename = "data/decomp_run_parameters.csv" #extensions/orderslots/
-projectfolder = "outputs/partitionruns/" #"outputs/routing/"
+instanceparamsfilename = "data/test_instance_parameters.csv"
+methodparamsfilename = "data/test_run_parameters.csv" #extensions/orderslots/
+projectfolder = "outputs/routing/"
 warehouseparms = CSV.read(warehouseparamsfilename, DataFrame)
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
 
-nocongestion_flag = 0 #methodparms[row_id, 18]
+nocongestion_flag = methodparms[row_id, 18]
 
 # Parameter Descriptions:
 # ==========================================
@@ -293,9 +293,9 @@ end
 solvemetrics = (solve_time=zeros(numpartitions+1), solvetime_init=zeros(numpartitions+1), solvetime_spsel=zeros(numpartitions+1), solvetime_sp=zeros(numpartitions+1), lsnsiterations=zeros(numpartitions+1))
 
 #Solve each partition
-counter = 6
+counter = 1
 globalstarttime = time()
-for s in 6:numpartitions
+for s in 1:numpartitions
 
 	println("===== PARTITION $s =====")
 
@@ -425,14 +425,14 @@ if ordergraphreporting_flag == 1
 end
 
 #-----------------------------------------------------------------------------------#
-#=
+
 include("scripts/routing/oldcongestionfunctions.jl")
 include("scripts/routing/createroutingnetwork.jl")
 include("scripts/routing/saveandloadassignments.jl")
 savetaskassignments(string(outputfolder, "/assignments.jld2"))
 
 include("run_routing.jl")
-=#
+
 #-----------------------------------------------------------------------------------#
 
 #congestionanalysis(nocongestion_flag)

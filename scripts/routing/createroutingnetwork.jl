@@ -40,6 +40,17 @@ function findroutingprearcs()
 		newarclength[w,s] = tstep_r * ceil(traveltime / tstep_r)
 		newarclength[s,w] = tstep_r * ceil(traveltime / tstep_r)
 	end
+    if stationtostation_flag == 1
+        for w1 in workstations, w2 in [w for w in workstations if w > w1]
+            l1, l2 = maploctointersection[w1], maploctointersection[w2] 
+            dist = abs(intcoords[l1][1] - intcoords[l2][1]) + abs(intcoords[l1][2] - intcoords[l2][2]) 
+            traveltime = dist / podspeed
+            push!(prearcs, (w1, w2, traveltime, tstep_r * ceil(traveltime / tstep_r)))
+            push!(prearcs, (w2, w1, traveltime, tstep_r * ceil(traveltime / tstep_r)))
+            newarclength[w2,w1] = tstep_r * ceil(traveltime / tstep_r)
+            newarclength[w1,w2] = tstep_r * ceil(traveltime / tstep_r)
+        end
+    end
 
 	return prearcs, newarclength
 
@@ -59,6 +70,19 @@ function pathsbetweenintersections()
 		allpaths[int1,int2] = []
 		enumerateshortestpaths(int1, int2, relevantintersections, traveltimeraw, leftstep, rightstep, upstep, downstep)
 	end
+    if stationtostation_flag == 1
+        for w1 in workstations, w2 in setdiff(workstations,w1)
+            int1, int2 = maploctointersection[w1], maploctointersection[w2] 
+            solepath = [int1]
+            startx, starty = intcoords[int1]
+            destx, desty = intcoords[int2]
+            for currx in startx:16*sign(destx-startx):destx
+                push!(solepath, intlookup[currx, starty-3])
+            end
+            push!(solepath, int2)
+            allpaths[int1,int2] = solepath
+        end
+    end
 
 end
 
@@ -89,6 +113,7 @@ function createroutingarcs()
 					if int1 == min(int1, int2)
 						path = rawpath
 					else
+                        println("$int1, $int2 - ", rawpath)
 						path = reverse(rawpath)
 					end
 					push!(routearcs[n1, n2], arcindex)
@@ -174,6 +199,24 @@ function podarcsets_routing(pods_r, newarclength)
 			push!(A_minus_p[p, n2_return], a_return)
 		end
 	end
+    if stationtostation_flag == 1
+        for p in pods_r, w1 in workstations, w2 in [w for w in workstations if w>w1], t in -maxtraveltime:tstep_r:horizon_r+maxtraveltime-newarclength[w1,w2]
+            n1_leave, n2_leave = routenodes[w1, t], routenodes[w, t + newarclength[w1, w2]]
+            n1_return, n2_return = routenodes[w2, t], routenodes[s, t + newarclength[w2, w1]]
+
+            for a_leave in routearcs[n1_leave, n2_leave]
+                push!(podarcset[p], a_leave)
+                push!(A_plus_p[p, n1_leave], a_leave)
+                push!(A_minus_p[p, n2_leave], a_leave)
+            end
+
+            for a_return in routearcs[n1_return, n2_return]
+                push!(podarcset[p], a_return)
+                push!(A_plus_p[p, n1_return], a_return)
+                push!(A_minus_p[p, n2_return], a_return)
+            end
+        end   
+    end 
 
 	#Stationary arcs
 	for p in pods_r, t in -maxtraveltime:tstep_r:horizon_r+maxtraveltime-tstep
