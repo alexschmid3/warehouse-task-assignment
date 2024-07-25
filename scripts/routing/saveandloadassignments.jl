@@ -3,16 +3,16 @@ tstep_cong = 15
 tstep_r = 30
 maxtraveltime = tstep_r * ceil(((warehouse_x_length_meters + warehouse_y_length_meters) / podspeed) / tstep_r)
 horizon_r = horizon*2
+routenodelookup, routenodes, routenodes_end, numnodes_r, extendednumnodes_r = createroutingnodes()
+routearcs, routearclookup, numarcs_r, RA_plus, RA_minus, newarclength, routearcs_path, routearclookup_path, A_space = createroutingarcs()
 
 function savetaskassignments(assignmentfilename)
 
-	routenodelookup, routenodes, routenodes_end, numnodes_r, extendednumnodes_r = createroutingnodes()
-	routearcs, routearclookup, numarcs_r, RA_plus, RA_minus, newarclength, routearcs_path, routearclookup_path, A_space = createroutingarcs()
-	
 	orders_r, pods_r = [], []
 	workstationassignment, ordersassignedto, orderassignmentbegan = Dict(), Dict(), Dict()
 	podswith_r, podsfor = Dict(), Dict()
 	orderopentime, orderclosetime = Dict(), Dict()
+	poddelaypenalty = Dict()
 
 	for s in 1:numpartitions
 		currpartition, currsol = partitioninfo[s], partitionsolution[s]
@@ -29,6 +29,7 @@ function savetaskassignments(assignmentfilename)
 			catch
 				orderopentime[m] = t
 			end
+			orderclosetime[m] = horizon_r
 			push!(ordersassignedto[w], m)
 		end
 		for m in orders_r, i in itemson[m]
@@ -68,7 +69,7 @@ function savetaskassignments(assignmentfilename)
 						orderopentime[m] = t
 					end
 					for t2 in t:tstep:horizon
-						orderclosetime[m] = horizon_r
+						
 						if !(m in currsol.ordersopen[workstationassignment[m], t2])
 							orderclosetime[m] = t2
 							break
@@ -79,7 +80,7 @@ function savetaskassignments(assignmentfilename)
 			end	
 		end
 
-		poddelaypenalty = Dict()
+		
 		for m in orders_r, p in podsfor[m], t in orderopentime[m]:tstep_r:horizon_r
 			n = routenodes[workstationassignment[m], t]
 			for a in RA_plus[n]

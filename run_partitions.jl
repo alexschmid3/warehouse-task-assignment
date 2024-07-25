@@ -50,15 +50,16 @@ ordergraphreporting_flag = 0
 const GRB_ENV = Gurobi.Env()
 
 # Select the run files
-#842,847,848,849,851,852,853,854
 row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 warehouseparamsfilename = "data/warehouse_sizes_and_capacities.csv"
-instanceparamsfilename = "data/decomp_instance_parameters.csv"
-methodparamsfilename = "data/decomp_run_parameters.csv" #extensions/orderslots/
-projectfolder = "outputs/partitionruns/"
+instanceparamsfilename = "data/test_instance_parameters.csv"
+methodparamsfilename = "data/test_run_parameters.csv" #extensions/orderslots/
+projectfolder = "outputs/routing/"
 warehouseparms = CSV.read(warehouseparamsfilename, DataFrame)
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
 methodparms = CSV.read(methodparamsfilename, DataFrame)
+
+nocongestion_flag = methodparms[row_id, 18]
 
 # Parameter Descriptions:
 # ==========================================
@@ -422,6 +423,14 @@ if ordergraphreporting_flag == 1
 	include("scripts/figures/ordergraph.jl")
 	writeordergraph(ordergraphreportingfilename)
 end
+
+#-----------------------------------------------------------------------------------#
+
+include("scripts/routing/saveandloadassignments.jl")
+include("scripts/routing/oldcongestionfunctions.jl")
+include("scripts/routing/createroutingnetwork.jl")
+savetaskassignments(string(outputfolder, "/assignments.jld2"))
+include("run_routing.jl")
 
 #-----------------------------------------------------------------------------------#
 
