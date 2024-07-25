@@ -13,6 +13,7 @@ function savetaskassignments(assignmentfilename)
 	podswith_r, podsfor = Dict(), Dict()
 	orderopentime, orderclosetime = Dict(), Dict()
 	poddelaypenalty = Dict()
+	itemsfrom = Dict()
 
 	for s in 1:numpartitions
 		currpartition, currsol = partitioninfo[s], partitionsolution[s]
@@ -38,7 +39,7 @@ function savetaskassignments(assignmentfilename)
 		for m in orders_r
 			podsfor[m] = []
 		end
-		itemsfrom = Dict()
+
 		for w in currpartition.workstations, t in times, (m,i,p) in currsol.itempodpicklist[w,t]
 			try
 				#println("$w, $t ==> ", itempodpicklist[w,t])
