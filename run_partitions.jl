@@ -426,10 +426,11 @@ end
 
 #-----------------------------------------------------------------------------------#
 
-include("scripts/routing/saveandloadassignments.jl")
 include("scripts/routing/oldcongestionfunctions.jl")
 include("scripts/routing/createroutingnetwork.jl")
+include("scripts/routing/saveandloadassignments.jl")
 savetaskassignments(string(outputfolder, "/assignments.jld2"))
+
 include("run_routing.jl")
 
 #-----------------------------------------------------------------------------------#
