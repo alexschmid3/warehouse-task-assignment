@@ -293,9 +293,9 @@ end
 solvemetrics = (solve_time=zeros(numpartitions+1), solvetime_init=zeros(numpartitions+1), solvetime_spsel=zeros(numpartitions+1), solvetime_sp=zeros(numpartitions+1), lsnsiterations=zeros(numpartitions+1))
 
 #Solve each partition
-counter = 1
+counter = 6
 globalstarttime = time()
-for s in 1:numpartitions
+for s in 6:numpartitions
 
 	println("===== PARTITION $s =====")
 
