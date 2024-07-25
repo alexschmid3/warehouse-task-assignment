@@ -113,7 +113,6 @@ function createroutingarcs()
 					if int1 == min(int1, int2)
 						path = rawpath
 					else
-                        println("$int1, $int2 - ", rawpath)
 						path = reverse(rawpath)
 					end
 					push!(routearcs[n1, n2], arcindex)
