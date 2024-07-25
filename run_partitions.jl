@@ -33,7 +33,7 @@ include("scripts/lsns/subproblemselection/selectlearningbenchmarksubproblem.jl")
 include("scripts/test/checksolution.jl")
 include("scripts/figures/histograms.jl")
 
-include("scripts/visualizations/warehouseviz.jl")
+#include("scripts/visualizations/warehouseviz.jl")
 
 println("Scripts imported")
 
