@@ -22,16 +22,17 @@ update_geom_defaults("text", list(size = 10))
 
 dev.new(width=8, height=4)
 
-png(file="orderpickdistrib.png",
+png(file="orderpickdistrib_new.png",
     width=1000, height=1200)
 
 #Make the histogram
-ggplot(data, aes(x=picks, fill=picktype)) +
-  geom_density(adjust=3, alpha=0.5, color=NA) +
+ggplot(data, aes(x=picks, fill=picktype, color=picktype)) +
+  geom_density(adjust=3, alpha=0.5, size=1.5) +
   scale_fill_manual(values=c("#0072B2", "#D55E00")) +
-  geom_vline(xintercept = deframe(means[1, 'mean_picks']), linetype="dashed", color = "#0072B2", size=3) +
-  geom_vline(xintercept = deframe(means[2, 'mean_picks']), linetype="dashed", color = "#D55E00", size=3) +
-  geom_vline(xintercept = 1, linetype="dashed", color = "#000000", size=3) +
+  scale_colour_manual(values=c("#0072B2", "#D55E00")) +
+  geom_vline(xintercept = deframe(means[1, 'mean_picks']), linetype="dashed", color = "#0072B2", size=2.5) +
+  geom_vline(xintercept = deframe(means[2, 'mean_picks']), linetype="dashed", color = "#D55E00", size=2.5) +
+  geom_vline(xintercept = 1, linetype="dashed", color = "#000000", size=2.5) +
   xlab(" Picks per pod ") +
   xlim(1,5) +
   ylab(" Density ") +

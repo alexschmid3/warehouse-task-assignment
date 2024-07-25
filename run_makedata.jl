@@ -1,4 +1,5 @@
-
+time()
+fulltimestart=time()
 using JuMP, Gurobi, Plots, Random, CSV, DataFrames, Statistics, Dates, HDF5, LinearAlgebra, FileIO, JLD2, NearestNeighbors, SparseArrays
 
 #-----------------------------------------------------------------------------------#
@@ -50,10 +51,10 @@ debugmode = 0					# 1 --> will perform solution consistency unit tests at each L
 const GRB_ENV = Gurobi.Env()
 
 # Select the instancecd
-row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
-warehouseparamsfilename = "data/extensions/timedisc/warehouse_sizes_and_capacities.csv"
-instanceparamsfilename = "data/extensions/timedisc/train_instance_parameters.csv"
-methodparamsfilename = "data/extensions/timedisc/train_run_parameters.csv"
+row_id = 601 #ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
+warehouseparamsfilename = "data/warehouse_sizes_and_capacities.csv"
+instanceparamsfilename = "data/train_instance_parameters.csv"
+methodparamsfilename = "data/train_run_parameters.csv"
 
 warehouseparms = CSV.read(warehouseparamsfilename, DataFrame)
 instanceparms = CSV.read(instanceparamsfilename, DataFrame)
@@ -474,4 +475,5 @@ end
 
 #-----------------------------------------------------------------------------------#
 
+println("Full time = ", time()-fulltimestart)
 println("Done!")

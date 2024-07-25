@@ -27,8 +27,7 @@ function readtrainingfiles(trainfilelist)
 		data = CSV.read(string(trainingfolder, file), DataFrame)
 		
 		run_id, instance_id = convert(Int, data[1,1]), convert(Int, data[1,2])
-
-		dynamicfile = string("trainingdata/cluster/mainmodel_wh",warehouse_id,"/dynamic/features_wh", warehouse_id,"_pass", data_pass,"_instance", instance_id,"_run", run_id,".jld2")
+		dynamicfile = string(dynamictrainingfolder,"features_wh", warehouse_id,"_pass", data_pass,"_instance", instance_id,"_run", run_id,".jld2")
         println(dynamicfile)
         dynamicdata = load(dynamicfile)
 		
@@ -162,7 +161,7 @@ function predictstaticsubproblemmodel(testfilelist, mlmodel)
 		
 		run_id, instance_id = convert(Int, data[1,1]), convert(Int, data[1,2])
 
-		dynamicfile = string("trainingdata/mainmodel_wh",warehouse_id,"/dynamic/features_wh", warehouse_id,"_pass", data_pass,"_instance", instance_id,"_run", run_id,".jld2")
+		dynamicfile = string(dynamictrainingfolder,"features_wh", warehouse_id,"_pass", data_pass,"_instance", instance_id,"_run", run_id,".jld2")
         println(dynamicfile)
         dynamicdata = load(dynamicfile)
 

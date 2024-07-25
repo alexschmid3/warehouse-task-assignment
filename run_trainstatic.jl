@@ -4,7 +4,7 @@ using JuMP, Gurobi, Plots, Random, CSV, DataFrames, Statistics, Dates, HDF5, Lin
 include("scripts/training/staticmlmodel/trainstaticmodel.jl")
 include("scripts/training/staticmlmodel/staticmodels.jl")
 
-warehouse_id = 6 #parse(Int, ARGS[1])
+warehouse_id = parse(Int, ARGS[1])
 data_pass = 0
 subproblemsperinstance = 1000
 seed = 456
@@ -14,7 +14,8 @@ savemodelfilename_obj = string("models/staticmlmodel_wh", warehouse_id, "_pass",
 savemodelfilename_imp = string("models/staticmlmodel_wh", warehouse_id, "_pass", data_pass+1,"_sp", subproblemsperinstance, "_imp.jld2")
 
 #Get relevant training data
-trainingfolder = string("trainingdata/cluster/mainmodel_wh",warehouse_id,"/static/")
+trainingfolder = string("trainingdata/mainmodel_wh",warehouse_id,"/static/")
+dynamictrainingfolder = string("trainingdata/mainmodel_wh",warehouse_id,"/dynamic/")
 unfiltered_filelist = readdir(trainingfolder)
 filelist = []
 for filename in unfiltered_filelist

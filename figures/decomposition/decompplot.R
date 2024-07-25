@@ -25,7 +25,7 @@ png(file="partition_pileon.png",
 
 ggplot(data = results, aes(x = partition, y = items_picked_per_pod, fill = partitionobjective)) +
   geom_bar(stat = "identity", position = position_dodge(), alpha = 0.75)  +
-  ylim(0,2.1) +
+  ylim(0,3.3) +
   geom_hline(yintercept = deframe(means[1, 'mean_pileon']), linetype="dashed", color = "#0072B2", size=1) +
   geom_hline(yintercept = deframe(means[2, 'mean_pileon']), linetype="dashed", color = "#D55E00", size=1) +
   #geom_text(data = NULL, x = 12, y = 1.6, label = "1.71", size = 4) +
@@ -41,7 +41,8 @@ ggplot(data = results, aes(x = partition, y = items_picked_per_pod, fill = parti
         axis.text.x = element_text(size = 18),
         axis.text.y = element_text(size = 18),
         legend.title = element_text(face="bold", size = 24)) +
-  theme(legend.position="bottom", legend.text = element_text(size = 24))
+  #theme(legend.position="bottom", legend.text = element_text(size = 24))
+  theme(legend.position="none")
 
 dev.off()
 
@@ -61,7 +62,7 @@ png(file="partition_util.png",
 
 ggplot(data = results, aes(x = partition, y = time_utilization, fill = partitionobjective)) +
   geom_bar(stat = "identity", position = position_dodge(), alpha = 0.75)  +
-  ylim(0,100) +
+  ylim(0,1) +
   geom_hline(yintercept = deframe(utilmeans[1, 'mean_util']), linetype="dashed", color = "#0072B2", size=1) +
   geom_hline(yintercept = deframe(utilmeans[2, 'mean_util']), linetype="dashed", color = "#D55E00", size=1) +
   #geom_text(data = NULL, x = 12, y = 1.6, label = "1.71", size = 4) +
@@ -77,7 +78,8 @@ ggplot(data = results, aes(x = partition, y = time_utilization, fill = partition
         axis.text.x = element_text(size = 18),
         axis.text.y = element_text(size = 18),
         legend.title = element_text(face="bold", size = 24)) +
-  theme(legend.position="bottom", legend.text = element_text(size = 24))
+  #theme(legend.position="bottom", legend.text = element_text(size = 24))
+  theme(legend.position="none")
 
 dev.off()
 
@@ -98,7 +100,7 @@ png(file="partition_obj.png",
 
 ggplot(data = results, aes(x = partition, y = objective, fill = partitionobjective)) +
   geom_bar(stat = "identity", position = position_dodge(), alpha = 0.75)  +
-  ylim(0,250) +
+  ylim(0,300) +
   geom_hline(yintercept = deframe(objmeans[1, 'mean_obj']), linetype="dashed", color = "#0072B2", size=1) +
   geom_hline(yintercept = deframe(objmeans[2, 'mean_obj']), linetype="dashed", color = "#D55E00", size=1) +
   #geom_text(data = NULL, x = 12, y = 1.6, label = "1.71", size = 4) +
@@ -114,7 +116,8 @@ ggplot(data = results, aes(x = partition, y = objective, fill = partitionobjecti
         axis.text.x = element_text(size = 18),
         axis.text.y = element_text(size = 18),
         legend.title = element_text(face="bold", size = 24)) +
-  theme(legend.position="bottom", legend.text = element_text(size = 24))
+  theme(legend.position="none") 
+  #theme(legend.position="bottom", legend.text = element_text(size = 24))
 
 dev.off()
 
