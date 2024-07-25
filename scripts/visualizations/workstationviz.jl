@@ -337,7 +337,7 @@ end
 
 #---------------------------------------------------------------------------------------#
 
-function workstationviz_three(wsdrawingname, itempodpicklist)
+function workstationviz_three(wsdrawingname, partition, currsol)
 
 	#Find coordinates for each time-space node
 	nodePoints = Dict()
@@ -347,7 +347,7 @@ function workstationviz_three(wsdrawingname, itempodpicklist)
 	k1 = 1000/(timesperrow + 1)  
 	k2 = 600/(numworkstations + 2)
 
-	for w in workstations, t in 0:tstep:horizon
+	for w in partition.workstations, t in 0:tstep:horizon
 		n = nodes[w,t]
 		if nodelookup[n][2]/tstep < timesperrow
 			ymod = (floor((nodelookup[n][2]/tstep)/timesperrow))/3
@@ -369,8 +369,8 @@ function workstationviz_three(wsdrawingname, itempodpicklist)
 	#-------------------------------------------------------------------------#
 
 	throughput = Dict()
-	for w in workstations, t in 0:tstep:horizon
-		sortedlist = sort(itempodpicklist[w,t], by = x -> x[3])
+	for w in partition.workstations, t in 0:tstep:horizon
+		sortedlist = sort(currsol.itempodpicklist[w,t], by = x -> x[3])
 		currentpod = -1
 		vizlist = []
 		for item in sortedlist
@@ -391,7 +391,7 @@ function workstationviz_three(wsdrawingname, itempodpicklist)
 	orderlistbynode = Dict()
 	orderslotassign = Dict()
 	slotorderassign = Dict()
-	for w in workstations, t in times, s in 1:workstationordercapacity
+	for w in partition.workstations, t in times, s in 1:workstationordercapacity
 		slotorderassign[nodes[w,t], s] = 0 
 	end
 	for n in 1:numnodes

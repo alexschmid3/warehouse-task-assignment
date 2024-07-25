@@ -13,7 +13,6 @@ lsnsdata$scheme <- paste(lsnsdata$method, lsnsdata$initialization)
 lsnsdata <- lsnsdata %>%
   filter(initialization == "(cold start)")
 
-
 #---------------------------------------------------------------#
 
 update_geom_defaults("text", list(size = 10))
@@ -25,8 +24,8 @@ png(file="lsnsiter.png",
 
 ggplot(lsnsdata, aes(x = lsnsiteration, y = objective, colour =scheme, group = scheme)) + 
   geom_line(size=2.5)+
-  scale_color_manual(breaks = c("Learn-then-optimize (warm start)", "Learn-then-optimize (cold start)", "Learning-enhanced (warm start)", "Learning-enhanced (cold start)","Domain-based (warm start)", "Domain-based (cold start)","Randomized (warm start)", "Randomized (cold start)"),
-                     values = c("#FFB385", "#FE6100", "#EF99C4", "#DC267F", "#B9CDFF", "#648FFF", "#A1A1A1", "#5A5A5A")) +
+  scale_color_manual(breaks = c("Learn-then-optimize (cold start)", "Domain-based (cold start)", "Learning-enhanced (cold start)", "Randomized (cold start)"),
+                     values = c("#FE6100","#648FFF","#5A5A5A","#DC267F")) +
   xlim(0,50) +
   xlab(" \nLSNS iteration ") +
   ylab(" Throughput\n ") +
@@ -51,9 +50,9 @@ png(file="lsnstime.png",
 
 ggplot(lsnsdata, aes(x = cumul_time, y = objective, colour =scheme, group = scheme)) + 
   geom_line(size=2.5)+
-  scale_color_manual(breaks = c("Learn-then-optimize (warm start)", "Learn-then-optimize (cold start)", "Learning-enhanced (warm start)", "Learning-enhanced (cold start)","Domain-based (warm start)", "Domain-based (cold start)","Randomized (warm start)", "Randomized (cold start)"),
-                     values = c("#FFB385", "#FE6100", "#EF99C4", "#DC267F", "#B9CDFF", "#648FFF", "#A1A1A1", "#5A5A5A")) +
-  xlim(0,400) +
+  scale_color_manual(breaks = c("Learn-then-optimize (cold start)", "Domain-based (cold start)", "Learning-enhanced (cold start)", "Randomized (cold start)"),
+                     values = c("#FE6100","#648FFF","#5A5A5A","#DC267F")) +
+  xlim(0,500) +
   xlab(" \nTime (s) ") +
   ylab(" Throughput\n ") +
   labs(title="") +

@@ -33,6 +33,8 @@ include("scripts/lsns/subproblemselection/selectlearningbenchmarksubproblem.jl")
 include("scripts/test/checksolution.jl")
 include("scripts/figures/histograms.jl")
 
+include("scripts/visualizations/warehouseviz.jl")
+
 println("Scripts imported")
 
 #-----------------------------------------------------------------------------------#
@@ -48,6 +50,7 @@ ordergraphreporting_flag = 0
 const GRB_ENV = Gurobi.Env()
 
 # Select the run files
+#842,847,848,849,851,852,853,854
 row_id = ifelse(length(ARGS) > 0, parse(Int, ARGS[1]), 1) # (for cluster submissions)
 warehouseparamsfilename = "data/warehouse_sizes_and_capacities.csv"
 instanceparamsfilename = "data/decomp_instance_parameters.csv"
@@ -351,7 +354,7 @@ for s in 1:numpartitions
 		sp = constructsubproblem(currpartition, sp_orders, sp_window, sp_pods, sp_itemson, sp_items, currsol)
 
 		#Re-optimize subproblem
-		sp_obj, sp_solvetime, h_sp, y_sp, z_sp, f_sp, g_sp, v_sp, feasibleflag_sp, sp_buildtime = reoptimizesubproblem(sp, currsol, currpartition, 0)
+		sp_obj, sp_solvetime, h_sp, y_sp, z_sp, f_sp, g_sp, v_sp, feasibleflag_sp, sp_buildtime = reoptimizesubproblem(sp, currsol, currpartition, nocongestion_flag)
 		println("Re-opt time = ", sp_solvetime, " seconds")
 
 		#Update solution
@@ -393,9 +396,9 @@ for s in 1:numpartitions
 		println("Partition throughput = ", sum(length(currsol.itempodpicklist[w,t]) for w in currpartition.workstations, t in times))
 
 		#Time limit termination (2 hours)
-		if time() - globalstarttime >= 60*60*2
-			break
-		end
+		#if time() - globalstarttime >= 60*60*2
+		#	break
+		#end
 
 		global counter += 1
 
@@ -422,12 +425,14 @@ end
 
 #-----------------------------------------------------------------------------------#
 
+#congestionanalysis(nocongestion_flag)
+#include("scripts/visualizations/workstationviz.jl")
+#workstationviz(string(visualizationfolder,"/station.png"), partitioninfo[1], partitionsolution[1])
+#workstationviz_three(string(visualizationfolder,"/station_three.png"), partitioninfo[1], partitionsolution[1])
+
 println("Done!")
 
 #-----------------------------------------------------------------------------------#
-
-#include("scripts/visualizations/workstationviz.jl")
-#workstationviz(string(visualizationfolder,"/station.png"), partitioninfo[1], partitionsolution[1])
 
 #=
 function findpath(n1)
@@ -527,7 +532,93 @@ fractlist = [0,0]
 timespacenetwork(string(visualizationfolder, "/tsn_onlystorage_pod", p,".png"), arclistlist, colorlist, thicknesslist, dashlist, fractlist, 4000, 2000)
 
 
+currsol = partitionsolution[1]
+currpartition = partitioninfo[1]
+
+totalpoddist, totalpodpicks = Dict(), Dict()
+for p in currpartition.pods
+	currtrippicks, currtripdist = 0, 0
+	for a in currsol.ypath[p]
+		l1,l2 = nodelookup[arclookup[a][1]][1], nodelookup[arclookup[a][2]][1]
+		currtripdist += warehousedistance[l1,l2]
+	end
+	for w in workstations, t in times, (m,i,p2) in currsol.itempodpicklist[w,t]
+		if p == p2
+			currtrippicks += 1
+		end
+	end
+	totalpoddist[p] = currtripdist
+	totalpodpicks[p] = currtrippicks
+end
+
+df = (pod=[p for p in pods if totalpodpicks[p] >= 1], itempicks=[totalpodpicks[p] for p in pods if totalpodpicks[p] >= 1], disttraveled=[totalpoddist[p] for p in pods if totalpodpicks[p] >= 1])
+CSV.write("figures/histograms/distdistrib_new.csv", df)
 
 
+currsol = partitionsolution[1]
+currpartition = partitioninfo[1]
+
+
+totalpoddist, totalpodpicks = Dict(), Dict()
+for p in currpartition.pods
+	tripcounter = 1
+	currtrippicks, currtripdist = 0, 0
+
+	for a in currsol.ypath[p]
+		l1,t1 = nodelookup[arclookup[a][1]]
+		l2,t2 = nodelookup[arclookup[a][2]]
+		currtripdist += warehousedistance[l1,l2]
+		for w in workstations, t in max(0,t1):tstep:min(t2-tstep,horizon), (m,i,p2) in currsol.itempodpicklist[w,t]
+			if p == p2
+				currtrippicks += 1
+			end
+		end
+		if (l2 == podstorageloc[p]) & !(l1 == podstorageloc[p])
+			totalpoddist[p,tripcounter] = currtripdist
+			totalpodpicks[p,tripcounter] = currtrippicks
+			tripcounter += 1
+			currtrippicks, currtripdist = 0, 0
+		end
+	end
+	if currtrippicks > 1e-4
+		totalpoddist[p,tripcounter] = currtripdist
+		totalpodpicks[p,tripcounter] = currtrippicks
+	end
+end
+
+allkeys = keys(totalpoddist)
+df = (pod=[p for (p,ti) in allkeys if totalpodpicks[p,ti] >= 1], itempicks=[totalpodpicks[p,ti] for (p,ti) in allkeys if totalpodpicks[p,ti] >= 1], disttraveled=[totalpoddist[p,ti] for (p,ti) in allkeys if totalpodpicks[p,ti] >= 1])
+CSV.write("figures/histograms/distdistrib_new.csv", df)
+
+totalitempicks = Dict()
+totalorderpicks = Dict()
+for p in currpartition.pods
+	pickeditems, pickedorders = [], []
+	for w in workstations, t in times, (m,i,p2) in currsol.itempodpicklist[w,t]
+		if p == p2
+			push!(pickeditems, i)
+			push!(pickedorders, m)
+		end
+	end
+	totalitempicks[p] = length(pickeditems)
+	totalorderpicks[p] = length(unique(pickedorders))
+end
+
+
+fullpodlist = [p for p in pods if totalitempicks[p] >= 1]
+fulltypelist = ["Item picks" for p in pods if totalitempicks[p] >= 1]
+fullpicklist = [totalitempicks[p] for p in pods if totalitempicks[p] >= 1]
+for p in pods
+	if totalitempicks[p] >= 1
+		push!(fullpodlist, p)
+		push!(fulltypelist, "Order picks")
+		push!(fullpicklist, totalorderpicks[p])
+	end
+end
+
+
+df = (pod=fullpodlist, picktype=fulltypelist, picks=fullpicklist)
+CSV.write("figures/histograms/pickdistrib_new.csv", df)
 
 =#
+

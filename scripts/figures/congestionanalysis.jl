@@ -26,12 +26,11 @@ function congestionanalysis(nocongestion_flag)
     df = DataFrame(congutil = allcongestionutils)
 
     if nocongestion_flag == 0
-        CSV.write("figures/congestionanalysis/congestionsolution4.csv", df)
+        CSV.write("figures/congestionanalysis/congestionsolution5.csv", df)
+        warehouseviz("figures/congestionanalysis/warehousecongestion_cong_new.png", 4000)
     else nocongestion_flag == 1
-        CSV.write("figures/congestionanalysis/nocongestionsolution4.csv", df)
+        CSV.write("figures/congestionanalysis/nocongestionsolution5.csv", df)
+        warehouseviz("figures/congestionanalysis/warehousecongestion_nocong_new.png", 4000)
     end
-
-    include("scripts/visualizations/warehouseviz.jl")
-    warehouseviz("figures/congestionanalysis/warehousecongestion_nocong.png", 4000)
 
 end

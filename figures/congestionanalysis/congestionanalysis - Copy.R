@@ -8,8 +8,8 @@ library(dplyr)
 #---------------------------------------------------------------#
 
 #Read in detour and delay distribution data
-congdata <- read_csv('congestionsolution2.csv')
-nocongdata <- read_csv('nocongestionsolution3.csv')
+congdata <- read_csv('congestionsolution5.csv')
+nocongdata <- read_csv('nocongestionsolution5.csv')
 
 #---------------------------------------------------------------#
 #---------------------------------------------------------------#
@@ -23,6 +23,9 @@ nocongdata <- nocongdata %>%
   mutate(datalabel = vec_nocong)
 
 alldata = rbind(congdata, nocongdata)
+
+alldata <- alldata %>%
+  filter(congutil != 0)
 
 #---------------------------------------------------------------#
 
@@ -68,7 +71,7 @@ png(file="congestionhistogram_raw.png", width=1200, height=800)
 alldata %>%
   ggplot(aes(x=congutil, color=datalabel, fill=datalabel)) +
   geom_histogram(position="identity",alpha=0.3,size=1.5)+ 
-  geom_vline(aes(xintercept = 1.05), size=1.5)+
+  geom_vline(aes(xintercept = 1.01), size=1.5)+
   #xlim(0, 0.00000001)+
   #ylim(0, 100)+
   scale_colour_manual("", 
